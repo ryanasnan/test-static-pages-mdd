@@ -1,0 +1,516 @@
+.wy-nav-content {
+    max-width: none;
+}
+
+img {
+    border: solid 2px #BBB;
+    padding: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 700px !important;
+}
+
+
+img {
+    border: solid 2px #BBB;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;   
+    padding: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 700px !important;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+
+.modal.show {
+    display:flex;
+    align-items: center;
+}
+
+/* Modal Content (image) */
+img.modal-content {
+    max-width: 100% !important;
+    margin: auto;
+    display: block;
+    border: none;
+}
+
+/* Add Animation */
+img.modal-content {
+    -webkit-animation-name: zoom;
+    -webkit-animation-duration: 0.6s;
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+
+img.modal-content.out {
+  animation-name: zoom-out;
+  animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+    from {-webkit-transform:scale(1)}
+    to {-webkit-transform:scale(2)}
+}
+
+@keyframes zoom {
+    from {transform:scale(0.4)}
+    to {transform:scale(1)}
+}
+
+@keyframes zoom-out {
+    from {transform:scale(1)}
+    to {transform:scale(0)}
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px){
+    img {
+        max-width: 100% !important;
+    }
+    img.modal-content {
+        max-width: 400px !important;
+        margin: 0;
+    }
+}
+
+/*  Create left and right line for every head level */
+div[itemprop=articleBody] > div.section {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    background: none;
+    padding-left: 0;
+}
+
+div[itemprop=articleBody] > div.section div.section {
+    padding: 10px 22px;
+    margin: 10px 0;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+/* h2 - h6 global set */
+div[itemprop=articleBody] > div.section div.section:before, div[itemprop=articleBody] > div.section div.section:after {
+    content: " ";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 0;
+}
+
+div[itemprop=articleBody] > div.section div.section.active {
+    background-repeat: no-repeat;
+    background-size: 20px;
+}
+
+/* left line level 1 (head2) */
+div[itemprop=articleBody] > div.section > div.section:before {
+    width: 2em;
+    border: 0.12em solid #ff444447;
+    left: 0;
+    border-right: 0px;
+}
+
+div[itemprop=articleBody] > div.section > div.section:after {
+    width: 2em;
+    border: 0.12em solid #ff444447;
+    right: 0;
+    border-left: 0px;
+}
+
+div[itemprop=articleBody] > div.section > div.section.active:before {
+    background: linear-gradient(to right, #ff444447 0px, transparent 8px) 0 100%, linear-gradient(to bottom, #ff444447 0px, transparent 8px) 0 0, linear-gradient(to top, #ff444447 0px, transparent 8px) 0 100%;
+}
+div[itemprop=articleBody] > div.section > div.section.active:after {
+    background: linear-gradient(to left, #ff444447 0px, transparent 8px)  100% 100%, linear-gradient(to bottom, #ff444447 0px, transparent 8px) 0 0, linear-gradient(to top, #ff444447 0px, transparent 8px) 0 100%;
+}
+
+/* left line level 2 (head3) */
+div[itemprop=articleBody] > div.section > div.section > div.section:before {
+    width: 1.9em;
+    border: 0.12em solid #1af10740;
+    left: 0;
+    border-right: 0px;
+}
+
+
+div[itemprop=articleBody] > div.section > div.section > div.section:after {
+    width: 1.9em;
+    border: 0.12em solid #1af10740;
+    right: 0;
+    border-left: 0px;
+}
+
+div[itemprop=articleBody] > div.section > div.section > div.section.active:before {
+    background: linear-gradient(to right, #1af10740 0px, transparent 8px) 0 100%, linear-gradient(to bottom, #1af10740 0px, transparent 8px) 0 0, linear-gradient(to top, #1af10740 0px, transparent 8px) 0 100%;
+}
+
+div[itemprop=articleBody] > div.section > div.section > div.section.active:after {
+    background: linear-gradient(to left, #1af10740 0px, transparent 8px) 100% 100%, linear-gradient(to bottom, #1af10740 0px, transparent 8px) 0 0, linear-gradient(to top, #1af10740 0px, transparent 8px) 0 100%;
+}
+
+/* left line level 3 (head4) */
+div[itemprop=articleBody] > div.section > div.section > div.section > div.section:before {    
+    width: 1.8em;
+    border: 0.12em solid #0099cc36;
+    left: 0;
+    border-right: 0px;
+}
+
+div[itemprop=articleBody] > div.section > div.section > div.section > div.section:after {
+    width: 1.8em;
+    border: 0.12em solid #0099cc36;
+    right: 0;
+    border-left: 0px;
+}
+
+div[itemprop=articleBody] > div.section > div.section > div.section > div.section.active:before {  
+    background: linear-gradient(to right, #0099cc36 0px, transparent 8px) 0 100%, linear-gradient(to bottom, #0099cc36 0px, transparent 8px) 0 0, linear-gradient(to top, #0099cc36 0px, transparent 8px) 0 100%;
+}
+div[itemprop=articleBody] > div.section > div.section > div.section > div.section.active:after {
+    background: linear-gradient(to left, #0099cc36 0px, transparent 8px) 100% 100%, linear-gradient(to bottom, #0099cc36 0px, transparent 8px) 0 0, linear-gradient(to top, #0099cc36 0px, transparent 8px) 0 100%;
+}
+
+/* left line level 4 (head5) */
+div[itemprop=articleBody] > div.section > div.section > div.section > div.section > div.section:before {
+    width: 1.7em;
+    border: 0.12em solid #ff88002e;
+    left: 0;
+    border-right: 0px;
+}
+
+div[itemprop=articleBody] > div.section > div.section > div.section > div.section > div.section:after {
+    width: 1.7em;
+    border: 0.12em solid #ff88002e;
+    right: 0;
+    border-left: 0px;
+}
+
+div[itemprop=articleBody] > div.section > div.section > div.section > div.section > div.section.active:before {
+    background: linear-gradient(to right, #ff88002e 0px, transparent 8px) 0 100%, linear-gradient(to bottom, #ff88002e 0px, transparent 8px) 0 0, linear-gradient(to top, #ff88002e 0px, transparent 8px) 0 100%;
+}
+div[itemprop=articleBody] > div.section > div.section > div.section > div.section > div.section.active:after {
+    background: linear-gradient(to left, #ff88002e 0px, transparent 8px) 100% 100%, linear-gradient(to bottom, #ff88002e 0px, transparent 8px) 0 0, linear-gradient(to top, #ff88002e 0px, transparent 8px) 0 100%;
+}
+
+/* left line level 5 (head6) */
+div[itemprop=articleBody] > div.section > div.section > div.section > div.section > div.section > div.section:before {    
+    width: 1.6em;
+    border: 0.12em solid #00000026;
+    left: 0;
+    border-right: 0px;
+}
+
+div[itemprop=articleBody] > div.section > div.section > div.section > div.section > div.section > div.section:after {
+    width: 1.6em;
+    border: 0.12em solid #00000026;
+    right: 0;
+    border-left: 0px;
+}
+
+div[itemprop=articleBody] > div.section > div.section > div.section > div.section > div.section > div.section.active:before { 
+    background: linear-gradient(to right, #00000026 0px, transparent 8px) 0 100%, linear-gradient(to bottom, #00000026 0px, transparent 8px) 0 0, linear-gradient(to top, #00000026 0px, transparent 8px) 0 100%;
+}
+div[itemprop=articleBody] > div.section > div.section > div.section > div.section > div.section > div.section.active:after {
+    background: linear-gradient(to left, #00000026 0px, transparent 8px) 100% 100%, linear-gradient(to bottom, #00000026 0px, transparent 8px) 0 0, linear-gradient(to top, #00000026 0px, transparent 8px) 0 100%;
+}
+
+/* left and right preview */
+div.section > span.span-text {
+    position: absolute;
+    pointer-events: none; /* pointer-events: none is needed, if not will make loading problem */
+    visibility: hidden;
+    border-radius: 15px;
+    padding: 0 15px;
+    transition:top 0.3s;
+        -moz-transition:top 0.3s; /* Firefox 4 */
+        -webkit-transition:top 0.3s; /* Safari and Chrome */
+        -o-transition:top 0.3s; /* Opera */
+}
+
+div.section > span.left-span-text {
+    left : 0;
+    transform: rotate(270deg);
+    transform-origin: 0px 0px;
+}
+
+div.section > span.right-span-text {
+    right: 0;
+    transform: rotate(90deg);
+    transform-origin:100% 0%;
+}
+
+
+div.section > div.section > span.span-text {
+    background: #ff444482;
+}
+
+div.section > div.section > div.section > span.span-text {
+    background: #1af107a3;
+}
+
+div.section > div.section > div.section > div.section > span.span-text {
+    background: #0099cc82;
+}
+
+div.section > div.section > div.section > div.section > div.section > span.span-text {
+    background: #ff88008c;
+}
+
+div.section > div.section > div.section > div.section > div.section > div.section > span.span-text {
+    background: #00000082;
+}
+
+div.section > div.section-wrapper {
+    width: 22px;
+    position: absolute;
+    cursor: pointer;
+}
+
+div.section > div.left-section-wrapper {
+    left: 0;
+    top: 0;
+    z-index: 2;
+}
+
+div.section > div.right-section-wrapper {
+    right: 0;
+    top: 0;
+    z-index: 2;
+}
+
+
+/* Create border-bottom for each head level */
+
+h1 {
+    text-align: center;
+}
+
+h2 {
+    border-bottom: 2.2px solid;
+}
+
+h3 {
+    border-bottom: 1.7px solid;
+}
+
+h4 {
+    border-bottom: 1.2px solid;
+}
+
+h5 {
+    border-bottom: 0.7px solid;
+}
+
+h6 {
+    border-bottom: 0.4px solid;
+}
+
+/* Create Numbering for each head level */
+
+div[itemprop=articleBody] {
+	counter-reset: head2;
+}
+
+h2:before {
+    color: #ff444482;
+	content: counter(head2, upper-alpha)". ";
+	counter-increment: head2;
+}
+
+h2 {
+	counter-reset: head3;
+}
+
+h3:before {
+    color: #1af107a3;
+	content: counter(head3)". ";
+	counter-increment: head3;
+}
+
+h3 {
+	counter-reset: head4;
+}
+
+h4:before {
+    color: #0099cc82;
+	content: counter(head4, lower-alpha)") ";
+	counter-increment: head4;
+}
+
+h4 {
+	counter-reset: head5;
+}
+
+h5:before {
+    color: #ff88008c;
+	content: counter(head5)") ";
+	counter-increment: head5;
+}
+
+h5 {
+	counter-reset: head6;
+}
+
+h6:before {
+    color: #00000082;
+	content: counter(head6, lower-roman)". ";
+	counter-increment: head6;
+}
+
+dl.http.get {
+    border: 5px solid #1abc9c;
+}
+
+dl.http.post {
+    border: 5px solid #6ab0de;    
+}
+
+
+dl.http.patch, dl.http.put {
+    border: 5px solid #f0b37e;    
+}
+
+
+dl.http.delete {
+    border: 5px solid #f29f97;
+}
+
+
+
+dl.http dt {
+    font-size: 90% !important;
+    background: #eee !important;
+    padding: 4px 0 !important;
+    border-top: none !important;
+    display: block !important;
+}
+
+dl.http dt code.sig-name.descname:first-of-type {
+    border: 1px solid !important;
+    border-color: #e0e0e0 !important;
+    padding: 4px 4px 4px 12px !important;    
+}
+
+
+dl.http.get dt code.sig-name.descname:first-of-type {
+    background: #dbfaf4 !important;
+    color: #008a6f !important;
+}
+
+dl.http.post dt code.sig-name.descname:first-of-type {
+    background: #e7f2fa !important;
+    color: #009aff !important;
+}
+
+dl.http.patch dt code.sig-name.descname:first-of-type, dl.http.put dt code.sig-name.descname:first-of-type {
+    background: #ffedcc !important;
+    color: #e67c20 !important;
+}
+
+dl.http.delete dt code.sig-name.descname:first-of-type {
+    background: #fdf3f2 !important;
+    color: #de756b !important;
+}
+
+
+
+dl.http.get dd div.admonition p.admonition-title {
+	background: #1abc9c;
+}
+
+dl.http.post dd div.admonition p.admonition-title {
+    background: #6ab0de;    
+}
+
+dl.http.patch dd div.admonition p.admonition-title, dl.http.put dd div.admonition p.admonition-title {
+    background: #f0b37e;    
+}
+
+dl.http.delete dd div.admonition p.admonition-title {
+    background: #f29f97;
+}
+
+dl.http dd div.admonition {
+	background: #efefef;
+}
+
+
+
+dl.http dt code.sig-name.descname {
+    padding: 6px !important;
+    font-size: 90% !important;
+}
+    
+dl.http dd {
+    margin: 12px 24px !important;
+}
+
+
+div.sphinx-tab table {
+	width: 100%;
+}
+
+
+p {
+    line-height: 24px;
+    margin: 0;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.rst-content blockquote {
+    margin-left: none;
+    line-height: 24px;
+    margin-bottom: 10px;
+}
+
+
+@media screen and (max-width: 1370px) {
+    .wy-nav-side {
+        left: -300px;
+    }
+
+    .wy-nav-side.shift {
+        display: block;
+        left: 0;
+    }
+    
+    .wy-nav-top {
+        display: block;
+    }
+
+    .wy-nav-content-wrap {
+        margin-left: 0;
+    }
+
+
+}
+
+.wy-nav-content-wrap.shift {
+    margin-left: 300px;
+}
+
+.wy-side-nav-search {
+    border-right: 1px solid;
+    border-color: #34342966;
+}
+

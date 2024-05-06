@@ -1,0 +1,412 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Arsitektur Docker &mdash; Docker and Kubernetes 1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sphinxcontrib-httpexample.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/sphinxcontrib-httpexample.js"></script>
+        <script src="_static/js/custom.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Docker Objects (Image, Container, Volume, Networks)" href="docker-objects.html" />
+    <link rel="prev" title="Pengenalan Docker" href="docker-intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Docker and Kubernetes
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="docker-intro.html">Pengenalan Docker</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Arsitektur Docker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#docker-bukanlah-virtual-machine-namun-container-manager">Docker bukanlah <strong>virtual machine</strong>, namun <strong>container manager</strong>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#keuntungan-menggunakan-docker">Keuntungan menggunakan Docker</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#beberapa-objects-dan-konsep-pada-docker">Beberapa objects dan konsep pada Docker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#docker-images">Docker Images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-container">Docker Container</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-registry">Docker Registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-volume">Docker volume</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#command-umum-pada-docker-objects-image-container-volume"><cite>Command</cite> umum pada docker objects (image, container, volume)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docker-objects.html">Docker Objects (Image, Container, Volume, Networks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-delete-objects.html">Menghapus Objects pada docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile.html">Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-compose.html">Docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html">Dockerfile vs docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orchestration.html">Orchestration (Kubernetes)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-collection.html">Kumpulan Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-laravel.html">Docker Laravel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-mern.html">Docker MERN (Mongo Express React Node)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notelog.html">NoteLog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glosarium.html">Glosarium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concept-program-on-linux.html">Konsep Program di Linux</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Docker and Kubernetes</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Arsitektur Docker</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/docker-architecture.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="arsitektur-docker">
+<h1>Arsitektur Docker<a class="headerlink" href="#arsitektur-docker" title="Permalink to this headline">¶</a></h1>
+<p>Arsitektur docker yang membedakan dengan virtualisasi lain terletak pada object docker yang berisikan <strong>Images</strong>, <strong>Container</strong>, <strong>Network</strong>,** Volumes**.</p>
+<p>Semua object tersebut akan diproses di dalam docker daemon (sama halnya dengan mysql server)</p>
+<p>Ketika menginstall docker maka akan terdapat 2 buah jenis application yaitu <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">server</span></code> dan <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">client</span></code>.</p>
+<p><strong>Docker server</strong> atau yang biasa disebut sebagai <strong>docker daemon</strong> (dan lebih sering disebut sebagai <em>docker host</em>) adalah service yang berjalan pada <code class="docutils literal notranslate"><span class="pre">OS</span> <span class="pre">induk</span></code> (OS pada PC atau laptop atau local machine).</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Untuk selanjutnya OS induk akan disebut sebagai host saja (lihat pada section <code class="docutils literal notranslate"><span class="pre">glosarium</span></code>)</p>
+</div>
+<p>Docker daemon ini hanya dapat berjalan pada linux (menggunakan konsep kernel)</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Istilah <cite>docker daemon hanya berjalan pada linux</cite> yang dimaksud adalah docker daemon ini akan menggunakan <strong>virtual OS linux</strong>.</p>
+<p>Artinya jika menginstall docker pada windows atau mac, maka akan masih akan tetap dapat dijalankan, hanya saja secara default akan menggunakan linux sebagai virtual OS-nya.</p>
+<p>Terdapat cara untuk mengubah (switch) dari virtual os linux ke windows server, hanya saja masih belum terlalu baik (stabil) untuk saat ini.</p>
+</div>
+<p>Docker client sebenarnya hanya berupa perintah (command) pada terminal.</p>
+<p>Perintah pada docker client selanjutnya akan dikirim ke docker server (docker daemon).</p>
+<p>Berikut penggambaran pada penjelasan diatas</p>
+<img alt="_images/pengenalan-docker-1.2.docker-daemon.jpg" src="_images/pengenalan-docker-1.2.docker-daemon.jpg" />
+<p>Docker daemon sendiri akan me-exposes sebuah <code class="docutils literal notranslate"><span class="pre">REST</span> <span class="pre">API</span></code>, dari REST API tersebut akan memungkinkan tool/program dapat saling berkomunikasi ke docker daemon melalui API (socket).</p>
+<p>Dengan kata lain <strong>docker daemon</strong> berfungsi untuk manajemen container (container manager).</p>
+<img alt="_images/arsitektur-docker-2.1.docker-server-dan-client.jpg" src="_images/arsitektur-docker-2.1.docker-server-dan-client.jpg" />
+<p>Setelah docker daemon menerima perintah dari docker client maka docker daemon akan menjalankan perintah tersebut dan kemudian mengembalikan lagi ke docker client.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Ketika menjalankan command pada docker client (docker CLI) maka dia tidak akan menjalankan command tersebut di <cite>OS induk</cite> (baik pada windows atau mac atau bahkan os induk linux itu sendiri) melainkan akan menjalankan pada docker daemon sebagai <code class="docutils literal notranslate"><span class="pre">virtual</span> <span class="pre">OS</span> <span class="pre">linux</span></code> tersebut.</p>
+</div>
+<div class="section" id="docker-bukanlah-virtual-machine-namun-container-manager">
+<h2>Docker bukanlah <strong>virtual machine</strong>, namun <strong>container manager</strong>.<a class="headerlink" href="#docker-bukanlah-virtual-machine-namun-container-manager" title="Permalink to this headline">¶</a></h2>
+<p>Jika menggunakan konsep virtual machine, apabila terdapat 3 buah application maka harus menginstall operating system sebanyak 3 buah untuk 3 application tersebut.</p>
+<img alt="_images/arsitektur-docker-2.3.virtual-machine-dan-container.png" src="_images/arsitektur-docker-2.3.virtual-machine-dan-container.png" />
+<p>Ini dikarenakan pada virtual machine dia harus membuat adanya OS guest (OS pada virtual machine) jika ingin menjalankan application tersebut, atau singkatnya adalah keseluruhan komponen yang dibutuhkan.</p>
+<p>Jika menggunakan docker, maka hanya perlu 3 container, dimana 3 container tersebut akan menggunakan operating system induk yang digunakan pada container manager, atau dalam arti lain adalah <cite>nebeng</cite> ke sistem operasi induk.</p>
+<p>Namun perlu diketahui bahwa container manager akan meng-isolated container, yang artinya jika terdapat adanya container yang mengubah konfigurasi Operating system tidak akan sampai menganggu container lain.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Istilah isolated pada docker adalah membuat adanya antar tiap container tidak dapat berhubungan (satu container tidak dapat melakukan adanya perubahan di container lain).</p>
+<p>Atau dalam bahasa mudahnya ketika dijalankan local machine (local PC/laptop), jika terdapat lebih dari 1 container maka ini tidak akan sampai menganggu container lain dalam menjalankan application, sehingga hanya perlu 1 docker (1 container manager) untuk semua application pada 1 machine.</p>
+</div>
+<div class="section" id="keuntungan-menggunakan-docker">
+<h3>Keuntungan menggunakan Docker<a class="headerlink" href="#keuntungan-menggunakan-docker" title="Permalink to this headline">¶</a></h3>
+<p>Jika menggunakan cara biasa, maka ketika deploy di server harus menginstall beberapa komponen dalam menjalankan application, seperti web server, database, dan beberapa konfigurasi lainnya.</p>
+<img alt="_images/deploy-docker-3.1-deploy-dengan-cara-standard.png" src="_images/deploy-docker-3.1-deploy-dengan-cara-standard.png" />
+<p>Namun jika menggunakan docker, maka sebelum deploy akan membuat adanya packages atau kumpulan komponen (dalam menjalankan application) pada suatu images</p>
+<img alt="_images/deploy-docker-3.2-deploy-dengan-cara-docker.png" src="_images/deploy-docker-3.2-deploy-dengan-cara-docker.png" />
+<p>Tentu ini sangat menguntungkan karena bisa mem-bundle semua dalam satu package dan tinggal melakukan deploy.</p>
+<p>Jika menggunakan cara biasa tentu akan sangat sulit, terlebih jika memiliki lebih dari 1 server production, akan ada banyak konfigurasi yang dilakukan di lebih dari 1 server.</p>
+<p>Docker tidak seperti teknologi Hypervisor yang harus menggunakan OS secara utuh, docker menggunakan container yang akan menginduk pada OS induknya.</p>
+<p>Sehingga kebutuhan RAM akan jauh lebih kecil.</p>
+</div>
+</div>
+<div class="section" id="beberapa-objects-dan-konsep-pada-docker">
+<h2>Beberapa objects dan konsep pada Docker<a class="headerlink" href="#beberapa-objects-dan-konsep-pada-docker" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="docker-images">
+<h3>Docker Images<a class="headerlink" href="#docker-images" title="Permalink to this headline">¶</a></h3>
+<p>Images pada docker layaknya sebagai class yang dapat di-instansiasi.</p>
+<p>Instansiasi ini berupa container yang dapat dijalankan.</p>
+<p>Untuk membuat images dibutuhkan file <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> untuk mem-build image.</p>
+</div>
+<div class="section" id="docker-container">
+<h3>Docker Container<a class="headerlink" href="#docker-container" title="Permalink to this headline">¶</a></h3>
+<p>Container adalah sebuah instansiasi (atau object) daripada images.</p>
+<p>Pada container akan terdapat berbagai tools/program yang <cite>diikat</cite> beserta library, file konfigurasi, dan seluruh komponen yang dibutuhkan dalam menjalankan container (application pada container).</p>
+<img alt="_images/arsitektur-docker-2.2.docker-dengan-tiga-container.jpg" src="_images/arsitektur-docker-2.2.docker-dengan-tiga-container.jpg" />
+<p>container menggunakan konsep <code class="docutils literal notranslate"><span class="pre">shared</span> <span class="pre">kernel</span></code> pada sistem operasi host (docker daemon) yang dijalankannya.</p>
+<p>Share kernel memugkinkan juga berbagi library dan dependency yang dibutuhkan, sehingga sebuah layanan (aplikasi) dapat dijalankan tanpa harus menghidupkan <cite>guest os</cite> dahulu, proses tersebut dihilangkan, sehingga kebutuhan resource (cpu, ram) berkurang dan waktu tempuh untuk menjalankan layanan semakin cepat</p>
+</div>
+<div class="section" id="docker-registry">
+<h3>Docker Registry<a class="headerlink" href="#docker-registry" title="Permalink to this headline">¶</a></h3>
+<p>Registry pada docker (atau biasa disebut Container registry) merupakan tempat menyimpan image docker, istilah mudahnya adalah repository layaknya github/gitlab.</p>
+<p>Setelah membuat image docker (build dari Dockerfile) maka selanjutnya dapat memasukkan ke dalam registry.</p>
+<p>Setelah terdapat di registry maka server (production) dapat melakukan pull image tersebut.</p>
+<p>Mengapa tidak melakukan langsung ke server langsung ???</p>
+<p>Karena sederhananya jika lebih dari 1 server maka harus melakukan pengiriman (upload) ke tiap server.</p>
+<p>Jika menggunakan registry maka hanya perlu meng-upload images dari local machine ke registry dan keselanjutnya di tiap server hanya perlu melakukan pulling images pada registry.</p>
+<p>Ini juga akan membuat adanya keteraturan dengan developer lain, dimana satu developer akan mengupload ke registry dan developer lain bisa melakukan pulling images pada registry tersebut.</p>
+<p>Terdapat berbagai registry yang sudah ada, seperti <strong>docker hub</strong>, <strong>google container hub</strong>, <strong>aws elastic container registry</strong>.</p>
+<p>Namun disarankan untuk menggunakan docker hub, karena selain sebagai registry resmi (official) dari docker juga sudah terdapat banyak image yang bisa digunakan.</p>
+</div>
+<div class="section" id="docker-volume">
+<h3>Docker volume<a class="headerlink" href="#docker-volume" title="Permalink to this headline">¶</a></h3>
+<p>Docker dapat menggunakan volume sebagai virtual storage yang akan digunakan.</p>
+<p>Contoh sederhananya adalah untuk menyimpan data yang dinamis seperti database.</p>
+<p>Secara default container yang dijalankan tidak memiliki storage, sehingga ketika container dihapus maka data yang ada di dalamnya ikut terhapus.</p>
+</div>
+</div>
+<div class="section" id="command-umum-pada-docker-objects-image-container-volume">
+<h2><cite>Command</cite> umum pada docker objects (image, container, volume)<a class="headerlink" href="#command-umum-pada-docker-objects-image-container-volume" title="Permalink to this headline">¶</a></h2>
+<p>Sejatinya command pada docker akan menggunakan format yang sama, hanya saja tidak semua objects (images, container, volume, network) menggunakannya</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="o">&lt;</span><span class="n">objects</span><span class="o">&gt;</span> <span class="p">[</span><span class="n">COMMAND</span><span class="p">]</span>
+</pre></div>
+</div>
+<img alt="_images/arsitektur-docker-3.5.docker-common-command.png" src="_images/arsitektur-docker-3.5.docker-common-command.png" />
+<p>Terdapat berbagai macam <code class="docutils literal notranslate"><span class="pre">COMMAND</span></code> yang sama pada tiap <cite>objects</cite> docker, berikut adalah beberapa listnya:</p>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">ls</span></code></p>
+<blockquote>
+<div><p>command ini akan me-list images, container, volume dan network yang sedang dijalankan</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ls</span> <span class="pre">-a</span></code></p>
+<blockquote>
+<div><p>command ini akan me-list objects pada container yang sedang berjalan maupun yang tidak dijalankan.</p>
+<p>command ini merupakan kependekan daripada <code class="docutils literal notranslate"><span class="pre">--all</span></code></p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">create</span></code></p>
+<blockquote>
+<div><p>command ini akan membuat container, volume, dan network baru</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rm</span></code></p>
+<blockquote>
+<div><p>command ini akan menghapus container, image, volume dan network pada docker.</p>
+<p>Namun perlu diingat konsep docker objects adalah depedency, jika semisal ingin menghapus image maka harus menghapus container dahulu.</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prune</span></code></p>
+<blockquote>
+<div><p>command ini hampir sama dengan <cite>rm</cite> hanya saja ini akan menghapus container, volume dan network yang tidak digunakan</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logs</span></code></p>
+<blockquote>
+<div><p>command logs akan memperlihatkan proses run daripada suatu proses pada container.</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inspect</span></code></p>
+<blockquote>
+<div><p>command inspect digunakan untuk melihat adanya konfigurasi di dalam suatu container, volume dan network.</p>
+</div></blockquote>
+</li>
+</ol>
+<p>Selain itu terdapat berbagai macam parameter pada tiap <code class="docutils literal notranslate"><span class="pre">COMMAND</span></code>, berikut adalah beberapa contohnya:</p>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">--name</span></code></p>
+<blockquote>
+<div><p>parameter ini akan digunakan untuk menamai container.</p>
+<p>Secara default docker akan menamai container dengan nama yang cukup unik, beberapa diantaranya biasanya nama orang.</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-p</span></code></p>
+<blockquote>
+<div><p>parameter ini akan membuat adanya port pada container yang akan dijalankan.</p>
+<p>Terdapat 2 port yang harus diisikan yaitu port… dan port</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-e</span></code></p>
+<blockquote>
+<div><p>Parameter ini adalah untuk membuat environment variable pada container.</p>
+<p>Pada beberapa container dibutuhkan adanya environment variable untuk menjalankan servicenya, semisal mysql dengan environment variable <code class="docutils literal notranslate"><span class="pre">MYSQL_ROOT_PASSWORD</span></code></p>
+</div></blockquote>
+</li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="docker-objects.html" class="btn btn-neutral float-right" title="Docker Objects (Image, Container, Volume, Networks)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="docker-intro.html" class="btn btn-neutral float-left" title="Pengenalan Docker" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ryan
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

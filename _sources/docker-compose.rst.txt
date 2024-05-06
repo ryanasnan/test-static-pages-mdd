@@ -1,0 +1,276 @@
+Docker compose
+========================
+
+Docker compose adalah file dimana kesemua object (container, volume, networks) daripada docker dapat dibundle menjadi satu buah application yang siap jalan.
+
+Menjalankan docker compose adalah layaknya menjalankan docker run dengan segala parameternya
+
+misal
+
+docker run -v
+
+docker run --networks
+
+.. attention::
+
+	Docker compose berbeda dengan instruction pada ``dockerfile``.
+
+	Lihat bagian dockerfile vs docker container (compose)
+
+
+Untuk memberikan gambaran tentang penggunaan docker pada php dan nginx secara sederhana, dapat mengikuti contoh berikut
+
+struktur file::
+
+	├── code
+	│   └── index.php
+	├── docker-compose.yml
+	└── site.conf
+
+file ``docker-compose.yml``::
+
+	version: '3'
+
+	services:
+	    webserver-service:
+	        image: nginx:latest
+	        container_name: webserver
+	        ports:
+	            - "8080:80"
+	        volumes:
+	            - ./code:/code
+	            - ./site.conf:/etc/nginx/conf.d/default.conf
+	        networks:
+	            - code-network
+	    php-service:
+	        image: php:fpm
+	        container_name: php-fpm
+	        volumes:
+	            - ./code:/code
+	        networks:
+	            - code-network
+
+	networks:
+	    code-network:
+	        driver: bridge
+
+file ``site.conf``::
+
+	server {
+	    listen 80;
+	    index index.php index.html;
+	    server_name localhost;
+	    error_log  /var/log/nginx/error.log;
+	    access_log /var/log/nginx/access.log;
+	    root /code;
+
+	    location ~ \.php$ {
+	        try_files $uri =404;
+	        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+	        fastcgi_pass php-fpm:9000;
+	        fastcgi_index index.php;
+	        include fastcgi_params;
+	        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+	        fastcgi_param PATH_INFO $fastcgi_path_info;
+	    }
+	}
+
+file ``code/index.php``::
+
+	<?php
+	phpinfo();
+
+.. image:: resources/images/docker-laravel-1.1.simple-docker-php-nginx.png
+
+
+Perlu diketahui bahwa saat menggunakan adanya network, maka host pada container dapat diakses pada container lain.
+
+Semisal pada contoh diatas adalah pada file ``site.conf`` menggunakan host `php-fpm` yang mana host ini berasal dari container bernama `php-fpm`
+
+.. note::
+
+	Sebenarnya juga bisa menggunakan nama service daripada container tersebut misal adalah `php-service`
+
+	sehingga pada file site.conf dapat dibuat sebagai berikut
+
+	file ``site.conf``::
+
+		server {
+		    listen 80;
+		    index index.php index.html;
+		    server_name localhost;
+		    error_log  /var/log/nginx/error.log;
+		    access_log /var/log/nginx/access.log;
+		    root /code;
+
+		    location ~ \.php$ {
+		        try_files $uri =404;
+		        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		        fastcgi_pass php-service:9000;
+		        fastcgi_index index.php;
+		        include fastcgi_params;
+		        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		        fastcgi_param PATH_INFO $fastcgi_path_info;
+		    }
+		}
+
+	Namun disarankan menggunakan nama container yang telah ada, karena dengan menggunakan nama container maka network masih dapat dilakukan tanpa menggunakan objects docker-compose.
+
+
+
+
+
+
+docker compose
+--------------------------
+
+jika terdapat banyak sekali container yang diintegrasikan maka sebaiknya gunakan docker compose
+
+docker compose adalah automation proses  integrasi container tersebut, seperti membuat container, connect antar container, konfigurasi environment variable, dll.
+
+	
+code::
+
+	version: "3.7"
+
+	services: 
+		mongo:
+			container_name: mongo
+			image: mongo:4-xenial
+			ports:
+				- 27017:27017
+			networks:
+				- java_network
+		redis:
+			container_name: redis
+			image: redis:5
+			ports:
+				- 6379:6379
+			networks:
+				- java_network
+		java-docker:
+			container_name: java-docker
+			image: java-docker:1.0
+			ports:
+				- 8080:8080
+			depends_on:
+				- redis
+				- mongo
+			environment:
+				- NAME=Docker
+				- MONGO_HOST=mongo
+				- MONGO_PORT=27017
+				- REDIS_HOST=redis
+				- REDIS_PORT=6379
+			networks:
+				- java_network
+	networks:
+		java_network:
+			name: java_network
+
+services adalah container dengan konfigurasinya 
+
+
+Dalam pembuatan di docker compose dapat memberikan dependency pada container
+
+maka pada docker compose diatas java-docker tidak akan dijalankan sampai redis dan mongo dijalankan 
+
+
+Pada environment maka saat menjalankan container java-docker dia membutuhkan adanya host dan port
+
+
+sebelumnya pada environment memang terdapat adanya set host untuk menjalankan tools/program lain
+
+maka diberikan mongo dan redis untuk menjalankan host asal sudah terdapat network
+
+konsep port juga sama
+
+ini artinya konsep port di docker adalah <port-public>:<port-container>
+
+yang mana ketika mengakses container java-docker dan mengakses port public maka akan diteruskan (forward) ke port container
+
+
+berarti ini tergantung saja darimana set port
+
+misal pada mongo
+
+port 8083:27017
+
+artinya di container java-docker bisa memberikan
+
+MONGO_PORT=8083
+
+
+selanjutnya buat network
+
+
+
+jika ingin me-running semua container
+
+docker-compose up
+
+docker-compose up akan membuat container dan me-start container
+
+docker-compose down akan menghentikan container sekaligus menghapus container
+
+docker-compose stop hanya akan menghentikan container
+
+
+.. note::
+
+	jika melakukan command ``docker-compose up`` dan melakukan quit (ctrl+c) bukan berarti menghapus container tersebut, hanya akan melakukan stop container 
+
+	yang artinya container tersebut bisa dilakukan ``docker-compose start``
+
+	untuk menghentikan dan menghapus container diperlukan command ``docker-compose down``	 
+
+
+==========================================================================================================
+Docker compose tidak bisa melakukan build secara berurutan
+==========================================================================================================
+
+Katakan memiliki adanya image yang akan dibuild, namun ini berdasar pada image sebelumnya.
+
+code::
+
+	# PHP FPM base image Service
+	php-52-base-image-rs:
+		build:
+		context: ./service/php/images/php-52-jessie-mod
+		dockerfile: Dockerfile
+		image: php-52-base-image-rs:app
+		container_name: php-52-base-image-rs
+		restart: unless-stopped
+		networks:
+			- yii1-rs
+
+	# PHP FPM Service for yii1
+	php-yii1-rs:
+		build:
+		context: ./service/php/images/php-52-jessie-mod
+		dockerfile: php-with-extra-ext.dockerfile
+		image: php-yii1-rs:app
+		container_name: php-yii1-rs
+		restart: unless-stopped
+		working_dir: /var/www/yii1
+		depends_on: 
+			- php-52-base-image-rs
+		volumes:
+			- ./service/php/config/usr-local-etc-php-conf.d/php.ini-php71:/usr/local/etc/php/conf.d/php.ini
+			- ./stateful/app:/var/www
+		networks:
+			- yii1-rs
+
+Jadi rencananya pada image ``php-yii1-rs:app`` itu baru di-build setelah image ``php-52-base-image`` selesai di-build, dimana untuk melakukannya adalah dengan syntax ``depends_on``.
+
+Namun nyatanya hal itu tidak akan terjadi, karena ``depends_on`` hanya untuk menangani saat service dimulai atau berakhir.
+
+Pada docker-compose memang ada ``depends_on`` namun ini hanya untuk menangani adanya proses pada ``docker compose up`` dan ``docker-compose stop``, dimana pas ``up`` (start) maka ini akan ada order dalam memulai service, dan juga ketika ``stop`` juga akan menggunakan order dalam menghentikan service.
+
+.. hint::
+
+	As you guessed, depends_on is for runtime order only, not build time - it just affects docker-compose up and docker-compose stop.
+
+	I highly recommend you make all the builds independent of each other. Perhaps you need to consider separate builder and runtime images here, and / or use a Docker-based CI (Gitlab, Travis, Circle etc) to have these dependencies available for testing.
+
+	ref : https://stackoverflow.com/questions/60139255/docker-compose-build-order

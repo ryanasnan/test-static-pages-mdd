@@ -1,0 +1,1056 @@
+Dockerfile
+=======================================================
+
+Pada `registry hub docker` sendiri sebenarnya telah banyak image yang dapat digunakan.
+
+Namun terkadang masih dibutuhkan adanya library atau tools lain dalam menjalankannya.
+
+Oleh karenanya dibutuhkan membuat file bernama **Dockerfile** dalam membuat custom image.
+
+.. attention::
+
+	Untuk lebih memahami pembuatan **Dockerfile**, penulis menyarankan untuk membaca dahulu section **concept program di linux**.
+
+	Karena pada pembuatan dockerfile hal yang paling krusial adalah `bagaimana menjalankan service dari container?`.
+
+================================
+Dockerfile
+================================
+
+Dalam docker untuk membuat suatu `image` dibutuhkan satu file bernama ``Dockerfile``.
+
+Dockerfile adalah file yang berisikan ``instruction`` yang nantinya akan di-build menjadi `image`.
+
+Ketika akan membuat custom image (menggunakan ``Dockerfile``) maka diperlukan adanya **Base Image** sebagai parent layer.
+
+Parent layer ini diambil dari registry hub,
+
+Parent layer ini bisa sebagai OS, atau bahkan dari docker image.
+
+Semisal jika dari OS
+
+code::
+
+	FROM ubuntu:18.04
+
+atau jika semisal dari suatu image yang telah ada di registry
+
+code::
+
+	FROM golang:1.11.4
+
+	COPY main.go /app/main.go
+
+	CMD ["go", "run", "/app/main.go"]
+
+kemudian untuk membuild image dari file Dockerfile
+
+command::
+
+	docker build .
+
+dimana command tersebut dijalankan pada direktori utama (root) yang mana terdapat file ``Dockerfile``
+
+.. hint::
+
+	Jika ingin menggunakan specific file ``Dockerfile`` (Dockerfile dengan nama lain) dapat menggunakan path lengkap
+
+	command::
+
+		docker build /path/to/<Dockerfile>
+
+Jika ingin menamai image beserta tag nya dapat memberikan tambahan parameter --tag dengan memberikannya dengan format ``<nama-image:tag>``
+
+command::
+
+	docker build --tag app-golang:1.0 .
+
+Setelahnya image yang dibuat dapat dicek 
+
+command::
+
+	docker images 
+	atau 
+	docker image ls
+
+konsep pembuatan image dengan `dockerfile` itu bagaikan bawang yang berlapis lapis di dalamnya.
+
+ketika membuat image dari Dockerfile maka tiap `instruction` di dalamnya akan membuat sebuah image baru.
+
+Dan ketika terdapat perintah di bawahnya lagi maka docker akan membuat imaage baru dan me-overwrite image tersebut, begitu sampai pada perintah terakhir.
+
+Image yang di-overwrite tersebut sering disebut `intermediate image`.
+
+Namun intermediate image tersebut, tidak akan langsung dihapus melainkan disimpan ke dalam cache.
+
+Dimana jika terdapat kesamaan `instruction` maka proses pembuatan intermediate image akan menggunakan cache tersebut.
+
+===========================================================================
+Instruction ``RUN``, ``CMD`` dan ``ENTRYPOINT`` pada file Dockerfile
+===========================================================================
+
+Pada Dockerfile biasanya terdapat 3 instruction **RUN**, **CMD** dan **ENTRYPOINT**.
+
+Ketiganya bisa dikatakan memiliki fungsionalitas yang sama yaitu menjalankan **command**, namun memiliki behavior yang berbeda.
+
+Sebelum masuk ke bahasan ketiga bentuk diatas akan dipelajari dulu tentang menjalankan program pada linux (UNIX) secara umumnya.
+
+Ini merupakan bahasan yang cukup fundamental dalam mengetahui bentuk command daripada docker.
+
+**Shell** VS **Executable File**
+----------------------------------------
+
+Pada unix system biasanya ketika akan menjalankan sebuah program maka diperlukan adanya file yang akan di-execute.
+
+Terdapat 2 cara dalam menjalankan file execute tersebut, yaitu **shell** dan **executable**.
+
+Secara ringkas, pada umumnya ``shell`` adalah representasi daripada symbolic link daripada file yang akan menjalankan program, atau mudahnya ini adalah shortcut ke file utama (execute file).
+
+.. hint::
+
+	Symbolic link (disebut symlink atau soft link), adalah jenis file khusus yang mengarah ke file lain, seperti shortcut di Windows atau alias pada Macintosh.
+
+Standard daripada command di linux (dalam menjalankan sebuah program) adalah menggunakan shell command, dan diberikan dengan adanya alias, sehingga cukup ringkas dalam menjalankannya.
+
+misalkan ketika menggunakan command ``echo hello world`` maka yang sebenarnya terjadi adalah mejalankan ``/bin/sh "echo \"hello world\""``
+
+.. image:: resources/images/notelog-shell-execute-1.1.basic-command-linux.png
+
+Sedangkan ``executable file`` adalah file utama dalam menjalankan program tersebut.
+
+Misalkan pada echo sendiri dapat dijalankan menggunakan file execute di ``/bin/echo``
+
+.. image:: resources/images/notelog-shell-execute-1.2.execute-command-linux.png
+
+.. warning::
+
+	Sepengetahuan penulis hampir semua software di linux akan dijalankan dengan shell command, sangat jarang langsung dijalankan menggunakan executable file
+
+.. note::
+
+	Biasanya pada linux setelah software terinstall maka secara otomatis akan menambahkan adanya shell/symbolic link (ke directory ``/bin/sh``) dan juga alias untuk menjalankannya.
+
+	Dan executable file dari software tersebut akan ditaruh ke dalam directory ``/usr/bin/``
+
+	.. image:: resources/images/notelog-shell-execute-1.3.shell-and-execute-file-php-ubuntu.png
+
+---------------------------
+``shell`` vs ``bash``
+---------------------------
+
+.. warning::
+
+	Bahasan ini hanya untuk memperjelas bagaimana masuk ke dalam `session terminal` suatu container docker (tidak ada hubungannya dengan ``RUN vs CMD vs ENTRYPOINT``), namun cukup penting untuk diketahui.
+
+Antara shell dan bash sebenarnya keduanya hampir sama, yaitu masuk ke dalam session terminal (session baru).
+
+Bahkan keduanya biasanya terdapat di direktori yang sama yaitu `/bin`.
+
+Untuk menjalankan shell melalui ``/bin/sh`` sedangkan untuk menjalankan bash melalui ``/bin/bash``.
+
+.. image:: resources/images/notelog-shell-execute-1.4.shell-vs-bash.png
+
+Perbedaan mendasar adalah ``bash`` memiliki lebih banyak fitur daripada shell (sh)
+
+Misalkan pada sh tidak terdapat keterangan nama user dan machine, dan juga tombol panah (arrow up,down,left,right) tidak akan berfungsi (hanya akan memunculkan huruf "^[[B^[[A^[[D^[[C")
+
+Namun sayangnya bahwa tidak semua distro linux akan selalu memiliki kedua session terminal tersebut.
+
+Sedangkan docker sendiri, tiap image bisa saja memiliki OS docker-daemon yang berbeda (debian, centos, fedor, dll).
+
+Namun standard yang biasa digunakan pada docker untuk masuk ke dalam session terminal adalah ``bash`` (/bin/bash).
+
+Dan apabila session terminal bash tidak ditemukan (dimana ini mungkin selain OS debian kernel) maka yang digunakan adalah ``shell`` (/bin/sh). 
+
+----------------------------------------------------------------------------
+Shell Form vs Exec Form pada instruction RUN, CMD, dan ENTRYPOINT
+----------------------------------------------------------------------------
+
+Terdapat 2 bentuk utama dalam instruction RUN, CMD dan ENTRYPOINT, yaitu `Shell form` dan `Exec form`.
+
+Kegunaan daripada shell form dan exec form sama seperti penjelasan diatas, yaitu ``shell`` akan menjalankan melalui symbolic link (``/bin/sh -c <command>``) sedangkan ``exec`` akan menjalankan melalui file executable.
+
+Hanya saja dalam implementasinya akan dibedakan menjadi 2 bentuk, dimana untuk shell akan menggunakan bentuk **string**, dan untuk exec akan menggunakan bentuk **array** (JSON array).
+
+Berikut bentuk daripada RUN, CMD dan ENTRYPOINT
+
+- RUN
+
+	shell form::
+
+		RUN <command>
+
+	exec form::
+
+		RUN ["executable", "param1", "param2"]
+
+- CMD
+
+	shell form::
+
+		CMD command param1 param2
+
+	exec form::
+
+		CMD ["executable","param1","param2"]
+		CMD ["param1","param2"]
+
+	.. note::
+
+		bentuk ``CMD ["param1","param2"]`` akan berlaku jika dikombinasikan dengan ENTRYPOINT (``ENTRYPOINT + CMD``) yang akan dijelaskan di bawah secara lebih lanjut.
+
+- ENTRYPOINT
+
+	shell form::
+
+		ENTRYPOINT command param1 param2
+
+	exec form::
+
+		ENTRYPOINT ["executable", "param1", "param2"]
+
+.. hint::
+
+	``command`` yang dimaksud pada bentuk diatas adalah penggunaan untuk shell command (symbolic link/symlink)
+
+	referensi : https://www.quora.com/What-are-the-differences-between-an-executable-program-and-command-in-Linux
+
+Dalam implementasinya instruction **RUN** akan menggunakan bentuk ``Shell form``, sedangkan pada CMD dan ENTRYPOINT akan menggunakan bentuk ``Exec Form``.
+
+**RUN**
+----------------------------
+
+RUN adalah perintah yang akan dijalankan ketika **MEMBUAT image**, yang artinya ini hanya dijalankan sekali saat pembuatan `image`.
+
+Misalkan adalah menginstall software git pada image ubuntu berikut
+
+file ``Dockerfile``::
+
+	FROM ubuntu:18.04
+
+	RUN apt-get update
+
+	RUN apt-get install -y git
+
+.. image:: resources/images/dockerfile-1.1-run-basic.png
+
+.. image:: resources/images/dockerfile-1.2-run-basic.png
+
+.. image:: resources/images/dockerfile-1.3-run-basic.png
+
+.. image:: resources/images/dockerfile-1.4-run-basic.png
+
+.. note::
+
+	Perlu diketahui bahwa tiap instruction di Dockerfile (RUN, CMD atau ENTRYPOINT) akan membuat adanya layer (intermediate image).
+
+	Dan setiap ada instruction baru akan me-overwrite layer yang lama.
+
+**CMD**
+---------------------------
+
+CMD adalah perintah untuk **EKSEKUSI command default** saat menjalankan container.
+
+Yang artinya perintah ``CMD`` ini hanya dijalankan ketika image di-running (menjadi container) dan tidak akan dijalankan ketika pembuatan image.
+
+file ``Dockerfile``::
+
+	FROM ubuntu:18.04
+
+	CMD echo "Hello world"
+
+.. image:: resources/images/dockerfile-2.1.cmd-basic.png
+
+.. note::
+
+	Perlu diketahui bahwa CMD hanya bisa satu untuk satu dockerfile dan jika lebih dari satu CMD maka **CMD terakhir** yang akan dijalankan.
+
+Semisal jika dalam bentuk exec form (dan lebih direkomendasikan)
+
+file ``Dockerfile``::
+
+	FROM ubuntu:18.04
+
+	CMD ["/bin/echo", "hello world"]
+
+.. image:: resources/images/dockerfile-2.2-run-basic-exec.png
+
+.. warning::
+
+	Dalam menuliskan array pada CMD dan ENTRYPOINT harus menggunakan double quote (``""``), jika hanya satu quote akan memunculkan `error`.
+
+**ENTRYPOINT**
+---------------------------
+
+ENTRYPOINT adalah perintah eksekusi command yang tidak dapat di-overwrite..
+
+Berbeda dengan CMD, maka ENTRYPOINT akan pasti dieksekusi dan tidak dapat digantikan dengan command selanjutnya.
+
+Dan kalaupun diberikan adanya parameter maka akan dianggap sebagai lanjutan dari command sebelumnya.
+
+file ``Dockerfile``::
+
+	FROM ubuntu:18.04
+
+	ENTRYPOINT ["/bin/echo", "Hello"]
+
+.. image:: resources/images/dockerfile-3.1-entrypoint-basic.png
+
+.. note::
+
+	Perlu diketahui bahwa ENTRYPOINT hanya bisa satu untuk satu dockerfile dan jika lebih dari satu ENTRYPOINT maka **ENTRYPOINT terakhir** yang akan dijalankan.
+
+.. note::
+
+	Persamaan dan Perbedaan CMD dan ENTRYPOINT
+
+	- Persamaan
+
+		Persamaan CMD dan ENTRYPOINT adalah instruction tersebut akan dieksekusi satu kali, dan jika lebih dari 1 maka instruction terakhir yang akan digunakan.
+
+		Artinya apa ?
+
+		Kedua instruction tersebut **hanya akan digunakan** untuk menjalankan service.
+
+		Namun ada pengecualian jika mengkombinasikan antara ``ENTRYPOINT + CMD``, dimana ENTRYPOINT akan tetap dijalankan dengan menggunakan CMD sebagai parameter (bukan command), untuk lebih lengkapnya silahkan menuju bagian dibawah.
+
+		Selain itu biasanya CMD dan ENTRYPOINT akan menggunakan bentuk ``exec form``, berbeda dengan RUN karena pada RUN biasanya hanya akan digunakan untuk pembuatan image, sedangkan CMD atau ENTRYPOINT digunakan untuk eksekusi (command) image.
+
+	- Perbedaan
+
+		Perbedaan CMD dan ENTRYPOINT seperti yang telah dituliskan diatas adalah pada CMD masih dapat untuk me-overwrite perintah baru, sedangkan pada ENTRYPOINT akan tetap menggunakan perintah pada Dockerfile (dan jika masih dituliskan maka akan dianggap sebagai satu bagian command).
+
+Substansial pengaplikasian RUN, CMD, dan ENTRYPOINT
+----------------------------------------------------------------
+
+Jika diringkas maka berikut adalah penggunaan substansial ketiga `instruction` pada dockerfile tersebut.
+
+------------------------
+Pengaplikasian **RUN**
+------------------------
+
+RUN biasa digunakan untuk:
+
+- membuat direktori
+- update/upgrade
+- install software
+- beberapa command lain selain menjalankan service
+
+Misal adalah mengupdate dan menginstall software berikut
+
+code::
+
+	RUN apt-get update && apt-get install -y \
+	  bzr \
+	  cvs \
+	  git \
+	  mercurial \
+	  subversion
+
+.. hint::
+
+	RUN sebaiknya hanya dituliskan dalam satu baris.
+
+	Mengapa ?
+
+	Karena ketika memiliki lebih dari 1 instruction RUN, maka layer yang dibuat (intermediate image) juga akan lebih dari 1, karena saat menjalankan instruction RUN maka akan membuat layer (intermediate image) dan menghapusnya begitu ada instruction baru.
+
+------------------------------------
+Pengaplikasian **CMD** 
+------------------------------------
+
+Tujuan utama CMD adalah untuk memberikan command default saat menjalankan container dari image.
+
+Yang secara mudahnya gunakan CMD ketika menjalankan container (run image) tanpa adanya tambahan command (yang akan me-overwrite).
+
+Contoh pengaplikasian sederhana daripada CMD dapat dilihat dari image official ``nginx``, dimana ketika menjalankan container (run image) maka service daripada nginx akan langsung dijalankan.
+
+.. image:: resources/images/dockerfile-4.1-cmd-implementation.png
+
+Ini dikarenakan pada image official ``nginx`` pada file ``Dockerfile`` membuat default CMD yaitu ``CMD ["nginx", "-g", "daemon off;"]``.
+
+Dengan CMD juga masih dapat untuk menggunakan command selain daripada `default command`, seperti misalkan untuk melihat list user
+
+command::
+
+	docker run nginx:latest /bin/cat /etc/passwd
+
+.. image:: resources/images/dockerfile-4.2-cmd-implementation.png
+
+.. note::
+
+	Hampir kebanyakan image yang menjalankan service akan menggunakan CMD dan jarang menggunakan ENTRYPOINT, karena pada CMD masih dapat di overwrite.
+
+	Sehingga akan cocok dalam melakukan debug.
+
+	Jika tidak terdapat instruction CMD, maka satu satunya cara untuk menjalankan command di container adalah dengan melakukan docker exec (docker container exec).
+
+
+------------------------------------
+Pengaplikasian **ENTRYPOINT**
+------------------------------------
+
+Sedangkan ENTRYPOINT adalah untuk membuat image yang dijalankan (container) menjadi seperti ``executable file``.
+
+Artinya command daripada ENTRYPOINT tidak akan tergantikan, dan apabila ditambahkan maka akan dianggap sebagai ``parameter``
+
+Contohnya misalkan terdapat image ``redis``.
+
+Daripada harus menuliskan command secara utuh seperti misal dalam mendapatkan key dengan command ``docker run redisimg redis -H something -u toto get key`` 
+
+Maka akan jauh lebih mudah untuk menuliskan ENTRYPOINT di Dockerfile dengan command utama seperti berikut
+
+code::
+
+	ENTRYPOINT ["redis", "-H", "something", "-u", "toto"] 
+
+Kemudian menjalankan container (run image) dengan menambahkan parameter selanjutnya.
+
+Misal jika ingin mendapatkan ``key``
+
+command::
+
+	docker run redisimg get key.
+
+.. hint::
+
+	Jika ingin menggunakan docker-compose akan sangat disarankan untuk menggunakan ENTRYPOINT karena akan lebih memastikan tidak terdapat command lain yang akan me-overwrite.
+
+--------------------------------------------------
+Pengaplikasian ``ENTRYPOINT + CMD``
+--------------------------------------------------
+
+Selain itu terdapat adanya kombinasi daripada ``ENTRYPOINT + CMD`` yaitu untuk membuat eksekusi dengan adanya parameter default
+
+gunakan untuk keperluan dimana ini tidak menggunakan variable environment
+
+file ``Dockerfile``::
+
+	FROM ubuntu:18.04
+	ENTRYPOINT ["/bin/echo", "Hello"]
+	CMD ["world"]
+
+.. image:: resources/images/dockerfile-5.1-entrypoint-cmd-implementation.png
+
+atau jika ingin mengimplementasikan ke redis dengan default value get key
+
+code::
+
+	ENTRYPOINT ["redis", "-H", "something", "-u", "toto"] 
+	CMD ["get", "key"]
+
+.. attention::
+
+	Jika ingin mengkombinasikan antara CMD dengan ENTRYPOINT maka keduanya harus menggunakan **JSON ARRAY**.
+
+
+Jika terjadi Error atau gagal running
+----------------------------------------------------------------------------------------------------------
+
+docker build -f ./php52.dockerfile --tag php-yii1-rs:app .
+
+atau misal berada di suatu path yang sangat jauh
+
+cd /home/me/myapp/some/dir/really/deep
+ docker build -f /home/me/myapp/dockerfiles/debug /home/me/myapp
+ docker build -f ../../../../dockerfiles/debug /home/me/myapp
+
+
+fungsi context adalah kalau misal di file Dockerfile itu ada perintah **COPY** atau yang berhubungan dengan directory
+
+
+
+bagaimana kalau docker-compose ada 'exited with code 0' atau code 1 ?
+
+gampang
+itu pasti dari image yang dibuild tapi nyatanya gak jalan
+
+nah makanya coba cek bagian yang dari Dockerfile
+
+katakan abis build
+docker build -t php-yii1-rs:app .
+lalu run
+docker run --rm php-yii1-rs:app
+Usage: /usr/local/sbin/php-fpm {start|stop|quit|restart|reload|logrotate}
+
+jangan utak utik yang lain (service yang lain)
+pokoknya yang ada file Dockerfile
+coba jalanin secara manual (build image lalu run, apa ada error)
+
+biasanya sih karena masalah 'beda versi'
+
+
+=======================
+Environment
+=======================
+
+Environment pada Dockerfile layaknya environment variable di terminal.
+
+Misalkan contoh di terminal
+
+.. image:: resources/images/dockerfile-6.1-environment-in-terminal.png
+
+Jika diimplementasikan ke Dockerfile
+
+file Dockerfile::
+
+	FROM ubuntu:18.04
+	ENV NAME john
+	ENV FULLNAME john doe
+	CMD echo "hello my name is $NAME and my fullname is $FULLNAME"
+
+.. image:: resources/images/dockerfile-6.2-dockerfile-environment.png
+
+Terdapat 2 bentuk daripada ENV yaitu menggunakan single env dan multi env.
+
+code::
+
+	ENV <key> <value>
+	ENV <key1>=<value1> <key2>=<value2> ...
+
+bentuk 1 adalah untuk mengeset 1 variable dalam 1 baris, sedangkan bentuk 2 adalah untuk mengeset multi variable dalam 1 baris.
+
+Environment Variable pada RUN CMD dan ENTRYPOINT
+----------------------------------------------------------
+
+Penggunaan Environment pada instruction RUN, CMD dan ENTRYPOINT tidak akan dapat dijalankan apabila ketiga instruction tersebut menggunakan executable file (exec form).
+
+Pada dockerfile jika menggunakan exec form maka ini tidak akan melalui shell command, oleh karenanya environment variable tidak akan berjalan.
+
+Semisal berikut contohnya
+
+.. image:: resources/images/dockerfile-6.3-dockerfile-environment-in-exec-form.png
+
+Hal ini juga berlaku pada ENTRYPOINT
+
+.. image:: resources/images/dockerfile-6.4-dockerfile-environment-in-exec-form.png
+
+Sejatinya variable environment hanya dapat berjalan pada terminal session.
+
+Sehingga jika ingin menggunakan environment variable pada dockerfile harus dijalankan **melalui** terminal session (shell command atau bisa juga **bash**)
+
+contoh menggunakan shell command
+
+code::
+
+	FROM ubuntu:18.04
+	ENV NAME john
+	CMD ["/bin/sh", "-c", "echo hello my name is \"$NAME\""]
+
+.. image:: resources/images/dockerfile-6.5-dockerfile-environment-in-exec-form.png
+
+contoh menggunakan bash command
+
+code::
+
+	FROM ubuntu:18.04
+	ENV NAME john
+	CMD ["/bin/bash", "-c", "echo hello my name is \"$NAME\""]
+
+.. image:: resources/images/dockerfile-6.6-dockerfile-environment-in-exec-form.png
+
+Overwrite environment variable saat pembuatan image (docker container create) atau saat menjalankan (docker run)
+------------------------------------------------------------------------------------------------------------------------------
+
+Environment variable ini juga dapat ditambahkan/overwrite pada saat pembuatan container (docker container create) atau berlaku juga pada saat menggunakan docker run
+
+Berikut contoh overwrite environment variable:
+
+- Semisal memberikan environment dengan langsung running image (docker run)
+
+	.. image:: resources/images/dockerfile-7.3-arg.png
+
+- Semisal memberikan environment variable dari container
+
+	.. image:: resources/images/dockerfile-7.4-arg.png
+
+	.. note::
+
+		Saat menggunakan docker container start untuk dapat memberikan standard out standerd error (STDOUT/STDERR) harus memberikan parameter ``-a``
+
+flow daripada environment variable adalah
+
+- build image 'x' dari file ``Dockerfile``
+- `environment variable` akan tercipta di image 'x'
+- saat menciptakan container atau menjalankan container maka `environment variable` ini dapat dioverwrite
+- exec command **CMD/ENTRYPOINT**
+
+Secara singkat sebenarnya `environment variable` dapat ditulis di dockerfile (pre-create image) atau saat menjalankan image (create image)
+
+Namun sejatinya ENV tersebut tidak akan dapat dioverwrite untuk proses build (lihat lebih detail pada Substansial penggunaan ARG dan ENV dibawah)
+
+Selain itu selalu ingat bahwa ketika menjalankan container (running image) maka sejatinya akan menjalankan command pada **CMD/ENTRYPOINT**, sehingga sebelum CMD atau ENTRYPOINT maka environment variable masih dapat diubah(overwrite).
+
+===============================
+ARG
+===============================
+
+Instruction ARG sebenarnya memiliki konsep yang sama dengan instruction `ENV` di Dockerfile, yaitu sebagai suatu variable.
+
+Namun behavior antara ARG dengan ENV sangat berbeda.
+
+Secara mudahnya ARG hanya dapat digunakan untuk proses build image dari file Dockerfile
+
+Artinya ARG ini tidak bisa digunakan di container (running image).
+
+Misalkan berikut
+
+file Dockerfile::
+
+	FROM ubuntu:16.04
+
+	ARG foo=bar
+	ENV baz qux
+	ENV foobar=thud
+
+	RUN echo $foo
+	RUN echo $baz
+
+	CMD echo 'foo variable' has value $foo \
+	  and 'baz variable' has value $baz \
+	  and 'foo bar variable' has value $foobar
+
+.. image:: resources/images/dockerfile-7.1-arg.png
+
+Sepintas hampir mirip namun perlu diketahui bahwa ARG tidak akan menjadi environment variable di dalam container.
+
+Apabila dicek maka hanya instruction ENV yang akan masuk ke dalam container sebagai variable
+
+.. image:: resources/images/dockerfile-7.2-arg.png
+
+.. image:: resources/images/dockerfile-7.5.arg-vs-env-dockerfile.png
+
+.. attention::
+
+	ARG bisa di overwrite pada saat pembuatan image (build image dari Dockerfile)
+
+	command::
+
+		docker build --build-args  -t <nama-image>:<tag>
+
+.. warning::
+
+	Instruction ARG dapat diletakkan sebelum instruction FROM.
+
+	Namun setelah FROM maka value daripada ARG tidak akan dapat digunakan.
+
+=====================================
+Substansial penggunaan ARG dan ENV
+=====================================
+
+Semisal terdapat Dockerfile sebagai berikut
+
+file Dockerfile::
+
+	ARG OS_VERSION=18.04
+	FROM ubuntu:$OS_VERSION
+
+	ENV DEBIAN_FRONTEND=noninteractive
+
+	RUN apt-get update \
+	    && apt-get install -y curl zip unzip git sqlite3
+
+	ENV PHP_VERSION=7.2
+
+	RUN apt-get install -y php$PHP_VERSION-fpm
+
+	CMD echo 'success install phpfpm version $PHP_VERSION on OS ubuntu version $OS_VERSION'
+
+.. warning::
+
+	Saat tulisan ini dibuat, repository untuk package php7.2-fpm sudah terdapat di ubuntu versi 18.04, pada ubuntu versi sebelumnya belum tersedia sehingga perlu menambahkan repository php dahulu (ondrejphp).
+
+.. image:: resources/images/dockerfile-7.6.arg-vs-env-dockerfile.png
+
+Kemudian apabila sudah dibuild maka saat mencoba overwrite ENV tidak akan dapat mengulangi proses build (dalam case ini menginstall package php versi lain)
+
+.. image:: resources/images/dockerfile-7.7.env-cannot-overwrite-to-build-image.png
+
+Jika dilihat dari behavior antara ARG dan ENV diatas maka dapat disimpulkan substansial keduanya sebagai berikut:
+
+- ARG direkomendasikan untuk pemilihan versioning package
+
+	semisal saat penginstallan versi OS atau pacakge, seperti ubuntu versi 16 atau 18 dan php versi 7.1 atau 7.2
+
+	Berbeda dengan ENV, instruction ``ARG`` dapat diberikan sebelum instruction ``FROM``
+
+	Jika menggunakan instruction ENV maka hasilnya akan error, seperti misal::
+
+		ENV version=16.04
+		FROM ubuntu:$version
+
+- ENV direkomendasikan sebagai environment variable yang dapat dioverwrite pada saat running container
+
+	seperti penentuan port.
+
+	Misalkan saat menjalankan node js dimana port nya bisa sembarang,
+
+	file ``http.js``::
+
+		var http = require('http');
+
+		function serve(ip, port)
+		{
+			http.createServer(function (req, res) {
+				res.writeHead(200, {'Content-Type': 'text/plain'});
+				res.write("\nSome Secrets:");
+				res.write("\n"+process.env.SECRET_PASSPHRASE);
+				res.write("\n"+process.env.SECRET_TWO);
+				res.end("\nThere is no place like "+ip+":"+port+'/');
+			}).listen(port, ip);
+			console.log('Server running at http://'+ip+':'+port+'/');
+		}
+
+		//Create a server listening on all networks
+		serve('0.0.0.0', 9000);
+
+	Berikut contoh menjalankan app node js diatas pada port 9000
+
+	command::
+
+		PORT=9000 node server.js
+
+	Apabila dibuat di container maka ketika menjalankannya dapat me-overwrite dengan memberikan port yang dikehendaki.
+
+	command::
+
+		docker run --rm -e port=9000 nodeexpress:latest
+
+	Tentunya cara ini dilakukan apabila di Dockerfile tidak memberikan instruction **EXPOSE**  (karena pada `Node js` sendiri bisa dikatakan tidak memiliki default port).
+
+	.. note::
+
+		Sekedar referensi pada **image official MySQL**, di dalamnya terdapat penggunaan environment variable untuk membuat root password (MYSQL_ROOT_PASSWORD)
+
+		environment ``MYSQL_ROOT_PASSWORD`` ini terletak pada file bash `docker-entrypoint.sh`
+
+		Saat menjalankan container (running image) CMD atau ENTRYPOINT ini akan menuju file tersebut.
+
+		Dimana jika tidak memberikan environment ``MYSQL_ROOT_PASSWORD`` maka akan terjadi error karena mysql belum membuatkan user root
+
+		file ``docker-entrypoint.sh``::
+
+			...
+			if [ -z "$MYSQL_ROOT_PASSWORD" -a -z "$MYSQL_ALLOW_EMPTY_PASSWORD" -a -z "$MYSQL_RANDOM_ROOT_PASSWORD" ]; then
+				mysql_error $'Database is uninitialized and password option is not specified\n\tYou need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD'
+			fi
+			...
+
+		ref: https://github.com/docker-library/mysql/blob/master/8.0/docker-entrypoint.sh
+
+Lebih jauh lagi penulis merekomendasikan ARG atau ENV di Dockerfile yang dikombinasikan dengan **docker compose**
+
+Alasannya sederhana, yaitu karena jika menggunakan **docker compose** maka dapat me-overwrite baik ARG atau ENV pada dockerfile secara lebih mudah
+
+Nah nantinya pada file **Dockerfile** ARG dan ENV dapat dijadikan sebagai default value saja.
+
+===============================
+Volume
+===============================
+
+Sebenarnya instruction Volume di Dockerfile bersifat opsional.
+
+Instruction volume ini digunakan apabila service akan menghasilkan data dinamis, atau dalam arti lain tidak setiap service memerlukan instruction ini.
+
+Konsep Volume pada Dockerfile sejatinya hanya untuk membuat `volume objects` ketika menjalankan container (running image)
+
+Substansial instruction volume di dockerfile adalah apabila service yang dijalankan menghasilkan data dynamic (statefull) maka perlu dibuatkan object volume.
+
+Nantinya setelah membuat image (dari file Dockerfile) dan merunning container maka data tersebut akan disimpan ke dalam volume.
+
+Contoh sederhana adalah misal pada Database MySQL.
+
+Secara default MySQL akan menyimpan semua data-datanya di directory ``/var/lib/mysql``
+
+Kemudian coba perhatikan file `Dockerfile` pada Image official MySQL di https://github.com/docker-library/mysql/blob/master/8.0/Dockerfile#L77
+
+code::
+
+	VOLUME /var/lib/mysql
+
+Disitu terlihat bahwa file Dockerfile pada MySQL akan membuat volume yang mana `mount destination` nya berada di ``/var/lib/mysql``.
+
+Ketika pull image (yang mana otomatis menggunakan file Dockerfile tersebut) dan menjalankan container (running image) maka akan tercipta volume object tanpa nama (random id)
+
+Tujuan daripadanya adalah ketika menghentikan container (stop container) lalu memulai kembali (start container) maka data di mysql seperti database/schema akan masih ada.
+
+Jika tidak terdapat instruction VOLUME pada dockerfile MySQL tersebut, maka ketika menghentikan container dan memulainya kembali data akan hilang.
+
+===============================
+Workdir
+===============================
+
+
+Any consecutive RUN, CMD, ADD, COPY, or ENTRYPOINT instruction will be executed in the specified working directory. 
+
+
+penggunaan workdir
+
+jadi workdir itu adalah change directory pada container (bukan di local)
+
+https://stackoverflow.com/questions/51066146/what-is-the-point-of-workdir-on-dockerfile
+
+dan ternyata workdir itu bisa diberikan env, artinya saat build dia akan memakai variable environment untuk keperluan seperti run (cmd kayaknya gak bisa)
+
+https://docs.docker.com/engine/reference/builder/#workdir
+
+
+======================
+Add
+======================
+
+add vs volume
+
+https://stackoverflow.com/questions/27735706/docker-add-vs-volume
+
+
+add vs copy
+
+copy hanya mengcopy file/folder biasa
+add memiliki mengambil file dari remote url (download) serta ada fitur extract file tar
+
+
+=========================
+Expose
+=========================
+
+
+Perlu dicoba 
+jadi saat di dockerfile itu gak dikasih expose
+tapi saat run dikasih -p
+
+docker run --rm -p 80:8080 nginx
+lalu apakah jalan
+
+nah ternyata saat dikasih -p itu ada host nya
+
+
+misal pada mysql yang mana dockerfilenya telah ada expose 3306 (atau 33060)
+jika di run dengan port destination yang sama di container
+
+docker run --rm -e MYSQL_ROOT_PASSWORD=root -p 3307:3306 mysql:latest
+
+maka hasilnya bisa connect
+mysql -h 127.0.0.1 --port=3307 -u root -proot
+
+
+
+tapi kalau misal mengguanakn
+
+docker run --rm -e MYSQL_ROOT_PASSWORD=root -p 3307:3307 mysql:latest
+
+maka akan gagal
+mysql -h 127.0.0.1 --port=3307 -u root -proot
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+jadi ya harus ditulis expose ini
+
+
+
+
+==================================
+mengupload image ke registry
+==================================
+
+Untuk bisa mengupload ke registry (misal docker hub) maka harus memberikan nama tag sesuai
+
+docker tag <nama-image>:<tag-image> <reponame>:<tag-docker-hub>
+
+
+docker tag app-golang:1.0 ryan/app-golang:1.0
+
+maka saat dilihat di list container akan terdapat baru yang mana terdapat 
+
+untuk melakukan push di terminal, diperlukan adanya login agar dapat melakukan push 
+
+docker login
+
+
+.. note::
+
+	Jika melakukan pembuatan image menggunakan image yang sudah ada (pada case diatas adalah golang), maka tidak akan melakukan push secara keseluruhan
+
+	Karena jika menggunakan image yang berasal dari registry maka saat push ke registry tersebut, registry akan menggunakan image yang sudah ada.
+
+
+Untuk melakukan pengecekan docker container telah berjalan (setelah docker container start)
+
+docker container logs <nama-container>
+
+.. hint::
+
+	biasanya jika sudah jalan maka akan memunculkan adanya keterangan **started ...**
+
+
+Untuk membuat adanya environment variable
+
+docker container create --name <nama-container> -p <outside-port>:<inside-port> -e <key-variable>=<value-variable> <image>:<tag>
+
+.. tip::
+
+	Jika ingin memberikan lebih dari satu environment dapat dengan menggunakan parameter e lebih dari satu kali
+
+	-e NAME=DOCKER -e USER=DOCKER
+
+untuk mengecek adanya environment variable
+
+docker container inspect <nama-container>
+
+
+==========================================================
+Membuat custom image dari registry 
+==========================================================
+
+Kebanyakan image di repository registry hub khususnya image official telah memiliki adanya standard library.
+
+Namun terkadang dalam suatu application masih membutuhkan adanya library lain yang belum disertakan di image official tersebut.
+
+Contohnya seperti image official php (https://hub.docker.com/_/php).
+
+Pada image official tersebut, hanya terdapat common library atau library umum yang ada di php.
+
+Jika semisal membutuhkan library seperti ``gd`` atau ``imagick`` (untuk keperluan mengolah file image) maka harus menginstall sendiri ke dalam containernya.
+
+berikut contoh penambahan library tersebut ke dalam dockerfile
+
+file ``Dockerfile``::
+
+	belum
+
+
+==========================================================
+Membuat custom image dari base image
+==========================================================
+
+.. attention::
+
+	Sebaiknya agar lebih memperkuat bagian custom image dapat mempelajari pada materi concept program on linux
+
+custom image dapat dibuat dengan memberikan base image
+
+base image alpine vs ubuntu
+-----------------------------------
+
+alpine itu menggunakan busybox makanya kecil
+
+busybox itu ya diperuntukkan untuk awal bagnet, misal ngasih perintah paling awal
+alpine itu udah linux (cuma ga ada isinya)
+
+sedangkan ubuntu itu lebih gede
+
+
+
+Menjalankan multi service pada satu container
+-----------------------------------------------
+
+sebenarnya penulis lebih menyarankan 1 service 1 container
+dimana jika itu dibuat di dockerfile maka dijalankan dengan cmd/entrypoint
+penggunaan seperti supervisor mungkin bisa, tapi kan supervisor itu third party, ditambah jika menggunakan supervisor maka service yang dibuat harus foreground (nodaemon=true)
+karena jika service bberjalan di foreground container akan berhenti
+maka dari itu sebaiknya 1 service saja
+
+
+ref : https://devops.stackexchange.com/questions/447/why-it-is-recommended-to-run-only-one-process-in-a-container
+
+
+ingat jika bingung bagaimana execute service dengan dockerfile dapat dengan
+
+
+
+intel@intel-Satellite-C55t-C:/etc/systemd/system/multi-user.target.wants$ cat php7.2-fpm.service 
+[Unit]
+Description=The PHP 7.2 FastCGI Process Manager
+Documentation=man:php-fpm7.2(8)
+After=network.target
+
+[Service]
+Type=notify
+ExecStart=/usr/sbin/php-fpm7.2 --nodaemonize --fpm-config /etc/php/7.2/fpm/php-fpm.conf
+ExecStartPost=-/usr/lib/php/php-fpm-socket-helper install /run/php/php-fpm.sock /etc/php/7.2/fpm/pool.d/www.conf 72
+ExecStopPost=-/usr/lib/php/php-fpm-socket-helper remove /run/php/php-fpm.sock /etc/php/7.2/fpm/pool.d/www.conf 72
+ExecReload=/bin/kill -USR2 $MAINPID
+
+[Install]
+WantedBy=multi-user.target
+
+
+referensi : https://docs.docker.com/config/containers/multi-service_container/
+
+Terdapat berbagai cara dalam 
+
+- command yang telah disediakan
+- melalui script bash (file ``.sh``)
+- supervisor
+
+semisal ketika telah memiliki OS (ubuntu)
+
+lalu menginstall service (misal nginx, mysql, php)
+
+lantas bagaimana run service nya
+
+sebenere masih pakai cmd atau entrypoint 
+hanya saja banyak cara dalam melakukanny
+
+
+
+penjelasan yang cukup comprehensive (menggunakan script .sh)
+http://phusion.github.io/baseimage-docker/
+https://github.com/onjin/docker-alpine-vsftpd
+https://github.com/helderco/docker-php
+
+
+menggunakan command dari software (command default yang mana ini akan menggunakan foreground) 
+https://medium.com/@pablo_ezequiel/creating-a-docker-image-with-mongodb-4c8aa3f828f2
+
+
+comphrehensive (all solution)
+
+
+referensi
+
+membuat image dengan custom software/application dari dockerfile
+
+https://linuxize.com/post/how-to-build-docker-images-with-dockerfile/
+
+repository docker khusus untuk membuat custom application dari base image (OS ubuntu bahkan alpine)
+
+https://github.com/docker-library
+misal
+https://github.com/docker-library/mysql/tree/master/5.7
+
+bahkan official application saja forked dari situ
+
+https://github.com/mysql/mysql-docker
+
+
+membuat deploy docker (dengan network)
+
+https://codefresh.io/docker-tutorial/build-docker-image-dockerfiles/
+
+https://medium.com/learnfazz/docker-dan-deployment-4709c5ee43c8
+https://medium.com/learnfazz/deployment-dengan-docker-d23249895a0b
+
+panduan membuat dockerfile (cukup compherensive dan menggunakan npm)
+https://www.docker.com/blog/speed-up-your-development-flow-with-these-dockerfile-best-practices/
+
+
+==========================================================================================================
+kalau gagal build dockerfile
+==========================================================================================================
+
+tips pake dockerfile
+
+kalau gagal build jangan hapus image atau container, rugi
+pokoknya setiap ada perubahan di dockerfile langsung build aja,
+docker build -t <nama-image> .
+
+kalau ada salah, lihat dimana salahnya atau di baris apa
+lalu di sebelumnya kasih
+
+RUN sh -c 'sleep 3600'
+
+nah katakan ini bisa hold image, jadi dia running (as container)
+lalu masuk
+docker exec -it <nama-container> /bin/bash
+
+lalu check apakah semua library udah benar, atau folder udah bener

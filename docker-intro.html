@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Pengenalan Docker &mdash; Docker and Kubernetes 1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sphinxcontrib-httpexample.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/sphinxcontrib-httpexample.js"></script>
+        <script src="_static/js/custom.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Arsitektur Docker" href="docker-architecture.html" />
+    <link rel="prev" title="Container and Orchestration with Docker &amp; Kubernetes" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Docker and Kubernetes
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pengenalan Docker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#virtualisasi">Virtualisasi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#teknologi-virtualisasi-hypervisor">Teknologi virtualisasi (<code class="docutils literal notranslate"><span class="pre">Hypervisor</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#teknologi-docker">Teknologi Docker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#perbedaan-docker-dengan-virtualisasi-yang-lain">Perbedaan Docker dengan virtualisasi yang lain</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docker-architecture.html">Arsitektur Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-objects.html">Docker Objects (Image, Container, Volume, Networks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-delete-objects.html">Menghapus Objects pada docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile.html">Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-compose.html">Docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html">Dockerfile vs docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orchestration.html">Orchestration (Kubernetes)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-collection.html">Kumpulan Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-laravel.html">Docker Laravel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-mern.html">Docker MERN (Mongo Express React Node)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notelog.html">NoteLog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glosarium.html">Glosarium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concept-program-on-linux.html">Konsep Program di Linux</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Docker and Kubernetes</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Pengenalan Docker</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/docker-intro.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pengenalan-docker">
+<h1>Pengenalan Docker<a class="headerlink" href="#pengenalan-docker" title="Permalink to this headline">¶</a></h1>
+<p>Perkembangan teknologi dewasa ini, tidak terlepas dari dukungan program/aplikasi yang tersedia dan terus beragam, seperti bahasa pemrograman, service, dan tools lainnya.</p>
+<p>Sayangnya karena terlalu banyaknya macam program yang harus diinstall dalam satu Operating System, menjadikan tiap service yang running daripada program tersebut tersebut sulit untuk di-maintain.</p>
+<p>Belum lagi adanya perbedaan tiap <cite>service</cite> di local machine (PC/laptop) dan juga di server mengakibatkan banyaknya hal yang harus dilakukan seperti me-list tiap service dan melakukan konfigurasi sebelum menjalankan application.</p>
+<p>Sehingga teknologi virtualisasi mulai dikembangkan untuk mengatasi permasalahan tersebut.</p>
+<div class="section" id="virtualisasi">
+<h2>Virtualisasi<a class="headerlink" href="#virtualisasi" title="Permalink to this headline">¶</a></h2>
+<p>Virtualisasi menjadi solusi atas permasalahan semakin kompleksnya resource development (program, service, tools) yang harus diinstall untuk menjalankan suatu application.</p>
+<p>Dengan adanya virtualisasi maka memungkinkan semua resource development dikemas dalam satu bundle yang siap untuk dijalankan baik di local dan server, sehingga membuat adanya perbedaan baik di local atau server menjadi sangat kecil sekali.</p>
+<p>Dengan begitu maka akan mempermudah dan mempercepat dalam proses deploy ke server, karena semua resource development yang dibutuhkan sudah ada dalam virtualisasi tersebut.</p>
+<p>Terdapat berbagai macam teknologi virtualisasi yang biasa digunakan, beberapa yang cukup populer adalah seperti <code class="docutils literal notranslate"><span class="pre">VMWare</span></code>, <code class="docutils literal notranslate"><span class="pre">Vagrant</span></code> dan <code class="docutils literal notranslate"><span class="pre">VirtualBox</span></code>.</p>
+<p>Namun kebanyakan teknologi virtualisasi menggunakan teknologi <code class="docutils literal notranslate"><span class="pre">hypervisor</span></code> sehingga harus memulai semua dari awal, seperti proses instalasi OS (operating system), konfigurasi OS sampai instalasi resource development yang dibutuhkan.</p>
+<p>Ini menjadikan depedency yang cukup besar karena harus menyiapkan segala kebutuhan resource development tersebut.</p>
+<p>Belum lagi dengan ukuran virtualisasi yang bisa sangat besar karena biasanya untuk satu operating system bisa memiliki sekitar 600MB, belum dengan resource development yang dibutuhkan.</p>
+<div class="section" id="teknologi-virtualisasi-hypervisor">
+<h3>Teknologi virtualisasi (<code class="docutils literal notranslate"><span class="pre">Hypervisor</span></code>)<a class="headerlink" href="#teknologi-virtualisasi-hypervisor" title="Permalink to this headline">¶</a></h3>
+<p>Hypervisor sendiri ada dua kategori, yaitu <code class="docutils literal notranslate"><span class="pre">Native</span> <span class="pre">Hypervisor</span></code> dan <code class="docutils literal notranslate"><span class="pre">Hosted</span> <span class="pre">Hypervisor</span></code>.</p>
+<p><strong>Native Hypervisor</strong> merupakan virtual mesin yang berjalan / diinstalasi langsung pada hardware (PC) contohnya adalah software <strong>Proxmox</strong>, <strong>VMware ESX</strong>, <strong>Hyper-V</strong>, dll.</p>
+<p>Sedangkan <strong>Hosted Hypervisor</strong> adalah virtual mesin yang diinstalasikan diatas operating system yang selanjutnya terdapat adanya guest operating sistem (virtual OS machine) berjalan pada proses aplikasi virtual tersebut, contohnya adalah software <strong>VirtualBox</strong>, <strong>VMware Player / Workstation</strong>, <strong>Parallels Desktop</strong>, maupun <strong>Qemu</strong>.</p>
+<p>Pada intinya sebuah hypervisor akan menyediakan layanan virtualisasi operating system (atau yang biasa disebut dengan <strong>guest os</strong>) dimana di dalam <cite>guest os</cite> tersebut akan terinstall <cite>library</cite> dan <cite>dependency</cite> untuk menjalankan suatu application.</p>
+<p>Maka dari itu kebutuhan resource (cpu, ram, hdd, dll) akan semakin besar seiring dengan banyaknya menjalankan <cite>guest OS</cite>, dan juga untuk menjalankan suatu guest OS akan memakan waktu yang relatif lebih lama.</p>
+<p>Teknologi Hypervisor diatas kurang bisa meng-cover kebutuhan developer baik dari segi waktu, ukuran file dan konfigurasinya, oleh Karenanya terdapat teknologi terbaru yang bernama <strong>docker</strong> yang bisa melakukan virtualisasi secara lebih efektif dan efisien.</p>
+</div>
+</div>
+<div class="section" id="teknologi-docker">
+<h2>Teknologi Docker<a class="headerlink" href="#teknologi-docker" title="Permalink to this headline">¶</a></h2>
+<p>Docker adalah sebuah aplikasi open source yang berfungsi sebagai wadah (container) untuk membuat sebuah mesin virtualisasi secara lengkap beserta semua komponen yang dibutuhkan.</p>
+<p>Docker menjadi perhatian para developer sejak tahun 2013, diperkenalkan oleh <strong>Solomon Hykes</strong> dalam acara <cite>PyCon US</cite>.</p>
+<p>Beberapa waktu setelahnya, Docker dirilis pertama kali pada bulan Juni tahun 2014.</p>
+<p>Docker dikembangkan oleh Solomon bersama rekannya Andrea Luzzardi dan Francois-Xavier Bourlet.</p>
+<p>Pada saat itu Docker merupakan proyek internal dotCloud, hasilnya, saat ini Docker sudah menjadi platform populer di lingkungan para developer di berbagai belahan dunia meskipun belum terlalu populer di Indonesia.</p>
+<p>Docker sendiri merupakan sebuah perusahaan yang menyediakan layanan platform <cite>container</cite> (sebagai salah satu layanan docker registry secara resmi).</p>
+<p>Kemampuan yang dimiliki Docker yaitu mampu menjalankan berbagai macam aplikasi dengan konfigurasi sistem yang berbeda-beda, meskipun masih dalam satu perangkat komputer atau server.</p>
+<p>Berbeda dengan virtualisasi yang lain docker menawarkan cara yang lebih memudahkan dalam membuat virtualisasi.</p>
+<p>Docker menggunakan teknologi <strong>container</strong> dan <strong>image</strong> atau dapat diartikan <strong>container</strong> adalah <cite>instance</cite> (instansiasi) daripada suatu <strong>image</strong> (mirip dengan konsep Object pada OOP Programming)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Untuk pengertian lebih lanjut mengenai container dan image akan dibahas pada materi selanjutnya</p>
+</div>
+<div class="section" id="perbedaan-docker-dengan-virtualisasi-yang-lain">
+<h3>Perbedaan Docker dengan virtualisasi yang lain<a class="headerlink" href="#perbedaan-docker-dengan-virtualisasi-yang-lain" title="Permalink to this headline">¶</a></h3>
+<p>Seperti yang telah dituliskan diatas, bahwa docker memiliki keunggulan karena memiliki container, dengan container maka tidak memerlukan adanya proses pembuatan virtual dari awal (OS, konfigurasi hardware, dll).</p>
+<p>Berikut ini perbedaan antara docker dengan vagrant (konsep virtualisasi vagrant hampir mirip dengan VMWare dan VirtualBox)</p>
+<img alt="_images/pengenalan-docker-1.1.perbedaan-docker-dengan-vagrant.png" src="_images/pengenalan-docker-1.1.perbedaan-docker-dengan-vagrant.png" />
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="docker-architecture.html" class="btn btn-neutral float-right" title="Arsitektur Docker" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Container and Orchestration with Docker &amp; Kubernetes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ryan
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

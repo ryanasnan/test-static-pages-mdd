@@ -1,0 +1,1754 @@
+NoteLog
+=====================
+
+=====================
+konsep php nginx
+=====================
+
+nah konsep sebenarnya php dan nginx itu gini
+
+ketika ada request misal localhost:8080
+
+maka dia akan diakses oleh nginx
+
+lalu dibaca di server blocks nginx
+kalau dapat maka dia akan diarahkan ke php dengan unix socket atau tcp
+misal app:9000 (docker) atau 172.41.12.12:9000 (kalau di dalam docker)
+
+so dari situ php akan memproses output nya
+
+nah kalau outputnya hanyalah api (json data) maka ya output itu
+tapi kalau outputnya sudah dalam html (body di dalam response) maka itu dirender pake browser
+walaupun sebenarnya kalau json data juga nanti bisa saja browser merender
+
+aku rasa ini juga berlaku dengan node, tapi mungkin sedikit berbeda karena di node bisa langsung write document html
+
+
+https://www.niagahoster.co.id/blog/web-server-adalah/
+https://www.niagahoster.co.id/blog/nginx-adalah/
+
+makanya di docker php dia itu gak ngapa ngapain
+nah sebenere koonsepnya itu dari request di browser (atau postman) lalu ke nginx dan dari config nginx akan dilanjutkan ke php (atau bisa node)
+terakhir tinggal output daripada php (atau node) tersebut
+
+
+konsep mas puji, php itu cuma menyiapkan (result) output berupa document html 
+
+jadi gini ketika ada akses localhost
+maka nginx akan membacanya
+
+kemudian dia akan menuju file php yang terletak di `root`/index.php (dalam hal ini /var/www/html/projects/publlic/index.php)
+
+lalu php fpm akan membaca script tersebut (index.php)
+mirip kayak konsep php <script>.php
+
+tapi ini dengan adanya uri
+
+lalu terakhir memunculkan result berupa element html, yang lalu dirender oleh browser
+
+berbeda dengan konsep node (mern)
+
+kalau mern
+
+ketika ada akses localhost (misal /register)
+maka server.js akan me-return api
+
+lalu react akan membaca daripada routing (misal /register)
+dan memunculkan komponentnya
+
+artinya react dulu baru api (server.js) -> yang mana seharusnya keberadaan component diatas routing di file server.js (tapi di kode gw salah)
+
+nah itu sebabnya kenapa react gak ada seo
+karena dia membaca dari (/)
+dan menyiapkan komponennya (element html)
+makanya gak kerender sama browser, tapi kerender oleh javascript (bahasa pasnya document dibuatkan oleh javascript)
+
+kalau mau seo seharusnya itu kerender sama browser
+lihat saja di file setup nginx
+
+file::
+
+	server {
+	    listen 80;
+	    location / {
+	        proxy_pass http://localhost:5000;
+	        proxy_http_version 1.1;
+	        proxy_set_header Upgrade $http_upgrade;
+	        proxy_set_header Connection 'upgrade';
+	        proxy_set_header Host $host;
+	        proxy_cache_bypass $http_upgrade;
+	    }
+	}
+
+gak ada root kan, artinya ketika ada akses ya langsung ke node js
+nah node js ini akan melihat di index react, 
+component baru akan dibuatkan di suatu component tertentu
+
+memang sih kalau di browser semua kelihatan
+..image:: resources/images/konsep-webserver-dengan-react-1.1-result-browser.png
+
+tapi kalau pake curl itu yang dapet ya cuma skeleton (kerangka) saja, nah di bagian element ``<div id=root><div>`` itu yang nantinya akan dimasukin pake javascript
+..image:: resources/images/konsep-webserver-dengan-react-1.2.result-curl.png
+
+jadi seo google itu membaca isi content situs melalui element htmlnya
+kalau kosong gitu ya percuma,
+google belum bisa me-render pake react
+
+bahkan kalau pake postman itu juga harus enable javascript
+..image:: resources/images/konsep-webserver-dengan-react-1.3-result-postman.png
+
+
+berbeda dengan php yang langsung me-render semua html element sehingga kalau pake curl pasti muncul semua
+
+konsep seo google itu membaca host, lalu uri dan konten
+sama halnya dengan curl atau telnet
+makanya dia cerdas
+
+
+update
+
+sebagai penjelas maka coba berikut
+
+file simple.js::
+
+	var http = require('http'),
+	    PORT = 3400;
+
+	var server = http.createServer(function(req, res){
+	    var body = "<pre>Haruskah belajar Node.js?</pre><p><h3>...Yo Mesto!</h3></p$
+	    res.writeHead(200, {
+	        'Content-Length':body.length,
+	        'Content-Type':'text/html',
+	        'Pesan-Header':'Pengenalan Node.js'
+	    });
+
+	    res.write(body);
+	    res.end();
+	});
+
+	server.listen(PORT);
+
+	console.log("Port "+PORT+" : Node.js Server...");
+
+jalankan dengan node simple.js
+
+hasilnya ketika dicoba dengan curl -> localhost:3400
+
+bagian daripada body terender
+
+berbeda dengan react yang sejatinya sudah merender bagian app.js, tapi untuk element di dalam element <div id="root">  akan dibuatkan , ingat bukan di render tapi diinsert layaknya syntax append()
+jika menggunakan nest
+
+=======================
+Konsep api address
+=======================
+
+https://www.quora.com/How-do-IP-addresses-work-Does-the-IP-address-vary-from-computer-to-computer-or-does-it-depend-on-the-internet-connection-youre-using-If-I-use-my-neighbours-Wi-Fi-from-my-computer-does-that-change-my-IP-address#:~:text=This%20IP%20address%20uniquely%20identifies,is%20refreshed%20at%20specific%20intervals.&text=If%20your%20wifi%20network%20has,global%20IP%20to%20your%20network.
+
+default gateway itu adalah ip address utama pada router yang digunakan untuk berkomuniskasi dengan remote
+
+When you look at a default gateway address, e.g. 192.168.1.254 it looks like an IP address because it is an ordinary IP address. It is the IP address of the inside port on a router. This gateway router has another port connected to an internet service provider. Each host on a local area network (LAN) needs a default gateway address to communicate with hosts outside on the internet via the gateway router.
+
+simplenya adalah ketika ada router maka dia ada ip host, nah yang digunakan itu default gatewanya
+
+
+================================================================================================================
+mengapa kalau docker build harus ada context path (asumsi)
+================================================================================================================
+
+karena ini bukanlah absolute path (path dari awal machine misal /root/docker atau /home/ryan/docker)
+
+What Is An Absolute Path?
+An absolute path is defined as the specifying the location of a file or directory from the root directory(/). In other words we can say absolute path is a complete path from start of actual filesystem from / directory.
+
+Some examples of absolute path:
+/var/ftp/pub
+/etc/samba.smb.conf
+
+
+What Is The Relative Path?
+Relative path is defined as path related to the present working directory(pwd). Suppose I am located in /var/log and I want to change directory to /var/log/kernel. I can use relative path concept to change directory to kernel
+
+https://stackoverflow.com/questions/57282805/how-to-access-docker-build-context-path-inside-dockerfile
+nah jadi katakanlah gini 
+dockerfile ada di
+
+/home/ryan/docker/laravel/Dockerfile
+
+tapi ada file di sebelum laravel, misal ada config
+
+/home/ryan/docker/php.ini
+
+nah itu artinya context path ini adalah root sebagai penunjuk Dockerfile
+
+artinya di dalam Dockerfile bisa copy langsung file php.ini tanpa perlu harus COPY ../../php.ini
+
+OK COBA ya
+
+ini berlaku kalau kita pake -f untuk menyatakan dimanakah file dockerfile
+https://docs.docker.com/engine/reference/commandline/build/#specify-a-dockerfile--f
+
+https://stackoverflow.com/questions/50230399/what-is-the-difference-between-docker-compose-build-and-docker-build
+
+
+
+intinya gini daripada ada file kayak docker-commpose.yml dan Dockerfile di directory root laravel
+mending disembunyiin atau maksudku letakkan saja di directory dockerconfig/
+nah nanti disitu isinya nginx.conf, my.cnf, php-fpm.ini tapi di direktori yang berbeda beda
+lebih enak kan
+
+
+btw gw lebih percaya sih context path itu bagaikan directory path
+nah file docker gak usahlah kasih secara jelas, langsung saja dockerfile
+
+
+lagian kan docker-compose itu secara default akan baca .env di same directory bahaya lah kalau gini caranya
+
+========================================================
+Mengapa di mysql official harus memberikan adanya -p
+========================================================
+
+pertanyaannya kenapa harus memberikan -p 3306:3306
+padahal kan di dockerfile sendiri sudah expose
+aneh kan ya
+
+nah ini jawabnya
+
+initanpa memberikan -p
+docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                 NAMES
+8c0608259965        mysql:latest        "docker-entrypoint.s…"   7 seconds ago       Up 6 seconds        3306/tcp, 33060/tcp   crazy_kepler
+
+ini dengan memberikan -p
+docker ps 
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                               NAMES
+bd676a579150        mysql:latest        "docker-entrypoint.s…"   16 seconds ago      Up 16 seconds       0.0.0.0:3306->3306/tcp, 33060/tcp   determined_bohr
+
+perbedaannya adalah dengan -p maka ada host
+
+
+nah ni juga berlaku pada nginx
+tapi kalau sudah ada nginx di local (host) ya gak bisa -p 80:80
+untuk me list port yang lagi di listen
+sudo lsof -i -P -n | grep LISTEN
+
+
+jadi intinya kalau gak dikasih -p gak bakal tau dia listen dimana
+cek aja pake docker ps di bagian ports atau
+sudo lsof -i -P -n | grep LISTEN
+
+dia listen gak
+
+atau bisa juga pake ping ke container lain
+seperti mas puji dullu
+
+
+artinya apa expose di dockerfile itu cuma buat aja available di ports (docker ps)
+tapi implementasinya ya di -p
+
+kalau misal pake -P (P besar) itu akan memberikan random port
+
+=========================================================
+mengapa di docker php image pake docker-php-ext-install
+=========================================================
+
+kenapa di image php
+lebih menggunakna docker-php-ext-install ?
+misal docker-php-ext-install pdo_mysql
+
+karena ternyata librarty pdo_mysql ini adalah dia akan mendownload segala macem file shingga image jadi besar
+selain itu dia juga akan meng-commpile
+compilenya itu belum tentu dipake
+ini juga makin membuat lama dalam build image
+makanya scriptnya mas puji agak lama
+
+====================================
+Melihat history log di linux
+====================================
+
+https://servernesia.com/2321/melihat-riwayat-perintah-linux/
+
+
+
+===========================
+redirection
+===========================
+
+ok done, jadi redirection (<, << atau >, >>) itu hanya membaca file log (stream text)
+me-redirect atau memindahkan output atau input program. 
+Misalnya, program yang outputnya ke stdout atau ke terminal bisa diredirect atau dipindahkan ke file, output dari stderr diredirect ke stdout, dan sebagainya.
+
+Karakter > untuk redirect output.
+Karakter < untuk redirect input.
+
+cat /etc/passwd | grep "nobody" > ~/user.txt
+
+jadi buat tar gak bisa kalau docker exec
+
+sebenarnya docker exec adalah mengeksekusi di dalam container
+
+
+======================================================================
+cara membuat web application (nginx) dengan subdirectory
+======================================================================
+jadi kalau
+domain/<uri1>
+biasanya kan uri1 itu gak bisa jadi applicaition
+paling kalau gak folder ya jadi api
+
+https://serversforhackers.com/c/nginx-php-in-subdirectory
+dibanding membuat dengan domain
+aku rasa ada bagusnya dengan subdirectory
+
+
+======================
+ubuntu vs centos 
+======================
+
+enaknya di centos itu lifetime lTS cukup panjang yaitu 10 tahun
+artinya gak banyak update2
+
+bandingkan dengan ubuntu yang mungkin cuma 2 tahun saja
+
+masalah lain kalau ada perubahan package yang begitu cepat, lantas apa resourcenya itu sudah ada
+
+kek misal di ubuntu desktop gw (16.04), baru gw pake 2 tahun
+pas
+sudo apt-get update
+
+eh malah error, kan kesel ye
+
+====================================================================
+ubuntu vs centos, berani pakai centos ?
+====================================================================
+
+bedanya apt sama yum
+jadi itu adalah package manage
+apt untuk ubuntu
+dan yum untuk red hat
+kenapa beda ?
+karena ya memang beda bro
+jadi katakanlah di apt itu repositorynya lebih banyak dibanding yum yang mungkin untuk urusan server
+
+selain itu perbedaan ubuntu dan red hat pada sisi direktori juga akan memiliki metode tersendiri dalam menaruh file
+makanya dibedakan reponya 
+tapi menurutku sih gak jauh jauh amat ya perbedaannya
+artinya tiap software gui bisalah diinstall
+
+jadi perbedaan antara ubuntu desktop dan rhel itu cuma repository di apt dan yum
+dimana 
+
+selain itu update ubuntu itu terlalu cepat
+sehingga tidak cocok untuk server
+berbeda dengan centos yang memberikan waktu hingga 5 tahun sampai rilis terbarunya
+
+ini akan mempengaruhi di repository
+contoh kasus adalah misal menginstall package php atau node
+
+misal di ubuntu 14 masih node versi 4
+sedangkan di ubuntu 18 sudah versi 10
+ya jelas berbeda
+
+masak iya tiap package download sendiri, terus build (compile ke binary)
+kan repot
+sehingga inilah yang menjadikan distro arch linux lebih disukai, karena repository nya (pacman) selalu menyediakan yang terupdate
+
+====================================================================================================
+network 0.0.0.0
+====================================================================================================
+
+ok ini diluar docker
+tapi sebenarnya network itu gimana sih
+
+gampangnya gini 0.0.0.0 itu artinya bisa diakses oleh semuanya
+
+nah laptop itu pasti ada 127.0.0.1 dan kalau ada wifi pasti 192.168.x.x
+
+misalkan ada software (mysql) nah dia `secara default` hanya bisa listen 127.0.0.1 dengan port 3306
+
+bisa saja di mysql kita buat 0.0.0.0 artinya siapapun bisa akses dia (apalagi laptop local yang pake 127.0.0.1)
+
+ini juga berlaku pada service lain
+misal node,
+
+makanya perlu diberikan host
+nah kalau 127.0.0.1 itu berarti local laptop (biasa disebut di localhost)
+
+localhost ini apa ? nama aja, jadi itu dns ngubah ke 127.0.0.1
+
+==========================
+volume itu akan menghapus
+==========================
+
+misal pada Dockerfile telah melakukan git clone atau memberikan file (ADD atau COPY)
+
+tapi dilakukan mounting 
+docker run --rm -v <path-host>:<path-container>
+
+misal di path-host itu kosong, sedangkan path-container itu telah diberikan file (entah dari git clone atau ADD/COPY)
+nah pas mounting bakal kosong
+
+kalau saat build ya ada file (dari git clone atau add/copy)
+tapi kalau di mounting ya hilang juga
+
+
+========================================================
+konsep node,php dan service backend
+========================================================
+
+jadi sebenarnya dari nginx itu sendiri adalah 
+
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.php index.html index.htm index.nginx-debian.html;
+
+    server_name server_domain_or_IP;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass localhost:9000;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+
+
+nah servicenya php itu jalan dimana
+jadi php itu adlah service yang berjalan di port 9000
+
+
+
+nah contoah lain adalah node
+
+
+server {
+    listen 80;
+    location / {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+
+jadi sebenarnya ketika akses
+domain.com/
+
+itu dia akan diterimma oleh nginx, karena nginx listen di 80 (port default web)
+kemudian ketika di root /, maka dia akan dilempar ke service localhost:5000
+dimana kebetulan node jalan di localhost:5000 (dijalankan di localhsot:5000)
+
+
+nah service kayak php, node itu jalan di tcp/ip
+
+
+kalau php mah ada opsi fpm unix socket, tapi gak bisa karena untuk konsep docker container akan error
+
+nah ciri2nya gimana
+
+misal nih
+
+di local
+
+kan akses localhsot:5000 sama localhost
+kok yang localhost:5000 itu node kalau di localhost itu nginx html
+
+karena ya gitu
+
+namanya juga tcp/ip
+
+artinya bisa diakses
+
+misal
+curl localhost:5000 sama curl localhost
+
+ya hasilnya sama, yg 5000 ke node yang 
+
+
+jadi jangan tanya 
+
+tcp/ip itu adalah standard
+
+intinya gini nginx itu service yang paling jalan/cuma listen di 80 (tcp/ip 80)
+
+nah sisanya service lain yang mau mendengarkan di tcp/ip port berapa
+
+kalau gak ada service nginx
+intel@intel-Satellite-C55t-C:~$ curl localhost
+curl: (7) Failed to connect to localhost port 80: Connection refused
+intel@intel-Satellite-C55t-C:~$ 
+
+karena yang listen di 80 gak ada
+
+======================================================
+Perbedaan binary dan source code
+======================================================
+
+kalau binary itu executable
+
+kaalu source code
+itu biasanya pake:
+-> configure
+-> make
+-> make install
+
+sederhananya dia itu meng copy file ke local langsung (pake command kek cp)
+
+nah secara umum ada 3 proses
+
+1. configure
+
+biasanya configure itu kayak cek apakah sudah ada depedency yang dibutuhkan
+kalau gak ada bakal error
+
+misal machine pake architecture apa
+ada directory /sbin gak, (kalau bukan linux umum seperti debian biasanya gagal)
+
+2. make
+
+sebenarnya ini membaca file Makefile secara default
+
+nah defaultnya biasanya adalah build
+
+atau katakanlah dia itu menjalankan command ``make build``
+
+make build ini adalah proses compile
+nah proses build ini biasanya akan menjalankan function function
+seperti regular express dll
+proses ini dinamakan compile (membuat source code ke binary)
+biasanya file objective c (.c) atau python (.py) -> makanya sering disebut bahasa mesin (machine) nah kudu di compile dulu kan biar jalan
+nah dari sini file yang dihasilkan itu encrypted, artinya ya gak bisa dilihat
+misal cat {nama-file-src}
+ya hasilnya aneh begini
+
+.. code::
+
+	 T�▒��
+	                         symtab.strt
+
+tapi itu biasanya disimpan di directory sementar
+3. make install
+
+nah biasanya ini baru copy dari directory smeentara ke yang aslinya
+
+itulah kenapa program bakal aman, karena sudah encrypted
+
+
+ok jadi dari sini sudah diketahui ya bagaimana mendapatkan directory hasil compile (binary)
+artinya jangan jalanin install
+di nginx
+install:	build 
+	test -d '$(DESTDIR)/usr/local/nginx' || mkdir -p '$(DESTDIR)/usr/local/nginx'
+
+	test -d '$(DESTDIR)/usr/local/nginx/sbin' \
+		|| mkdir -p '$(DESTDIR)/usr/local/nginx/sbin'
+	test ! -f '$(DESTDIR)/usr/local/nginx/sbin/nginx' \
+
+
+
+
+build:	binary modules manpage
+
+binary:	objs/nginx
+
+objs/nginx:	objs/src/core/nginx.o \
+	objs/src/core/ngx_log.o \
+	objs/src/core/ngx_palloc.o \
+	objs/src/core/ngx_array.o \
+	objs/src/core/ngx_list.o \
+	...
+
+	$(LINK) -o objs/nginx \
+	objs/src/core/nginx.o \
+	objs/src/core/ngx_log.o \
+	objs/src/core/ngx_palloc.o \
+	objs/src/core/ngx_array.o \
+	objs/src/core/ngx_list.o \
+	objs/src/core/ngx_hash.o \
+	...
+
+
+modules:
+
+objs/ngx_modules.o:	$(CORE_DEPS) \
+	objs/ngx_modules.c
+	$(CC) -c $(CFLAGS) $(CORE_INCS) \
+		-o objs/ngx_modules.o \
+		objs/ngx_modules.c
+
+manpage:	objs/nginx.8
+
+objs/nginx.8:	man/nginx.8 objs/ngx_auto_config.h
+	sed -e "s|%%PREFIX%%|/usr/local/nginx|" \
+		-e "s|%%PID_PATH%%|/usr/local/nginx/logs/nginx.pid|" \
+		-e "s|%%CONF_PATH%%|/usr/local/nginx/conf/nginx.conf|" \
+		-e "s|%%ERROR_LOG_PATH%%|/usr/local/nginx/logs/error.log|" \
+		< man/nginx.8 > $@
+
+
+
+jadi maksudnya kalau make
+dia itu artinya make build
+nah build ini menjalankan 3 alur -> 1 binary, 2 modules, 3 manpage
+
+nah alur binary dia itu menjalankan alur objs/nginx, dimana ini adalah link ke directory sementara objs
+
+nah alur module itu lah yang membuat compile
+
+terakhir si manpage cuma membuat adanya replace (regex), cmiiw
+
+nah biasanya yang bikin error itu karena gak ada tool buat compiling, entah g++, compiler c, dll
+
+contoh
+https://itsfoss.com/install-software-from-source-code/
+
+makanya pastiin aja udah benar,
+dan satu lagi jangan lupa
+
+
+note:: ada juga yang menggunakan build system selain make, yaitu ninja, tapi ini kurang recommended (contoh https://github.com/phw/peek)
+
+
+tapi beberapa kayak redis biasanya gak ada configure, dia malah langsung make dan make install
+
+kalau apt-get itu malah kayak binary
+
+
+kalau binary itu adalah file executable
+nah ini enak tinggal execute saja
+
+biasanya kalau download binary itu ada pilihan, antara arm64 atau 64bit (amd64)
+sebenarnya itu adalah hasil daripada install source code
+
+jadi katakanlah dari source code itu bisa me-detect processor machine, apakah pake arm64 atau amd64
+
+
+nah ini juga lah yang mengakibatkan perbedaan antara linux dan macos
+karena machine pada macos itu beda banget
+
+makanya ada software macos yang gak bisa jalan di linux misal sequel pro
+artinya dia khusus di desain untuk machine macos (gak buat build untuk arm64 atau amd64)
+kenapa ?
+singkatnya karena dia ditulis dengan objective-c
+yang khusus untuk machine macos
+
+
+
+
+
+nah istilah commpile itu adalah membuat encrypted tersebut
+
+
+sedangkan perbedaan 32 bit dan 64 bit hanya terletak pada penggunaan ram
+misal 64bit jauh lebih cepat
+
+
+====================================================================================================
+apa itu alpine
+====================================================================================================
+
+
+Alpine is a busybox-based linux distribution on steroids: it is gaining so much traction in the Docker ecosystem since it has 2 features that, combined together, make it quite of a valuable base image: it is ~5mb in size and uses the apk package manager.
+
+nah kalau misal mau tahu menginstalll package lewat alpine
+https://github.com/nodejs/docker-node/blob/master/14/alpine3.12/Dockerfile
+
+
+jadi intinya dari alpine sudah ada repository, tapi ini khusus untuk membuat compile, seperti g++
+
+nah jadi busybox itu awal banget
+dibawahnya ada alpine yang menjadi linux 
+
+
+nah alpine ini ada beberapa tipe macchine juga
+misal alpine 3.12 itu untuk x86_64 atau amd64
+jadi ya gak mesti
+
+lihat saja di docker node js, ada
+
+bashbrew-arch   variants
+amd64    stretch,stretch-slim,buster,buster-slim,alpine3.10,alpine3.11,alpine3.12
+arm32v6  alpine3.10,alpine3.11,alpine3.12
+arm32v7  stretch,stretch-slim,buster,buster-slim,alpine3.10,alpine3.11,alpine3.12
+arm64v8  stretch,stretch-slim,buster,buster-slim,alpine3.10,alpine3.11,alpine3.12
+i386     alpine3.10,alpine3.11,alpine3.12
+ppc64le  stretch,stretch-slim,buster,buster-slim,alpine3.10,alpine3.11,alpine3.12
+s390x    stretch,stretch-slim,buster,buster-slim,alpine3.10,alpine3.11,alpine3.12
+
+biasanya yang i386 (32bit) itu ngikutnya amd64
+
+x86 Based
+- x86 - 32 bit x86 (ia32)
+- x86_64 - 64 bit x86 (amd64)
+ARM Based
+- armhf - 32 bit ARM (hard-float ABI) - ARMv6
+- armv7 - 32 bit ARMv7
+- aarch64 - 64 bit ARM - ARMv8
+PowerPC Based
+- ppc64le - 64 bit PowerPC (little-endian)
+IBM System Z Based
+- s390x
+
+yang jelas amd64 dan arm itu lebih lengkap, karena hampir semua versi alpine ada
+
+
+
+untuk run alpine pertama kali
+
+apk update && apk add ca-certificates
+
+
+jadi ada cara juga
+misal install git di alpine kan
+terus commit di awal
+abis itu install node
+nah bisa dilihat hasil build
+
+==========================================================
+kalau serius mau buat dockerfile
+==========================================================
+https://hub.docker.com/r/readthedocs/build/dockerfile
+
+
+====================================================================================================
+docker push new repo
+====================================================================================================
+
+#. buat repo di docker hub (public/private)
+
+#. di local pastikan sudah build, dengan catatan pastikan di local bukan latest
+
+#. buat tag
+
+	.. code-block:: rst
+
+		docker tag <local-repo>:<tag-local-repo-saat-ini> <remote-repo>:latest
+		atau
+		docker tag <local-repo>:<tag-local-repo-saat-ini> <remote-repo>
+
+	misal remote repo adalah ryanasnan/sphinxrtd
+
+	.. code-block:: rst
+
+		# build image di local dengan tag awal
+		docker build -t sphinxrtd:1.0 .
+		# buat tag dari image local tersebut dimana tag nya ini adalah {remote-repo}:latest
+		docker tag sphinxrtd:1.0 ryanasnan/sphinxrtd:latest
+		# push ke remote repo dengan tag tersebut -> {remote-repo}:latest
+		docker push ryanasnan/sphinxrtd:latest
+
+#.  siklus selanjutnya
+
+	ketika adanya perubahan di Dockerfile, ulangi tapi dengan catatan ini masuk ke tag selanjutnya
+
+	misal
+
+	.. code-block:: rst
+
+		docker build -t sphinxrtd:2.0 .
+		docker tag sphinxrtd:2.0 ryanasnan/sphinxrtd:latest
+		docker push ryanasnan/sphinxrtd:latest
+
+	.. note::
+
+		setelah push akan muncul image baru dengan tag tersebut, 
+		sebenarnya itu adalah hasil tagging, jadi dihapus saja
+
+		docker image rm <nama-tag-image>:<tag-image>
+		misal
+		docker image rm ryanasnan/sphinxrtd:latest
+
+==========================================================================================================
+docker compose restart always (on autostart)
+==========================================================================================================
+
+Today I had the same issue that all containers are started when I boot my dev laptop, as restart: always was set in the .yml files.
+
+As I don't want to touch the .yml files, I just found out (thx Bobby) how to alter this setting by:
+
+docker update --restart=no <MY-CONTAINER-ID>
+
+jadi pada dasarnya ketika di `docker-compose` memiliki restart always, maka ketika machine di restart, ini akan run secara otomatis
+
+solusinya hanya satu yaitu mematikan
+
+cara lain mungkin menghapus container (running image), tapi ini kurang disarankan, karena kalau misal statefull, artinya data2 akan hilang
+
+jadi ya sudah gak apa apa tiap restart bakal running otomatis
+
+menghilangkan dengan docker-compose down
+----------------------------------------------------------------------------------------------------------
+
+jika semisal masih running ketika di restart, maka bisa saja menggunakan docker-compose down
+
+namun perlu diketahui bahwa docker-compose down akan menghapus container, sehingga ini sebabnya kalau docker-compose up akan memulai lagi membuat container
+
+namun kalau semisal container bersifat statefull dan statefullnya disimpan di volume (terutama volume di local machine) tentu akan aman aman saja
+
+walaupun ya kurang diketahui juga sih
+
+tapi kayaknya aman2 saja
+
+so, kalau berhentiin docker-compose baiknya pake docker-compose down saja sih (jangan ctrl + c)
+
+
+====================================================================================================
+penjelasan host
+====================================================================================================
+
+jadi sebenere /etc/hosts itu hanya pembuat saja
+
+misalkan saja pake dnsmasq
+dibuat
+address=/.laravel/127.0.0.1
+address=/.menorah/127.0.0.1
+
+artinya semua yang berakhiran dengan .laravel atau .menorah akan menuju 127.0.0.1
+
+misal
+sequla.laravel
+project.menorah
+dst
+
+sebenarnya itu hanya akan menuju 127.0.0.1
+
+
+nah dari nginx sebenarnya bisa mengetahui nama server
+nginx.conf
+server_name
+
+
+tapi kalau semisal gak didaftarkan di hosts ya tentu saja gak bisa
+karena itu artinya gak ada forward ke 127.0.0.1
+
+jadi katakanlah hostname (/etc/hosts) itu akan diterima di server_name di nginx.conf
+tapi kalau belum ada penentuan di /etc/hosts ya itu gak bisa
+
+====================================================================================================
+masalah php dan nginx di docker
+====================================================================================================
+
+jika bukan laravel (hanya php dan nginx saja)
+, apakah benar bahwa resource project itu diletakkan di php service
+kalau misal dikasih di nginx service dan di php service dihilangkan bagaimana ?
+dan ternyata benar, memang bacanya di php bukan di nginx service
+jadi project (php, node, dll) itu gak perlu di berikan di nginx melainkan di service server tersebut (php, node, dll)
+
+
+tapi jika laravel
+
+itu directory laravel harus di attach di nginx (i dont know why)
+kalau gak bakal error
+kalau dihilangkan di nginx service muncul 404 not found
+kalau dihilangkan di php service muncul error file not found (bukan 404)
+
+
+====================================================================================================
+docker-compose adalah seperti halnya docker run
+====================================================================================================
+
+service di docker-compose mirip dengan docker run
+
+A service definition contains configuration that is applied to each container started for that service, much like passing command-line parameters to docker run. Likewise, network and volume definitions are analogous to docker network create and docker volume create.
+
+As with docker run, options specified in the Dockerfile, such as CMD, EXPOSE, VOLUME, ENV, are respected by default - you don’t need to specify them again in docker-compose.yml.
+
+service di docker compose bertujuan untuk menciptakan lebih dari 1 container dalam 1 service
+https://stackoverflow.com/questions/35565770/difference-between-service-and-container-in-docker-compose#:~:text=Services%20and%20container%20are%20related,compose%20you%20can%20handle%20services.&text=Additionally%2C%20with%20docker%2Dcompose%20you,against%20one%20or%20more%20services.
+
+yang bagian build/image seperti halnya build/image
+yang bagian port adalah -p
+yang bagian network adalah --network
+yang bagian volume adalah -v
+
+========================================================================================================================================================================================================
+jika ingin mount volume pastikan file yang di mount bener semua, terkadang kalau ada Dockerfile bikin error saja
+========================================================================================================================================================================================================
+
+========================================================================================================================================================================================================
+jika pas di docker compose up itu terkadang ada tambahan, misal php_1 atau web_1 nah itu juga bisa dijadikan server tersendiri (bisa untuk php_1:9000 pada nginx)
+========================================================================================================================================================================================================
+
+
+====================================================================================================
+php extension in docker
+====================================================================================================
+
+php extension (php-gd dan lainnya)
+
+https://gist.github.com/chronon/95911d21928cff786e306c23e7d1d3f3
+
+gak perlu install package aneh aneh
+------------------------------------------------------------------------------------------------------------------
+di bagian dockerfile yang lain terdapat adanya banyak package seperti g++, c dll
+
+nah untuk mengcompile maka butuh adanya build essential
+build essential
+The build-essential package is a reference for all the packages needed to compile a Debian package. It generally includes the GCC/g++ compilers and libraries and some other utilities.
+
+menurutku sih gak perlu sampai install itu semua
+
+==========================================================================================================
+CORS dan Implementasi Proxy di React
+==========================================================================================================
+
+CORS (Cross Origin Resource Sharing)
+----------------------------------------------------------------------------------------------------------
+
+CORS adalah penggunaan resource yang berasal dari **luar** origin (di luar `current host`).
+
+Contoh termudah adalah semisal seperti gambar berikut
+
+.. image:: resources/images/CORS-1.1.principle.png
+
+Pada gambar diatas untuk mendapatkan gambar (tag <img>), maka perlu mengakses ``domain-b.com`` (request GET)
+
+CORS ini hanya berlaku pada `modern` browser, dimana terdapat adanya akses ke suatu situs menggunakan web application (browser) melalui suatu ``origin``.
+
+CORS bertujuan untuk dapat saling berbagi content antar web app, seperti misal ``images``, ``css`` atau bahkan suatu ``script`` yang mana kesemuanya akan memberikan adanya `path source` dimanakah content itu berasal.
+
+Berikut contoh termudah dalam penggunaan CORS
+
+code::
+
+	<img src="https://wallpapercave.com/wp/wp2705709.jpg">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.js"></script>
+
+Di atas adalah contoh penggunaan CORS untuk memberikan content berupa `image`, `css` dan `script` yang berasal dari luar, inilah yang disebut sebagai ``Cross-Origin Resource Sharing``.
+
+Sedangkan akses seperti ``curl`` atau ``wget`` tidak akan dianggap sebagai CORS, karena tidak menggunakan media browser (melainkan terminal).
+
+Penjelasan lebih lanjut tentang CORS akan dibahas pada tulisan dibawah.
+
+----------------------------------------------------------------------------------------------------------
+Origin
+----------------------------------------------------------------------------------------------------------
+
+Apa itu Origin ???
+
+Secara garis besar origin adalah suatu `host`, `scheme` atau `port` pada URL yang digunakan dalam mengakses resource dari server sendiri.
+
+misal saat mengakses `www.detik.com` di browser, lalu didalamnya akan memuat data-data seperti berita dan lain lain.
+
+Data data tersebut sejatinya diakses dari dalam backend server `www.detik.com` itu sendiri, maka karenanya `www.detik.com` akan disebut sebagai ``origin`` disini.
+
+Apapun request yang mana masih berada dalam `www.detik.com` maka akan dinamakan sebagai `same-origin`, seperti misal `www.detik.com/sport` akan dianggap masih dalam `same origin`.
+
+Namun jika semisal terdapat suatu situs seperti `www.kompas.com` yang mana data di dalamnya berasal daripada `www.detik.com` (melalui ajax/XHR) maka pengaksesan content tersebut dikatakan sebagai ``cross-origin resource sharing`` (CORS).
+
+Atau bisa dikatakan content daripada ``www.kompas.com`` berasal dari `www.detik.com`, disini maka www.kompas.com akan disebut menggunakan teknologi ``CORS``.
+
+Suatu web application dikatakan menggunakan `HTTP cross-origin` jika saat request resource menggunakan origin yang berbeda (domain, protocol, atau port) dari dirinya.
+
+Berikut contoh cross-origin::
+
+	http://example.com/app1
+	https://example.com/app2
+
+Dimana contoh diatas masuk kedalam `different schemes` (lihat adanya penggunaan ``http`` dengan ``https``)
+
+.. tip::
+
+	Saat membuka chrome, maka dari console bisa langsung melakukan akses resource luar dengan menggunakan method `fetch` dari console.
+
+	Seperti misal di situs www.detik.com lalu membuka console dan mengetikkan::
+
+		fetch("www.google.com")
+
+	Saat dijalankan maka itu sama saja akan mengakses host lain yaitu `www.google.com` melalui host `www.detik.com` dari consolenya (cross-origin).
+
+	Namun tentunya ini akan menimbulkan `error` karena adanya 'same-origin' policy yang akan dibahas pada tulisan dibawah.
+
+----------------------------------------------------------------------------------------------------------
+`Same-Origin policy` dalam CORS
+----------------------------------------------------------------------------------------------------------
+
+Sayangnya dalam browser modern terdapat adanya aturan bernama `same-origin policy`.
+
+Yang mana secara mudahnya bahwa browser, untuk alasan `security` akan membatasi request yang tidak berasal dari host `same origin` yang diakses melalui browser.
+
+Mengapa browser menerapkan adanya `same-origin policy` ???
+
+Contoh termudah adalah sebagai berikut:
+
+#. ``User a`` Masuk ke situs ``www.bankabc.com``
+
+#. Kemudian melakukan login ke dalam situs tersebut.
+
+#. Setelah proses login berhasil, maka selanjutnya akan terdapat penyimpanan `cookie` di client (dan mungkin session di server), cookie disini akan digunakan dalam pengaksesan yang membutuhkan ``authorization`` di `wwww.bankabc.com`, seperti misal saat mengakses halaman `www.bankabc.com/profile`, `www.bankabc.com/mutation` atau mungkin untuk melakukan transfer dll, maka client hanya perlu memberikan adanya cookie tadi.
+
+#. Lalu user melanjutkan browsing dan membuka beberapa situs lain, ``semisal www.situslain.com``
+
+#. Dan ternyata pada ``www.situslain.com`` terdapat code dimana dia mengakses ``www.bankabc.com/profile``
+
+#. Tentu saja karena masih terdapat adanya cookie yang disimpan, maka ketika mengakses ``www.bankabc.com/profile`` si server daripada ``www.bankabc.com`` akan mengira bahwa user tersebut sedang mau mengakses halaman profile tentang dirinya
+
+#. padahal sebenarnya data daripada user tersebut nantinya akan terlihat dan disimpan ke dalam server ``www.situslain.com`` 
+
+Dikarenakan adanya celah keamanan itulah maka modern browser menerapkan adanya ``same-origin policy`` dalam setiap adanya ``CORS``.
+
+Alasan terbesar adalah mekanisme browser yang dapat menyimpan data user ke dalam client app (browser) seperti misal ``cookie``.
+
+Dan ini tentu tidak sama seperti ``CURL`` atau ``WGET`` yang mana dalam pengaksesannya tidak menyimpan sama sekali adanya data dari client (`cookie`).
+
+`Authentication` pada browser sebagian besar akan menggunakan ``cookie``, terutama pada modern browser dewasa ini.
+
+Penggunaan session sendiri sudah mulai jarang digunakan setelah teknologi seperti ``node.js`` muncul.
+
+Sebelumnya pada PHP mekanisme `authorization` masih menggunakan adanya session (seperti ``$_SESSION['nama_session']``) yang mana ini tersimpan ke dalam server (backend) dan bukan client (browser).
+
+.. tip::
+
+	Penggunaan session sejatinya lebih ``secure``, mengingat session hanya disimpan ke dalam server itu sendiri.
+
+	Selain itu pada mekanisme session akan menyimpan data yang berkaitan dengan pengaksesan dari `user` seperti IP address, browser, dll.
+	
+	Sehingga ketika user mengakses pada routing server, maka server akan mengenali dan akan memberikan adanya response yang dibutuhkan.
+	
+	sehingga pada session benar benar tidak memerlukan adanya data yang dikirim dari client (browser).
+
+	Namun dengan adanya teknologi microservice, dimana antara client dan server sudah berbeda host (backend akan menggunakan konsep `api` dan client menggunakan `static page`) maka teknologi session tidak dapat diterapkan.
+
+	Teknologi session hanya dapat diterapkan jika semisal antara server (express) dan client (html) masih dalam satu host,
+
+	karena setelah melakukan request dan diproses di routing express, maka selanjutnya server akan melakukan rendering html.
+
+	Teknologi diatas akan jarang digunakan mengingat sudah terdapat adanya teknologi microservice yang mana server akan membuat JWT (json web token) yang selanjutnya akan disimpan oleh client (dari cookie atau local storage).
+
+	referensi : https://medium.com/@sherryhsu/session-vs-token-based-authentication-11a6c5ac45e4
+
+Cookie atau local storage browser biasa digunakan untuk menyimpan data user.
+
+Biasanya `Local storage` hanya akan digunakan untuk menyimpan data seperti konfigurasi dari user itu sendiri.
+
+Sedangkan `Cookie` biasanya menyimpan data untuk authentication.
+
+Perbedaan keduanya adalah pada cookie memiliki expiration, sedangkan pada local storage tidak, sehingga proses authentication biasanya akan menggunakan cookie dalam menyimpan data `token`.
+
+Alasannya adalah data user seperti ``token`` akan bersifat sementara (expired) sehingga suatu saat user harus masuk kembali (login), meskipun tak jarang pula web app menggunakan local storage untuk menyimpan data `token`.
+
+Namun baik cookie atau local storage, kedua teknik tersebut masih disimpan di client (browser), sehingga ini sebenarnya masih memungkinkan adanya celah keamanan yang sama.
+
+.. warning::
+
+	Cookie sebenarnya hanya tersimpan dalam **satu** situs saja, misalkan user a melakukan login di ``www.bankabc.com``, maka setelahnya di dalam web app tersebut (www.bankabc.com) akan memuat cookie seperti:
+
+	- username : a
+
+	- token : 3H35lo52C...
+
+	Yang nantinya user a harus memberikan cookie tersebut dalam mengakses halaman lain di www.bankabc.com.
+
+	Sedangkan jika user a mengakses www.situslain.com, maka cookie daripada www.bankabc.com tidak akan dapat digunakan.
+
+	Namun terkadang hacker bisa saja membajak `networks user` kemudian mencuri cookie user tersebut.
+
+.. hint::
+
+	Bahkan untuk selevel google saja yang bersifat public tidak menerapkan adanya CORS (tidak memberikan response header), sehingga akses seperti fetch("https://google.com/search?q=javascript") tidak akan dapat diakses (same-origin policy)
+
+
+----------------------------------------------------------------------------------------------------------
+Menerapkan akses dengan CORS (control allow header origin)
+----------------------------------------------------------------------------------------------------------
+
+Perlu diketahui bahwa CORS sejatinya jarang digunakan di beberapa web app dan mungkin bukanlah hal yang wajib perlu dibuat di server (back end).
+
+Penggunaan CORS biasanya adalah untuk memberikan adanya `whitelist` pada satu domain (origin) saja, sehingga web tersebut bisa mengakses content/resource.
+
+Atau bisa saja suatu web app akan membuat dapat diakses oleh siapa saja (bersifat public) dengan menggunakan value `*`.
+
+Berikut adalah contoh penerapan CORS pada ``express``, dimana si pengakses akan mengakses melalui host ``localhost:3000`` (origin host : `localhost` dan port : `3000`).
+
+code::
+
+	app.use(function (req, res, next) {
+		// Website you wish to allow to connect
+		res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+		next();
+	});
+
+Artinya ketika terdapat akses dari `http://localhost:3000` seperti fetch('http://localhost:5000'), maka server di express akan memperbolehkan akses.
+
+Mengapa ?
+
+Karena server (express) telah memberikan adanya response berupa header bernama 'Access-Control-Allow-Origin' dengan value berupa host dari origin lain.
+
+Kunci utama dalam penggunaan CORS adalah menyesuaikan adanya `response header` yang diperlukan, response header ini bisa dilihat saat terdapat error di console.
+
+.. note::
+
+	Jika menggunakan server seperti `nodejs` atau `express` maka CORS akan diberikan di response atau pada bagian `res`.
+
+	Sehingga ketika diakses dari origin luar (cross-origin) maka origin luar tersebut telah mendapatkan `response header` yang telah dikirimkan dari nodejs/express tadi.
+
+	atau secara singkat, maka dari back end yang menyediakan response header agar servernya sendiri dapat diakses.
+
+.. attention::
+
+	Lantas kenapa bisa mengakses resource seperti `image` dari web luar, misal ``<img src="https://wallpapercave.com/wp/wp2705709.jpg">`` ??? bukankah dengan adanya CORS maka sebenarnya tidak akan mungkin bisa.
+
+	Secara default, browser memperbolehkan adanya pengaksesan request dengan method GET jika melalui tag HTML seperti ``<img>``, ``<script>``, dll.
+
+	Sedangkan jika menggunakan teknik ``XHR`` baik itu menggunakan ``AJAX``, ``XmlHttpRequest`` atau ``axios`` maka browser akan menerapkan adanya ``same origin policy``.
+
+	Jika melihat di bagian ``inspect networks`` pada chrome, maka akan terlihat beberapa jenis request seperti ``XHR``, ``css``, ``img`` dll.
+
+	Namun yang perlu diingat bahwa sejatinya pengaksesan menggunakan tag element HTML seperti ``<img>`` atau ``<script>`` itu hanya menggunakan request dengan method `GET`.
+
+	Berikut adalah hasil pengaksesan menggunakan tag html ``<img>`` dan method ``fetch`` javascript saat me-load image.
+
+	Penggunaan tag html <img> akan berhasil
+
+	code::
+
+		<img src="https://wallpapercave.com/wp/wp2705709.jpg">
+
+		Request URL: https://wallpapercave.com/wp/wp2705709.jpg
+		Request Method: GET
+		Status Code: 200 
+		Remote Address: 51.222.47.58:443
+		Referrer Policy: strict-origin-when-cross-origin
+		accept-ranges: bytes
+		content-length: 346039
+		content-type: image/jpeg
+		date: Sat, 17 Oct 2020 07:41:47 GMT
+		etag: "5e503b80-547b7"
+		last-modified: Fri, 21 Feb 2020 20:20:16 GMT
+		server: nginx
+		status: 200
+		x-frame-options: SAMEORIGIN
+		:authority: wallpapercave.com
+		:method: GET
+		:path: /wp/wp2705709.jpg
+		:scheme: https
+		accept: image/avif,image/webp,image/apng,image/*,*/*;q=0.8
+		accept-encoding: gzip, deflate, br
+		accept-language: en-US,en;q=0.9
+		cache-control: no-cache
+		pragma: no-cache
+		referer: http://localhost:3000/
+		sec-ch-ua: "\\Not;A\"Brand";v="99", "Google Chrome";v="85", "Chromium";v="85"
+		sec-ch-ua-mobile: ?0
+		sec-fetch-dest: image
+		sec-fetch-mode: no-cors
+		sec-fetch-site: cross-site
+		user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36
+
+	Sedangkan pengaksesan menggunakan ``fetch`` akan terkena adanya `same origin policy`:
+
+	code::
+
+		fetch('https://wallpapercave.com/wp/wp2705709.jpg', {
+			method: 'GET'
+		})
+		.then(response => response.json())
+		.then(data => {
+			console.log('Success:', data);
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		});
+
+		atau 
+
+		fetch('https://wallpapercave.com/wp/wp2705709.jpg')
+
+
+		Request URL: https://wallpapercave.com/wp/wp2705709.jpg
+		Referrer Policy: strict-origin-when-cross-origin
+		accept-ranges: bytes
+		content-length: 346039
+		content-type: image/jpeg
+		date: Sat, 17 Oct 2020 07:41:47 GMT
+		etag: "5e503b80-547b7"
+		last-modified: Fri, 21 Feb 2020 20:20:16 GMT
+		server: nginx
+		status: 200
+		x-frame-options: SAMEORIGIN
+		Provisional headers are shown
+		Referer: http://localhost:3000/
+		sec-ch-ua: "\\Not;A\"Brand";v="99", "Google Chrome";v="85", "Chromium";v="85"
+		sec-ch-ua-mobile: ?0
+		User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36
+
+	Sehingga itulah sebabnya mengapa situs seperti ``pinterest``, ``google image search`` bisa mengakses secara bebas.
+	
+	Namun nantinya ini juga akan memiliki celah keamanan tersendiri, dan akan dibahas pada materi ``CSRF/XSRF``.
+
+.. warning::
+
+	referensi : video 'Cross Origin Resource Sharing (Explained by Example)-Ka8vG5miErk.mp4'
+
+	Jika semisal suatu server (back end) akan menerapkan CORS untuk method ``POST``, ``PUT``, ``DELETE`` atau method lain, maka ada beberapa hal yang perlu dilakukan.
+	
+	Seperti diketahui bahwa pengaksesan menggunakan method POST, PUT, DELETE akan memerlukan adanya header berupa ``Content-Type`` (dimana didalamnya biasanya adalah `body data` berupa `JSON`).
+	
+	Untuk dapat menggunakan header tersebut, maka di server membutuhkan adanya method tambahan bernama ``OPTIONS``.
+
+	Jika tidak diberikan adanya method ``OPTIONS``, maka secara normal request dengan method POST, PUT, atau DELETE akan ditolak.
+
+	Method ``OPTIONS`` tersebut akan berisikan seperti berikut.
+
+	code::
+
+		var express = require('express')
+		var cors = require('cors')
+		var app = express()
+
+		app.options('/products/:id', cors()) // enable pre-flight request for DELETE request
+
+		app.del('/products/:id', cors(), function (req, res, next) {
+			res.json({msg: 'This is CORS-enabled for all origins!'})
+		})
+
+	Atau jika ingin memberlakukan pada semua route, dapat menggunakan dengan value ``*``
+
+	code::
+
+		app.options('*', cors()) // diberikan sebelum route utama
+
+	Atau jika tidak menggunakan package seperti cors, maka bisa membuat dengan seperti berikut seperti berikut	
+
+	code::
+
+		app.use(function (req, res, next) {
+			// Website you wish to allow to connect
+			res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+			// Request methods you wish to allow
+			res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+			// Request headers you wish to allow
+			res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+			next();
+		});
+
+----------------------------------------------------------------------------------------------------------
+Serangan CSRF dan XSRF
+----------------------------------------------------------------------------------------------------------
+
+Pengaksesan `CORS` dengan tag HTML sebenarnya akan dapat membuat celah keamanan tersendiri seperti semisal tag ``<script>`` yang di dalamnya adalah mengakses beberapa data penting.
+
+.. hint::
+
+	Celah keamanan ini berada di origin itu sendiri (same origin) atau di web app itu sendiri.
+
+Contoh termudah adalah dengan melakukan inject script, seperti diketahui bahwa browser terdapat adanya fitur edit html, dimana didalamnya akan dapat dengan mudah memberikan tag element ``<script>`` baru.
+
+Dan didalamnya akan mengakses beberapa situs penting.
+
+Namun tentu ini tidak perlu dikhawatirkan karena ada 2 hal:
+
+#. Teknologi pencegahan input berupa tag
+
+	misal jika akan menginject script melalui `input form`, maka server telah mem-validasi dan menolaknya.
+
+#. Transaction ticket dan CSRF token
+
+	Dan kalaupun sampai dapat menginject script, maka tidak akan bisa melakukan karena sudah ada penerapan transaction ticket atau csrf token yang ada di tiap form.
+
+	Misal di dalam script tersebut akan mengakses seperti::
+	
+		fetch('www.bankabc.com/users/1/getUsernameAndPassword', { method : POST });
+
+	Namun tiap akses tanpa adanya `transaction ticket` atau `CSRF token` akan ditolak oleh server.
+
+	`transaction ticket` atau `CSRF token` tersebut hanya akan digenerate oleh server itu sendiri, dan akan digenerate tiap kali ada request (seperti saat pertama kali akses atau refresh halaman).
+
+	Berikut penjelasan lebih lengkap tentang CSRF token atau transaction ticket
+
+	- https://stackoverflow.com/a/29167709
+	- https://stackoverflow.com/a/27294846 (where CRSF Tokens is bolded).
+
+	Atau secara singkat dalam menggunakan akses tersebut maka perlu adanya token khusus di tiap akses, seperti "www.detik.com/admin/getUsernameAndPassword?token=ONLYGENERATEBYSERVER", sehingga hacker akan sulit memberikan token.
+
+	.. hint::
+
+		Pada laravel sendiri, ketika membuka suatu form pada halaman web, maka ia memerlukan adanya ``CSRF token``, dimana ini akan menghindari adanya serangan CSRF/XSRF.
+
+		CSRF token ini akan diproses pada middleware (``VerifyCRSFToken``), dan jika tidak terdapat token, atau token salah, maka akses akan ditolak.
+
+Namun perlu diingat bahwa `transaction ticket` atau `CSRF token` ini hanya berlaku pada browser (via web app), dan tidak berlaku pada penggunaan ``API``.
+
+Karena pada API hanya akan menggunakan adanya token dari si user tersebut dalam mengakses.
+
+Pada laravel saat menggunakan `api` (bukan web app), maka middleware `VerifyCRSFToken` harus dimatikan.
+
+.. hint::
+
+	Yang perlu dikhawatirkan sebenarnya adalah tidak berfungsinya CORS, sehingga suatu web app, dapat mengakses tanpa adanya filter `Same-Origin` policy.
+
+	Atau mungkin dengan adanya pencurian cookie, sehingga dapat digunakan oleh hacker.
+
+	Jika semisal CORS tidak berfungsi, maka hacker bisa melakukan transaction (dari route seperti www.domain.com/transferMoney atau www.domain.com/profile/getUsernameAndPassword)
+
+	Atau jika semisal cookie sudah didapat oleh hacker, maka hacker bisa login dan mengubah password.
+
+	Oleh karenanya dibutuhkan adanya proteksi ekstra dari back end dalam celah keamanan tersebut.
+
+.. attention::
+
+	Sejatinya penggunaan tag element seperti <img> atau <script> pada browser tidak akan dapat mengakses suatu halaman, semisal::
+
+		<script src="www.detik.com/admin">
+		<script src="www.detik.com/admin/getUsernameAndPassword">
+
+	Akan terdapat error, karena tag element html hanya khusus me-load content/resource dan bukan halaman page.
+
+----------------------------------------------------------------------------------------------------------
+Kesimpulan CORS 
+----------------------------------------------------------------------------------------------------------
+
+Sejatinya CORS akan sangat jarang menggunakan Ajax/XHR, dan biasanya hanya dengan tag HTML.
+
+Pada client (browser) telah menerapkan adanya `same-origin policy`, membuat pengaksesan dari luar origin (luar situs) akan diblok.
+
+Selain itu dalam server juga telah menerapkan adanya `CSRF token` atau `transaction ticket`, sehingga akan sulit diakses tanpa kedua data tersebut.
+
+Dengan begini maka akan terdapat double protection yaitu ?
+
+#. Keamanan dari browser/client 
+
+	Hacker tidak dapat mengakses melalui suatu situs (yang mungkin user mengaksesnya) karena adanya same origin policy
+
+#. Kemanan dari server/back end 
+
+	Hacker tidak dapat mengakses melalui fetch, XHR karena `tidak terdapat` atau `ketidakcocokan` csrf token atau transaction ticket yang harus disertakan.
+
+referensi:
+
+https://kelaskita.com/blog/memahami-csrf-dan-manfaat-nya/
+https://mti.binus.ac.id/2018/07/11/cross-site-request-forgery/
+https://medium.com/@dtkatz/3-ways-to-fix-the-cors-error-and-how-access-control-allow-origin-works-d97d55946d9
+https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+https://www.youtube.com/watch?v=M_nIIcKTxGk&list=PL1A2CSdiySGIRec2pvDMkYNi3iRO89Zot
+
+
+React Proxy
+----------------------------------------------------------------------------------------------------------
+
+Saat melakukan adanya development pada React, maka secara default react akan membuat server sendiri (seperti ``localhost:3000``), hanya saja dengan begini ketika akan mengakses server (seperti `express`) maka akan gagal karena dianggap sebagai CORS dan terkena `same origin policy`.
+
+Dalam case ini maka terdapat adanya beberapa solusi :
+
+#. menggunakan react proxy (diset dari react sendiri)
+#. menambahkan response header yang diperlukan (diset dari server backend)
+#. menggunakan socket.io (penulis belum memahami)
+
+Cara `response header` telah dibahas sebelumnya, artinya dari server hanya perlu memberikan adanya response header yang diperlukan.
+
+code::
+
+	app.use(function (req, res, next) {
+		// Website you wish to allow to connect
+		res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+		// Request methods you wish to allow
+		res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+		// Request headers you wish to allow
+		res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+		next();
+	});
+
+Kemudian sekarang akan dibahas penggunaan proxy, untuk socket io akan dibahas pada materi lain. 
+
+----------------------------------------------------------------------------------------------------------
+Bagaimana React menggunakan ``proxy`` ?
+----------------------------------------------------------------------------------------------------------
+
+Apa itu proxy ?
+
+Secara umum proxy adalah server/service yang mana akan memperkenalkan layer tambahan saat komunikasi untuk menyelundupkan/memodifikasi content.
+
+Contoh termudah seperti mem-proxy IP address kita ketika send request mengakses video youtube yang mana dilarang di negara sendiri
+
+Proxy pada react untuk apa ?
+
+Pada konteks development web, tujuan utama proxy adalah mencegah adanya isu ``CORS`` (Cross Origin Resource Sharing) yang mana terjadi karena browser "memaksakan" `Same-Origin Policy` untuk melindungi user dari XSS.
+
+Ini tidak akan menjadi masalah jika semisal app react telah di-build ke dalam production (seperti misal menggunakan ``webpack``) dan menjadi ``static page``.
+
+Dimana artinya nantinya react akan berada pada same-origin dan isu same-origin policy tidak akan terjadi (karena tidak menggunakan CORS)
+
+Namun pada mode `development` mau tidak mau, react akan memiliki host tersendiri, dan tentu pengaksesan di suatu server akan dianggap sebagai CORS dan `same-origin policy` akan diberlakukan.
+
+Untuk React memiliki fitur bernama ``Proxy``.
+
+Seperti diketahui bahwa proxy sama halnya dengan ``VPN``, artinya pada react ketika mengakses localhost:3000/users (pada react) itu sebenarnya akan diganti menjadi ``localhost:5000/users``
+
+Berikut beberapa cara dalam menerapkan proxy pada react:
+
+#. Default Proxy (dari react itu sendiri) - simple version
+
+	Berikut jika semisal menggunakan fetch/XHR pada react tanpa memberikan adanya proxy
+
+	code::
+
+		componentDidMount() {
+			fetch('/search?q=javascript')
+			.then(resp => {
+				console.log('======success=======');
+			})
+			.catch(err => {
+				console.log('======failure=======');
+				console.log(err);
+			});
+		}
+
+	Akan terjadi **error**.
+
+	Tapi jika menambahkan adanya proxy (ke dalam ``package.json``), maka request ke ``https://google.com`` akan dibuat proxy dan kita dapat me-load informasi dari google.com tersebut.
+
+	file ``package.json``::
+
+		{
+		...
+			"proxy": "https://www.google.com",
+		...
+		}
+
+	Yaitu saat akses melalui localhost:3000/search?q=javascript, maka ini sama saja akan mengakses https://google.com/search?q=javascript.
+
+	Pada javascript terdapat package yang khusus menangani proxy seperti ``node-http-proxy``.
+
+	.. attention::
+
+		Proxy pada react hanya akan terjadi saat menggunakan 
+
+		code::
+
+			fetch('http://localhost:3000/search?q=javascript')
+			.then(resp => {
+				console.log('======success=======');
+			})
+			.catch(err => {
+				console.log('======failure=======');
+				console.log(err);
+			});
+
+
+		Jika menggunakan cara diatas, maka proxy akan tetap berjalan.
+
+		Namun jika langsung dengan mengetikkan host diluar react maka tentu proxy tidak akan berjalan.
+
+		code::
+
+			fetch('https://google.com/search?q=javascript')
+			.then(resp => {
+				console.log('======success=======');
+			})
+			.catch(err => {
+				console.log('======failure=======');
+				console.log(err);
+			});
+
+		Jika menggunakan cara diatas, maka `same-origin policy` akan berjalan dan hasilnya adalah error.
+
+	.. warning::
+
+		Penggunaan proxy tidak akan bisa digunakan untuk aktivitas hacking.
+
+		misalkan adalah backend`` www.situslain.com`` sudah dipasangi adanya package seperti ``node-http-proxy``.
+
+		lalu ada user yang telah login di ``www.bankabc.com`` (terdapat adanya cookie) kemudian secara tidak sadar mengakses ``www.situslain.com/profile``, yang mana ini sama saja mengakses ``www.bankabc.com/profile``
+
+		Tapi selama data seperti `cookie` ataupun `local storage` tidak dapat diakses (karena ini disimpan di tiap web app) maka akan tetap aman.
+
+#. Default Proxy - custom path target version
+
+	Dikarenakan tidak semua request akan menuju ke server yang sama, bisa mendefinisikan "path" dan "target" untuk tiap path(slash)
+
+	file ``package.json``::
+
+		{
+		...
+			"proxy": {
+				"/search": {
+					"target": "https://www.google.com",
+					"changeOrigin": true
+				},
+				"/todos": {
+					"target": "http://jsonplaceholder.typicode.com/",
+					"changeOrigin": true
+				}
+			}
+		}
+
+	code::
+
+		componentDidMount() {
+			fetch('/search?q=javascript')
+			.then(resp => {
+				console.log('======success search request=======');
+				this.processResp(resp);
+				return fetch('/todos');
+			})
+			.then(todos => {
+				console.log('======success todos request=======');
+				todos.json().then(json => console.log(json));
+			})
+			.catch(err => {
+				console.log('======failure=======');
+				console.log(err);
+			});
+		}
+
+dalam case diatas maka yang terjadi adalah:
+
+- akses ``localhost:3000/search`` akan seperti mengakses ``www.google.com/search``
+
+- akses ``localhost:3000/todos`` akan seperti mengakses ``http://jsonplaceholder.typicode.com/todos``
+
+.. hint::
+
+	mencoba dengan axios juga tidak akan jauh berbeda
+
+	file ``package.json``::
+
+		{
+		...
+			"proxy": {
+				"/search": {
+					"target": "https://www.google.com",
+					"changeOrigin": true
+				},
+				"/todos": {
+					"target": "http://jsonplaceholder.typicode.com/",
+					"changeOrigin": true
+				},
+				"/posts": {
+					"target": "https://jsonplaceholder.typicode.com",
+					"changeOrigin": true
+				}
+			}
+		}
+
+	code::
+
+		componentDidMount() {
+			fetch('/search?q=javascript')
+			.then(resp => {
+				console.log('======success search request=======');
+				this.processResp(resp);
+				return fetch('/todos');
+			})
+			.then(todos => {
+				console.log('======success todos request=======');
+				todos.json().then(json => console.log(json));
+				return axios.get('/posts');
+			})
+			.then(posts => {
+				console.log('======success posts request=======');
+				console.log(posts);
+			})
+			.catch(err => {
+				console.log('======failure=======');
+				console.log(err);
+			});
+		}
+
+referensi:
+
+- https://create-react-app.dev/docs/proxying-api-requests-in-development/
+- https://medium.com/bb-tutorials-and-thoughts/react-how-to-proxy-to-backend-server-5588a9e0347
+- https://levelup.gitconnected.com/overview-of-proxy-server-and-how-we-use-them-in-react-bf67c062b929
+
+==========================================================================================================
+Package ``react-router`` sejatinya bukan url namun hanya semacam `routing` di browser
+==========================================================================================================
+
+bisa dilakukan antara akses melalui `CURL` dan web browser (click dan refresh)
+
+#. CURL
+
+code::
+
+	curl localhost:3000/users
+
+	[
+		{
+			"id": 1,
+			"name": "Leanne Graham",
+			"username": "Cs1900",
+			"age": "22",
+			"email": "Sincere@april.biz",
+			"companyId": "1",
+			"address": {
+			"street": "Kulas Light",
+			"suite": "Apt. 556",
+			"city": "Gwenborough",
+			"zipcode": "92998-3874",
+			"geo": {
+				"lat": "-37.3159",
+				"lng": "81.1496"
+			}
+			},
+			"phone": "1-770-736-8031 x56442",
+			"website": "hildegard.org",
+			"company": {
+			"name": "Romaguera-Crona",
+			"catchPhrase": "Multi-layered client-server neural-net",
+			"bs": "harness real-time e-markets"
+			}
+		},
+		{
+			"id": 2,
+			"name": "Ervin Howell",
+			"username": "Antonette",
+			"age": "25",
+			"email": "Shanna@melissa.tv",
+			"companyId": "1",
+		...
+
+NB: di ``postman`` sendiri juga akan menampilkan seperti diatas.
+
+#. Browser 
+
+Jika semisal terdapat component <Link> pada react maka di browser akan menghasilkan html dengan tulisan:
+
+html -> Hello, Users
+
+Sedangkan jika di browser dilakukan dengan mengetikkan secara penuh (localhost:3000/users) dan menekan enter hasilnya adalah list user seperti teknik CURL diatas
+
+react sendiri disarankan untuk menggunakan package nextjs, untuk masalah server-side-rendering.
+
+Hal ini tidak berlaku jika semisal menggunakan dengan , 
+----------------------------------------------------------------------------------------------------------
+
+misalkan mengakses localhost:3000/mystory pada web app (react).
+
+maka bukan berarti itu bisa diakses dari curl, karena itu adalah penggunaan daripada `react-router` package
+
+nah beda cerita kalau router `mystory` (express) itu berada setelah static page
+
+misal berikut ,maka dia bakal kena react (react router), yang jelas ditaruh di bawah sendiri
+
+code::
+
+	// if the application deployed('production'), use this to access static page (front end) and to create all the path route redirect on front end html
+	if (process.env.NODE_ENV === 'production') {
+		// to access static page DO NOT use the html file, ext 'client/build/index.html'
+		app.use(express.static(path.join(__dirname, 'client/build')));
+
+		// to access in all route path DO NOT use the directory, exp '/client/build'
+		app.get('*', (req, res) => {
+			res.sendFile(path.join(__dirname + '/client/build/index.html'));
+		});
+	}
+
+	app.get('/mystory', function (req, res) {
+		res.send('mystory')
+	})
+
+==========================================================================================================
+session based authentication vs token based authentication (case SESSION vs JWT)
+==========================================================================================================
+
+PHP session dan cookie
+----------------------------------------------------------------------------------------------------------
+
+pada PHP terdapat teknologi yang khusus untuk menyimpan data di "tiap" client, bernama `session`.
+session ini akan selalu ada selama user tidak melakukan logout (yang mana ini akan menjalankan `destroy session`)
+
+penggunaan teknologi session di php akan menyimpan data ke dalam `server` dan `client`.
+data di dalam server disebut sebagai `session`, sedangkan data di dalam client (browser) disebut sebagai `cookie`.
+atau secara mudahnya `session` akan disimpan ke server dan `cookie` akan disimpan ke client (browser)
+
+Untuk bisa menggunakan session di php perlu menuliskan adanya code `session_start()` yang diletakkan di code paling atas.
+Setelahnya php akan membuat session baru atau membaca session yang sudah ada
+pada server akan menyimpan file session (session_id) yang biasanya disimpan ke dalam direktori ``php/temp`` (sesuai setting di php.ini).
+kemudian php akan mengirimkan juga ke client (browser) yang bernama cookie, yang mana ini akan berisikan `session_id` tadi.
+jika dilihat di browser, maka akan terlihat cookie bernama `PHPSESSID` dengan value random id (session_id).
+
+
+Session nantinya dapat digunakan sebagai penyimpanan di tiap user.
+semisal ::
+
+	$_SESSION["hobi"] = "Main Komputer";
+	$_SESSION["status"] = "Sudah Login";
+
+	echo "<pre>";
+	print_r($_SESSION);
+	echo "</pre>";
+
+ketika client me-request ke server (php), maka php akan membaca session_id( dari `cookie` client) dan selanjutnya membaca data session (sesuai dengan `session_id` dari client).
+artinya cookie disini akan digunakan sebagai `tiket` untuk mengakses data session 9sesuai dengan session_id).
+
+.. note::
+
+	PHP sejatinya menerapkan 2 metode untuk me-track session yaitu cookie dan query string (pada url).
+	
+	Hanya saja query string dianggap tidak baik untuk SEO, sehingga kebanyakan akan menggunakan cookie
+
+.. tip::
+
+	Dalam browser (misal chrome) akan menggunakan penyimpanan data cookie sesuai dengan domain (`domain cookie`), yang berarti tiap domain akan menyimpan cookie nya masing masing.
+
+	Artinya jika mencoba membuka tab baru atau bahkan new browser, ketika domainnya masih sama (semisal www.domain.com) maka data cookie akan tetap sama.
+
+	Tetapi jika membuka domain yang sama pada browser lain, maka cookie ini akan berbeda (yang artinya session_id juga akan berbeda).
+
+Penggunaan session pada php biasanya diperuntukkan untuk authentication, misal setelah mencocokkan dengan data user di database, maka php akan menyimpand data session seperti berikut
+
+code::
+
+	$_SESSION["loggedin"] = true;
+	$_SESSION["id"] = $id;
+	$_SESSION["username"] = $username;
+
+Nantinya tiap client request ke server (php) maka php akan membaca session_id dan menemukan bahwa user tersebut telah memiliki data session, dan dapat mengakses halaman user.
+
+kekurangan teknologi ini :
+
+file session disimpan ke dalam server yang mana ini lama lama akan membebani di server sendiri, karena bisa saja user akan terlalu banyak
+selain itu teknologi ini hanya akan dapat disimpan pada satu server saja, sehingga ketika melakukan scaling seperti menggunakan microservice (container & orchestration) tidak akan dapat diterapkan.
+karena bisa saja akses back end dialihkan ke container (server back end) yang lain.
+
+alternatif lain untuk authentication adalah menggunakan package JWT.
+yang mana tiap client request, maka dia menyertakan token  (yang dikirim lewat header).
+kemudian server hanya perlu melakukan ``un-serialize`` token tersebut (yang mana ini membutuhkan adanya `secret_key`)
+kemudian akan mengetahui data seperti `id`, `username`, dll
+
+
+JWT
+----------------------------------------------------------------------------------------------------------
+
+json web token 
+
+
+==========================================================================================================
+Disable play video dengan CORS
+==========================================================================================================
+
+.. note::
+
+	Penulis belum yakin ini bisa diterapkan atau tidak.
+
+	Karena tetap cors itu hanya dari client, artinya ketika client sudah akses, maka dia akan mengetahui apakah telah terdapat adanya response header `control-allow-origin`
+
+	sedangkan dari server, tentu mau bagaimanapun tetap tidak akan bisa menolak streaming
+
+teknologi cors itu
+
+misal ada video
+
+nah disimpen di server
+tapi kalau di play di server itu (pake get) akan bisa
+
+namun jika dibuat adanya response baru bisa
+
+so lets say ginilah, oh ternyata di akses di request get (tanpa origin), maka gak bakal disetel
+

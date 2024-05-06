@@ -1,0 +1,517 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Dockerfile vs docker compose &mdash; Docker and Kubernetes 1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sphinxcontrib-httpexample.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/sphinxcontrib-httpexample.js"></script>
+        <script src="_static/js/custom.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Orchestration (Kubernetes)" href="orchestration.html" />
+    <link rel="prev" title="Docker compose" href="docker-compose.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Docker and Kubernetes
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="docker-intro.html">Pengenalan Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-architecture.html">Arsitektur Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-objects.html">Docker Objects (Image, Container, Volume, Networks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-delete-objects.html">Menghapus Objects pada docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile.html">Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-compose.html">Docker compose</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dockerfile vs docker compose</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#docker-compose-laravel-by-serversforhackers">Docker compose laravel by serversforhackers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#konsep-image-pada-dockerfile">Konsep image pada Dockerfile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pembuatan-dockerfile">Pembuatan dockerfile</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-logs">docker logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-network">docker network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-compose">docker compose</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="orchestration.html">Orchestration (Kubernetes)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-collection.html">Kumpulan Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-laravel.html">Docker Laravel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-mern.html">Docker MERN (Mongo Express React Node)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notelog.html">NoteLog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glosarium.html">Glosarium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concept-program-on-linux.html">Konsep Program di Linux</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Docker and Kubernetes</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Dockerfile vs docker compose</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/dockerfile-vs-docker-container-compose.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dockerfile-vs-docker-compose">
+<h1>Dockerfile vs docker compose<a class="headerlink" href="#dockerfile-vs-docker-compose" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="docker-compose-laravel-by-serversforhackers">
+<h2>Docker compose laravel by serversforhackers<a class="headerlink" href="#docker-compose-laravel-by-serversforhackers" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="konsep-image-pada-dockerfile">
+<h3>Konsep image pada Dockerfile<a class="headerlink" href="#konsep-image-pada-dockerfile" title="Permalink to this headline">¶</a></h3>
+<p>Image pada dockerfile sebenarnya adalah membuat image baru dari tiap instruction</p>
+<p>nah misal kita sedang run image ubuntu</p>
+<p>docker run –rm -it ubuntu:18.04 bash</p>
+<p>lalu install nginx</p>
+<p>apt-get update
+apt-get install -y nginx</p>
+<p>maka perubahan setelahnya dapat ditrace dengan command diatas</p>
+<p>untuk melihat perubahan pada container dapat menggunakan command</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">diff</span> <span class="o">&lt;</span><span class="nb">id</span><span class="o">-</span><span class="n">container</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>kemudian dalam perubahan tersebut dapat melakukan commit sama halnya dengan git.</p>
+<p>fungsi daripada docker commit adalah membuat image baru</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">commit</span> <span class="p">[</span><span class="n">OPTIONS</span><span class="p">]</span> <span class="n">CONTAINER</span><span class="o">-</span><span class="nb">id</span> <span class="p">[</span><span class="n">REPOSITORY</span><span class="p">[:</span><span class="n">TAG</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>docker commit -a “ryan” -m “installed nginx” &lt;id-container&gt; &lt;nginxbaru&gt;:&lt;latest&gt;</p>
+<p>nama-repository nantinya ini adalah nama image yang baru</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Jika ingin membuat adanya image baru (repository baru) maka disarankan menggunakan docker run dengan parameter –rm, sehingga container akan dihapus setelahnya</p>
+<p>misal</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">--</span><span class="n">rm</span> <span class="o">-</span><span class="n">it</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">18.04</span> <span class="n">bash</span>
+</pre></div>
+</div>
+</div>
+<p>kemudian docker image ls atau docker images akan muncul image baru</p>
+<p>dan itulah konsep dasar daripada dockerfile, sebenarnya dia commit image ketika ada instruction tapi dia akan menghapus begitu ada instructin selanjutnya, sampai pada yang terakhir</p>
+<p>dan dengan konsep intermediate image, maka ini akan membuat cache yang akan mempercepat</p>
+<p>jadi gini katakanlah docker container create -e foo=ryan
+itu artinya pada saat buat container itu dia override environment variable
+nah kalau docker run -e itu juga sama</p>
+<p>artinya apa
+pada saat exec (cmd atau entrypoint) dia akan mengambil daripada environmetn variable yang sudah ada</p>
+<p>bahasa mudahnya ketika container start (sama halnya docker run) itu adalah menjalankan cmd atau entrypoint</p>
+<p>nah di mysql official juga gitu
+sebelum execution file sh
+dia memberikan adanya environment terlebih dahulu
+ingat disini pada mysql official, dia gak memberikan ENV pada dockerfile melainkan pada file sh
+tapi konsepnya sama ENV di dockerfile dengan di file bash</p>
+</div>
+<div class="section" id="pembuatan-dockerfile">
+<h3>Pembuatan dockerfile<a class="headerlink" href="#pembuatan-dockerfile" title="Permalink to this headline">¶</a></h3>
+<p>hal yang paling krusial adalah env DEBIAN_FRONTEND</p>
+<p>ENV DEBIAN_FRONTEND=noninteractive</p>
+<p>noninteractive –
+You use this mode when you need zero interaction while installing or upgrading the system via apt.
+It accepts the default answer for all questions.
+It might mail an error message to the root user, but that’s it all.
+Otherwise, it is totally silent and humble, a perfect frontend for automatic installs.
+One can use such mode in Dockerfile, shell scripts, cloud-init script, and more.</p>
+<p>intinya adalah membuat default answer saat ada question
+mmisalnya pada mysql</p>
+<p>artinya ini adalah menuliskan env</p>
+<p>ini akan mencegah <cite>dialog box</cite> pada saat penginstallan package</p>
+<p>Misalkan saja ketika menginstall package mysql, pasti akan muncul dialog box untuk me-set root password</p>
+<p>Jika ini dilakukan di dockerfile maka akan muncul error <code class="docutils literal notranslate"><span class="pre">unable</span> <span class="pre">to</span> <span class="pre">initialize</span> <span class="pre">frontend:</span> <span class="pre">Dialog</span></code></p>
+<p>kemudian untuk meset UTC timezone perlu package tzdata dan menaruh UTC ke dalam file /etc/timezone</p>
+<p>apt/apt-get clean → cleans the packages and install script in /var/cache/apt/archives/
+apt/apt-get autoclean → cleans obsolete deb-packages, less than clean
+apt/apt-get autoremove → removes orphaned packages which are not longer needed from the system, but not purges them, use the –purge option together with the command for that.</p>
+<p>jadi setelah install akan membersihkan package</p>
+<p>rm /var/lib/apt/lists/*
+This will remove the package lists. No repositories will be deleted, they are configured in the config file in /etc/apt/sources.list. All that can happen is that tools like apt-cache cannot get package information unless you updated the package lists. Also apt-get install will fail with E: Unable to locate package &lt;package&gt;, because no information is available about the package.</p>
+<p>Then just run:</p>
+<p>apt-get update
+to rewrite those lists and the command will work again.</p>
+<p>Anyway, it’s recommended to run apt-get update before installing anything.</p>
+<p>jadi apt-get update itu akan memperbaharui list</p>
+<p>nah di dockerfile baiknya dihapus</p>
+<p>intinya ini akan memperkecil image</p>
+<p>build image</p>
+<p>docker build -t &lt;nama-image&gt;:&lt;nama-tag&gt; -f &lt;filepath-dockerfile&gt; &lt;contextpath-dockerfile&gt;</p>
+<p>context path adalah dimana dockerfile ini akan menjalankan setiap stuff</p>
+<p>misalkan dalam dockerfile terdapat adanya mount volume, jadi baiknya dikasih referencepath biar lebih jelas dia mount volume bersama file dockerfile (satu root)</p>
+<p>docker build -t shippingdocker/app:latest -f docker/app/Dockerfile docker/app</p>
+<p>ok jadi intinya</p>
+<p>jika dalam suatu container menjalankan service di background (running seperti daemon) docker akan otomatis menghentikan container</p>
+<p>karenanya dibutuhkan daemon off pada /etc/nginx/nginx.conf</p>
+<p>daemon off akan membuat nginx berjalan di foreground.</p>
+<p>lalu add konfig nginx</p>
+<p>add default /etc/nginx/sites-avaialbes/default</p>
+<p>nah fungsinya contextreference disini, dengan begini ini akan memberitahu dockerfile untuk mengambil semua file di dalam contextreference path</p>
+<p>supervisor
+nah ada nodaemon=true
+artinya ini akan dijalankan di foreground</p>
+<p>nah masalahnya ada di supervisor php</p>
+<p>karena php kan sudah berjalan otomatis</p>
+<p>di supervisor ketika menjalankan php-fpm akan error (karena sudah running)</p>
+<p>maka dari itu harus dimatikan daemon nya
+sama seperti nginx</p>
+<p>inilah hal yang perlu diperhatikan ketika menggunakan supervisor
+harus mematikan semua daemon
+karena ini akan dijalankan via supervisor</p>
+<p>kalau gak ada supervisor gimana ??</p>
+<p>keknya sih bisa sih ya, tapi kan nginx dan php-fpm itu berjalan di background.
+docker gak akan nangkep</p>
+<p>artinya kalau sudah install nginx dan php, meski berjalan tapi itu di background</p>
+<p>nah dengan adanya supervisor (nodaemon=true) ini akan membuat adanya foreground</p>
+<p>kenapa ini harus dilakukan</p>
+<p>nginx dan php-fpm sudah pasti background, docker gak akan ngedetect</p>
+<p>bisa kok dengan
+nginx -g “daemon no;”
+tapi itu kan buat nginx doang, kalau php nya gimana ?</p>
+<p>makanya pake supervisor</p>
+</div>
+</div>
+<div class="section" id="docker-logs">
+<h2>docker logs<a class="headerlink" href="#docker-logs" title="Permalink to this headline">¶</a></h2>
+<p>ketika buat supervisor dengan log</p>
+<p>maka ini bisa me-trace dengan
+docker logs &lt;id-container&gt;</p>
+<p>untuk lihat logs
+docker logs -f &lt;id-container&gt;</p>
+<p>jadi sejatinya docker itu melog di file</p>
+<p>/dev/stdout
+/dev/stderr</p>
+<p>maka dari itu tiap service baiknya di buatkan symlink kesitu</p>
+<p>ln -sf /dev/stdout /var/log/nginx/access.log
+ln -sf /dev/stderr /var/log/nginx/error.log</p>
+<p>untuk php</p>
+<p>-sf
+itu pembuatan symlink dengan force, artinya kalau sudah ada file symlink akan di-overwrite</p>
+<p>nah kalau logs itu sebenarnya cukup ribet pembuatannya
+kek nginx dia itu membuat symlink</p>
+<p><a class="reference external" href="https://github.com/nginxinc/docker-nginx/blob/8921999083def7ba43a06fabd5f80e4406651353/mainline/jessie/Dockerfile#L21-L23">https://github.com/nginxinc/docker-nginx/blob/8921999083def7ba43a06fabd5f80e4406651353/mainline/jessie/Dockerfile#L21-L23</a></p>
+<p>atau httpd
+<a class="reference external" href="https://github.com/docker-library/httpd/blob/b13054c7de5c74bbaa6d595dbe38969e6d4f860c/2.2/Dockerfile#L72-L75">https://github.com/docker-library/httpd/blob/b13054c7de5c74bbaa6d595dbe38969e6d4f860c/2.2/Dockerfile#L72-L75</a></p>
+<p>saran gw sih mending liat aja di docker-library
+ini bisa jadi referensi
+atau di repo lain yang official</p>
+<p>just remember cari yg official kek
+<a class="reference external" href="https://github.com/nodejs/docker-node/blob/master/14/alpine3.11/Dockerfile">https://github.com/nodejs/docker-node/blob/master/14/alpine3.11/Dockerfile</a>
+<a class="reference external" href="https://github.com/docker-library/mysql/blob/master/8.0/Dockerfile">https://github.com/docker-library/mysql/blob/master/8.0/Dockerfile</a></p>
+<p>saran buat log di docker
+<a class="reference external" href="https://www.docker.com/blog/capturing-logs-in-docker-desktop/">https://www.docker.com/blog/capturing-logs-in-docker-desktop/</a>
+<a class="reference external" href="https://docs.docker.com/config/containers/logging/">https://docs.docker.com/config/containers/logging/</a></p>
+</div>
+<div class="section" id="docker-network">
+<h2>docker network<a class="headerlink" href="#docker-network" title="Permalink to this headline">¶</a></h2>
+<p>secara default network pada docker akan ada 3</p>
+<p>docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+6ad11f8d1673        bridge              bridge              local
+6a0e158a9e0c        host                host                local
+b2282a228e64        none                null                local
+<a class="reference external" href="mailto:intel&#37;&#52;&#48;intel-Satellite-C55t-C">intel<span>&#64;</span>intel-Satellite-C55t-C</a>:~$</p>
+<p>membuat network baru</p>
+<p>docker network create</p>
+<p>type bridge adalah default dimana ini membuat local container dapat berkomunikasi satu sama lain</p>
+<p>tanpa membberikan specific type maka bridge akan digunakan</p>
+<p>local berarti local computer</p>
+<p>docker network create appnet</p>
+<p>docker run -d –rm –name=mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=homestead -e MYSQL_USER=homestead -e MYSQL_PASSWORD=secret –network=appnet mysql:5.7</p>
+<p>docker inspect appnet</p>
+<p>maka di bagian containers akan berisikan container mysql</p>
+<p>nah host daripada container tersebut adalah name yaitu mysql (atau ini sama dengan ipv4address)</p>
+<p>ketika dicoba di container</p>
+<p>misal</p>
+<p>getenv hosts mysql
+maka akan memunculkan bahwa ini sama dengan inspect network diatas</p>
+<p>mysql -h mysql -u homestead -psecret</p>
+<p>jika misalkan container lain akan berkomunikasi maka tinggal tambahkan network</p>
+<p>docker run –name=app –network=appnet -d –rm -p 80:80 -v $(pwd)/application:/var/www/html/public shippingdocker/app:latest</p>
+<p>maka pada nginx diatas hostname nya adalah <cite>app</cite></p>
+<p>nah di dalam container nginx bisa ngecek</p>
+<p>getent hosts app
+atau
+getent hosts mysql</p>
+<p>docker connecting a container</p>
+<p>-w adalah workdir
+ini digunakan untuk bberpindah sebelum mengeksekusi</p>
+<p>docker run -it –rm -v $(pwd):/var/www/html -w /var/www/html shippingdocker/app:latest composer create-project laravel/laravel application</p>
+<p>itu berarti sebelum exec composer create project, pindah ddulu</p>
+</div>
+<div class="section" id="docker-compose">
+<h2>docker compose<a class="headerlink" href="#docker-compose" title="Permalink to this headline">¶</a></h2>
+<p>basic:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span><span class="s1">&#39;3&#39;</span>
+<span class="n">services</span><span class="p">:</span>
+<span class="n">networks</span><span class="p">:</span>
+  <span class="n">appnet</span><span class="p">:</span>
+        <span class="n">driver</span><span class="p">:</span> <span class="n">bridge</span>
+<span class="n">volumes</span><span class="p">:</span>
+  <span class="n">dbdata</span><span class="p">:</span>
+        <span class="n">driver</span><span class="p">:</span> <span class="n">local</span>
+  <span class="n">cachedata</span><span class="p">:</span>
+        <span class="n">driver</span><span class="p">:</span> <span class="n">local</span>
+</pre></div>
+</div>
+<p>services itu bisa dikatakan container</p>
+<p>A service definition contains configuration that is applied to each container started for that service,
+much like passing command-line parameters to docker run.</p>
+<p>Likewise, network and volume definitions are analogous to docker network create and docker volume create.</p>
+<p>As with docker run, options specified in the Dockerfile, such as CMD, EXPOSE, VOLUME, ENV, are respected by default - you don’t need to specify them again in docker-compose.yml.</p>
+<p>You can use environment variables in configuration values with a Bash-like ${VARIABLE} syntax - see variable substitution for full details.</p>
+<p>This section contains a list of all configuration options supported by a service definition in version 3.</p>
+<p>jadi kayak docker run -v –networks image:tag</p>
+<p>nah ini juga berlaku dengan environment</p>
+<dl class="simple">
+<dt>environment:</dt><dd><p>MYSQL_ROOT_PASSWORD: secret</p>
+</dd>
+</dl>
+<p>jadi buat volumes juga</p>
+<p>untuk menghapus semua volume</p>
+<p>docker volume rm $(docker volume ls -q)</p>
+<p>jangan menghapus semua network, karena ada 3 default (host, bridge dan none)</p>
+<p>jadi docker compose itu memberitahukan network apa yang dibuat
+lalu di bagian services akan memberitahu ada service yang menggunakan network tersebut</p>
+<p>jadi docker-compose</p>
+<p>kalau semisal di bagian image tidak ditemukan (di local image atau remote image di docker hub)
+image &lt;name&gt;:&lt;tag&gt;</p>
+<p>itu gak ada dia akan melakukan build di build yang diberikan</p>
+<p>builld</p>
+<p>btw di docker-compose bisa langsung exec</p>
+<p>docker-compose &lt;nama-service&gt;</p>
+<p>docker-compose exec app composer require predis/predis</p>
+<p>tapi kalau di docker-compose tidak set workdir
+maka perlu dispesifik</p>
+<p>docker-compose exec -w /var/www/html/</p>
+<p>tapi kalau sudah ada di versi docker-compose nya</p>
+<p>jika tidak bisa pake shell</p>
+<p>docker-compose exec appbash -c “cd /var/www/html &amp;&amp; composer require predis/predis”</p>
+<p>dan juga bisa
+docker-compose run app pwd</p>
+<p>nah ini sama seperti docker run</p>
+<p>tapi kalau docker-compose run
+itu semua context sudah ada misal networks, image, dll</p>
+<p>nah kenapa pake docker-compose run dibanding docker compose
+karena kalau docker-compose exec itu dia gak semua context ada, misal working directory</p>
+<p>antara
+docker-compose exec app pwd
+dan
+docker-compose run app pwd</p>
+<p>itu hasilnya berbeda
+kalau yg run itu bisa pake working directory
+kalau exec ya exec aja
+kan kalau run dia seperti docker run artinya sudah ada workdirnya</p>
+<p>kalau exec mah kayak execution di root path aja</p>
+<p>sebagai reminder kalau exec</p>
+<p>docker-compose exec app bash -c “cd /var/www/html &amp;&amp; command”</p>
+<p>jadi environment variable ini bisa dijalankan bersamaan</p>
+<p>PORT=8000 docker-compose ps</p>
+<p>kalau konsepnya adalah npm (node)
+buat docker-compose, buat volume yang bind mount
+lantas disini kan bisa diketahui node versi berapa ? (dibuat di docker compose pake ARG) begitupula npm
+memang susahnya adalah ketika node file js
+tapi itu bisa dibuat cmd di dockerfile
+nanti kan bisa diovveride juga
+but jangan lupa workdirnya juga ya diset</p>
+<p>yang jelas di local benar benar bersih</p>
+<p>ketika menggunakan node pada laravel (misal package.json)
+ini ternyata di bind volume ke /opt
+artinya ketika install ini mungkin kesitu, tapi yang jelas ini bakal bisa buat build (npm run)
+nah disini bisa kasih command
+yang mana pada akhirnya service node ini gak dijalanin
+dan tujuannya memang untuk npm build</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="orchestration.html" class="btn btn-neutral float-right" title="Orchestration (Kubernetes)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="docker-compose.html" class="btn btn-neutral float-left" title="Docker compose" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ryan
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

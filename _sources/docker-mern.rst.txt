@@ -1,0 +1,7 @@
+Docker MERN (Mongo Express React Node)
+========================================
+
+https://github.com/sjdonado/docker-mern
+
+
+ingat berikan file .env sebelum melakukan perintah docker-compose up --build --remove-orphans

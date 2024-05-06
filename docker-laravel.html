@@ -1,0 +1,1559 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Docker Laravel &mdash; Docker and Kubernetes 1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sphinxcontrib-httpexample.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/sphinxcontrib-httpexample.js"></script>
+        <script src="_static/js/custom.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Docker MERN (Mongo Express React Node)" href="docker-mern.html" />
+    <link rel="prev" title="Kumpulan Dockerfile" href="dockerfile-collection.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Docker and Kubernetes
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="docker-intro.html">Pengenalan Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-architecture.html">Arsitektur Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-objects.html">Docker Objects (Image, Container, Volume, Networks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-delete-objects.html">Menghapus Objects pada docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile.html">Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-compose.html">Docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html">Dockerfile vs docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orchestration.html">Orchestration (Kubernetes)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-collection.html">Kumpulan Dockerfile</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Docker Laravel</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lemp-stack-laravel">LEMP Stack + laravel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-basic-tools-package">Install basic tools package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-repository-nginx-php">Add repository (nginx + php)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-package-nginx-php-php-library">Install package nginx + php + php library</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-composer">Install composer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-laravel">Install laravel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#set-konfigurasi-virtual-host-nginx">Set konfigurasi virtual host nginx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#permission">Permission</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#permission-dengan-user-non-root-dalam-laravel">Permission dengan user non-root dalam laravel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#konfigurasi-php">Konfigurasi php</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-php">module php</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#instalasi-mysql">Instalasi MySQL</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#secure-mysql">Secure mysql</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#user-non-root-di-mysql">User non-root di MySQL</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#redis">redis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-compose-laravel">Docker Compose laravel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-laravel">Basic Laravel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#advance-laravel">Advance Laravel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-laravel-docker">Multi Laravel docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#directory-structure">Directory structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#real-notelog">real notelog</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#desain-simple-laravel-5-5">desain simple laravel 5.5</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#directory-and-file-structure">directory and file structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#desain-reference-project-docker">desain reference project docker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#desain-single-app-single-docker">desain single app single docker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docker-mern.html">Docker MERN (Mongo Express React Node)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notelog.html">NoteLog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glosarium.html">Glosarium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concept-program-on-linux.html">Konsep Program di Linux</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Docker and Kubernetes</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Docker Laravel</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/docker-laravel.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="docker-laravel">
+<h1>Docker Laravel<a class="headerlink" href="#docker-laravel" title="Permalink to this headline">¶</a></h1>
+<p>Sebelum menggunakan docker pada laravel akan dicoba terlebih dahulu untuk menginstall LEMP Stack (Linux, Nginx, MySQL, PHP), Laravel beserta konfigurasinya dengan penjelasannya secara <cite>comprehensive</cite>.</p>
+<div class="section" id="lemp-stack-laravel">
+<h2>LEMP Stack + laravel<a class="headerlink" href="#lemp-stack-laravel" title="Permalink to this headline">¶</a></h2>
+<p>Penginstallan akan dicoba di google VM (Virtual Machine) cloud computing</p>
+<p>OS details</p>
+<img alt="_images/lemp-stack-1.1.os-details.png" src="_images/lemp-stack-1.1.os-details.png" />
+<p>Untuk IP public yang didapatkan <code class="docutils literal notranslate"><span class="pre">35.213.171.109</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Penulis tidak menyensor ip public dikarenakan ini untuk tujuan pembelajaran.</p>
+</div>
+<p>Versi Package/Software/Apps</p>
+<ul class="simple">
+<li><p>nginx        -&gt; 1.15 (dari repository development)</p></li>
+<li><p>php          -&gt; 7.1 (dari repository ondrej)</p></li>
+<li><p>mysql-server -&gt; 5.7</p></li>
+<li><p>laravel      -&gt; 5.5</p></li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p><code class="docutils literal notranslate"><span class="pre">Laravel</span> <span class="pre">5.5</span></code> dipilih utamanya karena banyaknya requirement pada laravel 6 dan 7 seperti harus menggunakan php versi 7.2, yang mana tidak setiap librarynya sudah ada (meskipun mungkin laravel hanya membutuhkan extension <code class="docutils literal notranslate"><span class="pre">mbstring</span></code> dan <code class="docutils literal notranslate"><span class="pre">mcrypt</span></code>, namun tidak dipungkiri bahwa nantinya akan terdapat depedency extension lain yang belum terdapat pada php versi 7.2)</p>
+</div>
+<div class="section" id="install-basic-tools-package">
+<h3>Install basic tools package<a class="headerlink" href="#install-basic-tools-package" title="Permalink to this headline">¶</a></h3>
+<p>Berikut adalah package yang perlu ada di server</p>
+<ul class="simple">
+<li><p>git</p></li>
+<li><p>wget</p></li>
+<li><p>curl</p></li>
+<li><p>zip</p></li>
+<li><p>unzip</p></li>
+<li><p>htop</p></li>
+</ul>
+<p>Beberapa diantaranya telah terdapat di distribusi Ubuntu versi 18 (wget, git)</p>
+<img alt="_images/lemp-stack-1.2.install-package.png" src="_images/lemp-stack-1.2.install-package.png" />
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Disarankan untuk menggunakan root user dalam penginstallan package tersebut dan ketika mengkonfigurasi package.</p>
+</div>
+</div>
+<div class="section" id="add-repository-nginx-php">
+<h3>Add repository (nginx + php)<a class="headerlink" href="#add-repository-nginx-php" title="Permalink to this headline">¶</a></h3>
+<p>Selanjutnya tambahkan repository nginx dan php (optional).</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">add</span><span class="o">-</span><span class="n">apt</span><span class="o">-</span><span class="n">repository</span> <span class="o">-</span><span class="n">y</span> <span class="n">ppa</span><span class="p">:</span><span class="n">nginx</span><span class="o">/</span><span class="n">development</span>
+
+<span class="n">add</span><span class="o">-</span><span class="n">apt</span><span class="o">-</span><span class="n">repository</span> <span class="o">-</span><span class="n">y</span> <span class="n">ppa</span><span class="p">:</span><span class="n">ondrej</span><span class="o">/</span><span class="n">php</span>
+</pre></div>
+</div>
+<img alt="_images/lemp-stack-1.3.add-package-repo.png" src="_images/lemp-stack-1.3.add-package-repo.png" />
+<p>lalu update</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Untuk production sebaiknya gunakan versi stable, atau sebaiknya menggunakan dari default repository.</p>
+</div>
+</div>
+<div class="section" id="install-package-nginx-php-php-library">
+<h3>Install package nginx + php + php library<a class="headerlink" href="#install-package-nginx-php-php-library" title="Permalink to this headline">¶</a></h3>
+<p>Selanjutnya install package nginx dan php.</p>
+<p>Untuk package php akan ditambahkan beberapa library seperti <code class="docutils literal notranslate"><span class="pre">mcrypt</span></code>, <code class="docutils literal notranslate"><span class="pre">mbstring</span></code>, dll untuk menjalankan Laravel (lihat requirement di <a class="reference external" href="https://laravel.com/docs/7.x/installation">https://laravel.com/docs/7.x/installation</a>)</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> \
+<span class="n">nginx</span> \
+<span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">fpm</span> \
+<span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">cli</span> \
+<span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">mcrypt</span> \
+<span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">gd</span> \
+<span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">mysql</span> \
+<span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">pgsql</span> \
+<span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">imap</span> \
+<span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">mbstring</span> \
+<span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">xml</span> \
+<span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">curl</span> \
+<span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">bcmath</span> \
+<span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">sqlite3</span> \
+<span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">xdebug</span> \
+<span class="n">php</span><span class="o">-</span><span class="n">memcached</span>
+</pre></div>
+</div>
+<img alt="_images/lemp-stack-1.4.add-package-repo.png" src="_images/lemp-stack-1.4.add-package-repo.png" />
+<p>Setelahnya cek bahwa nginx dan php sudah berjalan dengan normal</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nginx</span> <span class="o">-</span><span class="n">v</span>
+<span class="n">php</span> <span class="o">-</span><span class="n">v</span>
+<span class="n">ps</span> <span class="n">aux</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">php</span>
+</pre></div>
+</div>
+<img alt="_images/lemp-stack-1.5-php-and-nginx.png" src="_images/lemp-stack-1.5-php-and-nginx.png" />
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Jika menggunakan nginx versi dev (repository development) biasanya setelah penginstallan, service nginx masih belum <cite>running</cite>.</p>
+<img alt="_images/lemp-stack-1.5.1.check-result-nginx-not-running.png" src="_images/lemp-stack-1.5.1.check-result-nginx-not-running.png" />
+<p>Atau Bisa dicek dengan command <code class="docutils literal notranslate"><span class="pre">ss</span></code>, <code class="docutils literal notranslate"><span class="pre">netstat</span></code> atau <code class="docutils literal notranslate"><span class="pre">lsof</span></code> yang me-listen port <code class="docutils literal notranslate"><span class="pre">80</span></code></p>
+<img alt="_images/lemp-stack-1.5.2.check-nginx-listen.png" src="_images/lemp-stack-1.5.2.check-nginx-listen.png" />
+<p>Untuk menjalankan service ketik saja di command dengan <code class="docutils literal notranslate"><span class="pre">nginx</span></code> maka setelahnya akan berjalan.</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nginx</span>
+</pre></div>
+</div>
+<img alt="_images/lemp-stack-1.5.3.nginx-listen.png" src="_images/lemp-stack-1.5.3.nginx-listen.png" />
+<p>Jika sudah berada di server <cite>production</cite> direkomendasikan untuk menggunakan package versi stable, baik nginx, php ataupun package lain.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>daemon pada nginx dapat dijalankan dengan menggunakan command <code class="docutils literal notranslate"><span class="pre">nginx</span> <span class="pre">-g</span> <span class="pre">&quot;daemon</span> <span class="pre">off;&quot;</span></code> untuk daemon yang tidak dijalankan di background (foreground) dan <code class="docutils literal notranslate"><span class="pre">nginx</span> <span class="pre">-g</span> <span class="pre">&quot;daemon</span> <span class="pre">on;&quot;</span></code> untuk dijalankan di background.</p>
+<center>
+        <video width="800" controls>
+                <source src="../../resources/videos/menjalankan-daemon-nginx.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+        </video>
+        <p>Caption</p>
+</center></div>
+</div>
+<div class="section" id="install-composer">
+<h3>Install composer<a class="headerlink" href="#install-composer" title="Permalink to this headline">¶</a></h3>
+<p>Composer merupakan tool untuk depedency management pada PHP yang nantinya akan digunakan untuk menginstall Laravel.</p>
+<p>Pada hakikatnya composer adalah file <strong>php</strong> yang ditaruh ke dalam <code class="docutils literal notranslate"><span class="pre">/usr/bin</span></code> untuk dijadikan <cite>alias</cite>.</p>
+<p>Berikut untuk menginstall composer dalam satu baris</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">php</span> <span class="o">-</span><span class="n">r</span> <span class="s2">&quot;readfile(&#39;https://getcomposer.org/installer&#39;);&quot;</span> <span class="o">|</span> <span class="n">sudo</span> <span class="n">php</span> <span class="o">--</span> <span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="nb">dir</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span> <span class="o">--</span><span class="n">filename</span><span class="o">=</span><span class="n">composer</span>
+</pre></div>
+</div>
+<p>maksud dari command diatas adalah membaca file dari <code class="docutils literal notranslate"><span class="pre">getcomposer.org/installer</span></code>, lalu dijalankan dengan php (menjadi script php), lalu diletakkan di direktori <code class="docutils literal notranslate"><span class="pre">/usr/bin</span></code> dan filenya dinamakan <code class="docutils literal notranslate"><span class="pre">composer</span></code> (untuk alias)</p>
+<p>atau mudahnya seperti mengcopy file <code class="docutils literal notranslate"><span class="pre">https://getcomposer.org/installer</span></code> ke <code class="docutils literal notranslate"><span class="pre">usr/bin/composer</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>command (alias) <code class="docutils literal notranslate"><span class="pre">php</span></code> adalah untuk menjalankan script php, misal</p>
+<p>php &lt;file.php&gt;</p>
+<img alt="_images/lemp-stack-1.6-php-running-script.png" src="_images/lemp-stack-1.6-php-running-script.png" />
+</div>
+<img alt="_images/lemp-stack-1.7-composer.png" src="_images/lemp-stack-1.7-composer.png" />
+<p>atau bisa dikatakan sama dengan commmand berikut</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">php</span> <span class="n">composer</span><span class="o">-</span><span class="n">setup</span><span class="o">.</span><span class="n">php</span> <span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="nb">dir</span><span class="o">=</span><span class="nb">bin</span> <span class="o">--</span><span class="n">filename</span><span class="o">=</span><span class="n">composer</span>
+</pre></div>
+</div>
+<p>Selanjutnya setelah penginstallan composer dapat dicek dengan mengetikkan command <code class="docutils literal notranslate"><span class="pre">composer</span></code></p>
+<img alt="_images/lemp-stack-1.7.1-composer-command.png" src="_images/lemp-stack-1.7.1-composer-command.png" />
+</div>
+<div class="section" id="install-laravel">
+<h3>Install laravel<a class="headerlink" href="#install-laravel" title="Permalink to this headline">¶</a></h3>
+<p>Laravel akan diletakkan di direktori <code class="docutils literal notranslate"><span class="pre">/var/www/&lt;project-laravel&gt;</span></code></p>
+<p>Berikut command yang digunakan untuk menginstall laravel 5.5 dengan direktori root bernama <cite>myapp</cite></p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">composer</span> <span class="n">create</span><span class="o">-</span><span class="n">project</span> <span class="n">laravel</span><span class="o">/</span><span class="n">laravel</span> <span class="n">myapp</span>  <span class="s2">&quot;5.5.*&quot;</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Jika semisal ram yang digunakan pada cloud computing cukup kecil (dibawah 1 GB), maka proses penginstallan laravel akan mengalami kegagalan (<code class="docutils literal notranslate"><span class="pre">Killed</span></code>).</p>
+<p>Direkomendasikan untuk menggunakan spec server dengan ram diatas 1 GB.</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Jika ingin menggunakan laravel versi development, gunakan command berikut</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">composer</span> <span class="n">create</span><span class="o">-</span><span class="n">project</span> <span class="n">laravel</span><span class="o">/</span><span class="n">laravel</span><span class="p">:</span><span class="n">dev</span><span class="o">-</span><span class="n">develop</span> <span class="n">myapp</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="set-konfigurasi-virtual-host-nginx">
+<h3>Set konfigurasi virtual host nginx<a class="headerlink" href="#set-konfigurasi-virtual-host-nginx" title="Permalink to this headline">¶</a></h3>
+<p>Virtual host adalah konfigurasi untuk pembuatan <cite>domain name</cite>, <cite>root path access</cite>, konfigurasi <cite>fastcgi</cite> dan lain lain.</p>
+<p>Dalam satu server bisa membuat lebih dari 1 virtual host (misal untuk beberapa subdomain)</p>
+<p>Istilah virtual host sering digunakan pada <code class="docutils literal notranslate"><span class="pre">Apache</span></code>, sedangkan pada <cite>nginx</cite> disebut sebagai <strong>server blocks</strong>.</p>
+<p>Pada OS debian dan turunannya (ubuntu) biasanya package nginx akan memiliki 2 directory untuk set virtual host yaitu <code class="docutils literal notranslate"><span class="pre">sites-available</span></code> dan <code class="docutils literal notranslate"><span class="pre">sites-enabled</span></code></p>
+<p>yang mana <code class="docutils literal notranslate"><span class="pre">sites-available</span></code> adalah untuk menyimpan configurasi virtual host yang ada/tersedia sedangkan <code class="docutils literal notranslate"><span class="pre">sites-enabled</span></code> adalah virtual host yang dijalankan.</p>
+<p>Metodenya adalah membuat virtual host di <code class="docutils literal notranslate"><span class="pre">sites-available</span></code> kemudian membuat symlink ke dalam <code class="docutils literal notranslate"><span class="pre">sites-enabled</span></code>.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Sejatinya untuk nginx biasanya virtual host akan menggunakan direktori <code class="docutils literal notranslate"><span class="pre">conf.d</span></code> tanpa harus menggunakan symlink.</p>
+<p>Pada debian dan turunannya ditambahkan direktori <code class="docutils literal notranslate"><span class="pre">sites-enabled</span></code> sebagai virtual host (server blocks)</p>
+<p>file /etc/nginx/nginx.conf:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">include</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">conf</span><span class="o">.</span><span class="n">d</span><span class="o">/*.</span><span class="n">conf</span><span class="p">;</span>
+<span class="n">include</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">sites</span><span class="o">-</span><span class="n">enabled</span><span class="o">/*</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<p>Pada saat penginstallan nginx biasanya sudah terdapat adanya virtual host default (/etc/nginx/sites-availables/default)</p>
+<p>file <code class="docutils literal notranslate"><span class="pre">/etc/nginx/sites-availables/default</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        root /var/www/html;
+
+        # Add index.php to the list if you are using PHP
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name _;
+
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
+        }
+}
+</pre></div>
+</div>
+<p>code listen akan membuat nginx me-listen pada port, defaultnya untuk web server adalah 80.</p>
+<p><code class="docutils literal notranslate"><span class="pre">default_server</span></code> adalah parameter untuk mengindikasikan nginx membaca konfigurasi ini sebagai default server, opsi parameter ini opsional.</p>
+<p>Untuk konfigurasi ipv6 adalah menggunakan code berikut.</p>
+<p>code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">listen</span> <span class="p">[::]:</span><span class="mi">80</span> <span class="n">default_server</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Namun biasanya ipv6 sangat jarang digunakan.</p>
+<p>code <code class="docutils literal notranslate"><span class="pre">root</span></code> adalah untuk membuat path access root.</p>
+<p>code <code class="docutils literal notranslate"><span class="pre">index</span></code> adalah untuk membaca file index (apabila ada) secara berurutan (misal pada case diatas akan membaca file index.html, jika tidak ada maka akan membaca file index.htm dan seterusnya)</p>
+<p>misal adalah ketika membaca uri tanpa adanya keterangan.</p>
+<p>semisal mengakses ip <code class="docutils literal notranslate"><span class="pre">25.139.242.424/</span></code> tanpa ada tambahan direktori atau file maka ini akan mencoba mencari file <code class="docutils literal notranslate"><span class="pre">index.html</span></code>, kemudian kalau tidak ada akan mencoba mencari file <code class="docutils literal notranslate"><span class="pre">index.htm</span></code> dst.</p>
+<p>code <code class="docutils literal notranslate"><span class="pre">server_name</span></code> adalah nama server yang akan digunakan dalam identifikasi virtual host yang akan digunakan, misal <code class="docutils literal notranslate"><span class="pre">server_name</span> <span class="pre">www.site.com</span> <span class="pre">site.com</span></code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>server_name bisa lebih dari 1 sites, artinya bisa diberikan domain atau subdomain lebih dari 1</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>konsep domain (case droplet)</p>
+<blockquote>
+<div><p>Each server block in your /etc/nginx/sites-enabled/default will have a server_name.</p>
+<p>Server name is what it will listen for, together with your port settings.
+So let’s say you have a domain, you point your A name like: example.com to your droplets IP.
+This lets the DNS server know where the domain should go (like a street adress).</p>
+<p>Then you can set a server block inside the default file, with server name: example.com
+But you wish to also have this accessible via www.example.com, that mens you change it like so:
+server_name example.com www.example.com;</p>
+<p>If you then want to have a subdomain like: yolo.example.com and have it work in another directory, you make another server block and you there add server name:
+yolo.example.com</p>
+<p>You also have to add the a name in the DNS agian, point yolo.example.com to your ip.
+For maximum flexibility use:
+a name&gt;floating ip&gt;your server</p>
+</div></blockquote>
+<p>Jadi intinya tiap cloud (droplet, gcp, aws) mereka akan memiliki DNS, yang mana ini untuk mengarahkan suatu domain ke ip</p>
+<p>Di local computer juga dapat dibuat menggunakan dnsmasq (third party) atau <code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code> (default package di linux)</p>
+<p>Di local computer, biasanya domain yang dibuat (pada dnsmasq atau /etc/hosts) akan diarahkan ke 127.0.0.1 yang sudah menjadi standard tiap pemrograman</p>
+<p>Namun dnsmasq lebih direkomendasikan, karena ini tidak selalu berjalan (dapat di-disable) sedangkan pada /etc/hosts akan selalu running.</p>
+<p>Dnsmasq nantinya juga akan m</p>
+</div>
+<p>code <code class="docutils literal notranslate"><span class="pre">location</span></code> adalah untuk konfigurasi saat berada pada suatu path atau file dengan ekstensi tertentu (misal <code class="docutils literal notranslate"><span class="pre">.php</span></code>)</p>
+<p>berikut penjelasan sederhananya</p>
+<p>code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>location / {
+        try_files $uri $uri/ =404
+}
+</pre></div>
+</div>
+<p>artinya adalah ketika mengakses root (<code class="docutils literal notranslate"><span class="pre">/</span></code>) maka dia akan mencari file kalau tidak ada ya direktori, kalau gak ada keluar 404 (not found)</p>
+<p>misal akses <code class="docutils literal notranslate"><span class="pre">25.139.242.424/foo</span></code></p>
+<p>maka pertama dia akan membaca file <code class="docutils literal notranslate"><span class="pre">/var/www/html/foo</span></code> kalau tidak ada kemudian membaca foo sebagai directory <code class="docutils literal notranslate"><span class="pre">/var/www/myaapp/public/foo/</span></code> dan jika masih tidak ada maka akan keluar <code class="docutils literal notranslate"><span class="pre">404</span></code> (not found)</p>
+<p>Untuk konfigurasi virtual host di laravel dapat menggunakan code sebagai berikut</p>
+<p>file <code class="docutils literal notranslate"><span class="pre">/etc/nginx/sites-availables/default</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>server {
+        listen 80 default_server;
+
+        root /var/www/myapp/public;
+
+        index index.html index.htm index.php;
+
+        server_name _;
+
+        location / {
+                try_files $uri $uri/ /index.php$is_args$args;
+        }
+
+        location ~ \.php$ {
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php7.1-fpm.sock;
+        }
+}
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Untuk error akan tetap menggunakan default konfigurasi (/etc/nginx/nginx.conf) yaitu akan menulis pada <code class="docutils literal notranslate"><span class="pre">/var/log/nginx/error.log</span></code></p>
+</div>
+<p>Untuk code <code class="docutils literal notranslate"><span class="pre">location</span></code> dibuat secara default membaca file index.php (/var/www/myapp/public/index.php),</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Dengan konfigurasi location tersebut, maka nginx hanya bisa mengakses directory <code class="docutils literal notranslate"><span class="pre">public</span></code> seperti file <code class="docutils literal notranslate"><span class="pre">favicon.ico</span></code>, <code class="docutils literal notranslate"><span class="pre">css/app.css</span></code> dan tidak bisa keluar.</p>
+<img alt="_images/lemp-stack-1.7.1-laravel-public-directory.png" src="_images/lemp-stack-1.7.1-laravel-public-directory.png" />
+</div>
+<p>Kemudian daripada di location menggunakan <code class="docutils literal notranslate"><span class="pre">404</span></code> sebaiknya diarahkan untuk membaca file /index.php (var/www/html/myapp/public/index.php) dengan menambahkan adanya parameter (jika terdapat adanya query string <code class="docutils literal notranslate"><span class="pre">?</span></code>)</p>
+<p>dokumentasi pada nginx <code class="docutils literal notranslate"><span class="pre">$is_args</span></code> adalah untuk question mark <cite>?</cite> sedangkan <code class="docutils literal notranslate"><span class="pre">$args</span></code> adalah arguments yang akan dipass</p>
+<p>semisal mengakses <code class="docutils literal notranslate"><span class="pre">25.139.242.424/foo?param=value</span></code></p>
+<p>maka query string itu akan dikasihkan (pass) ke index.php (file /var/www/myapp/public/index.php) dan bukan ke <code class="docutils literal notranslate"><span class="pre">foo</span></code></p>
+<p>Kemudian pada code <code class="docutils literal notranslate"><span class="pre">location</span> <span class="pre">~</span> <span class="pre">\.php</span></code> adalah untuk konfigurasi saat membaca file php.</p>
+<p>Jika menggunakan konsep virtual host laravel seperti diatas, maka otomatis akan membaca file <code class="docutils literal notranslate"><span class="pre">/var/www/myapp/public/index.php</span></code> which is ini akan langsung menggunakan code ini.</p>
+<p>code <code class="docutils literal notranslate"><span class="pre">include</span> <span class="pre">snippets/fastcgi-php.conf</span></code> adalah file untuk membuat web request dapat dibaca oleh php (language php)</p>
+<p>code <code class="docutils literal notranslate"><span class="pre">fastcgi_pass</span> <span class="pre">unix:/var/run/php/php7.1-fpm.sock</span></code> adalah untuk menggunakan unix socket <code class="docutils literal notranslate"><span class="pre">php-fpm</span></code> dalam membaca file php</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Sebenarnya secara default php menggunakan tcp/ip yang me-listen port 9000, contoh <code class="docutils literal notranslate"><span class="pre">127.0.0.1:9000</span></code></p>
+<p>Alasan utama menggunakan unix socket adalah supaya lebih cepat (meskipun ini tidak terlalu signifikan dibandingkan dengan tcp) karena ini menggunakan local file.</p>
+<p>Jika semisal ingin menggunakan tcp/ip maka berikut settingannya</p>
+<p>code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fastcgi_pass</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">9000</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<p>Jika ingin mengetest konfigurasi virtual host tidak terdapat adanya error dapat mengggunakan command <code class="docutils literal notranslate"><span class="pre">nginx</span> <span class="pre">-t</span></code> atau <code class="docutils literal notranslate"><span class="pre">service</span> <span class="pre">nginx</span> <span class="pre">configtest</span></code></p>
+<p>Kemudian restart service nginx</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">service</span> <span class="n">nginx</span> <span class="n">reload</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>jika muncul error misal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>``Job for nginx.service failed because the control process exited with error code. See &quot;systemctl status nginx.service&quot; and &quot;journalctl -xe&quot; for details.``
+</pre></div>
+</div>
+<p>gunakan <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">status</span> <span class="pre">nginx</span></code> untuk me-trace</p>
+<p>Apabila jika errornya adalah <code class="docutils literal notranslate"><span class="pre">Address</span> <span class="pre">already</span> <span class="pre">in</span> <span class="pre">use</span></code> maka kemungkinan besar service nginx telah berjalan dan tidak dapat di-restart,</p>
+<p>seperti berikut error secara details:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Jun</span> <span class="mi">05</span> <span class="mi">04</span><span class="p">:</span><span class="mi">42</span><span class="p">:</span><span class="mi">43</span> <span class="n">localhost</span> <span class="n">nginx</span><span class="p">[</span><span class="mi">16439</span><span class="p">]:</span> <span class="n">nginx</span><span class="p">:</span> <span class="p">[</span><span class="n">emerg</span><span class="p">]</span> <span class="n">bind</span><span class="p">()</span> <span class="n">to</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">80</span> <span class="n">failed</span> <span class="p">(</span><span class="mi">98</span><span class="p">:</span> <span class="n">Address</span> <span class="n">already</span> <span class="ow">in</span> <span class="n">use</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>solusinya adalah matikan dahulu service nginx</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fuser</span> <span class="o">-</span><span class="n">k</span> <span class="mi">80</span><span class="o">/</span><span class="n">tcp</span>
+</pre></div>
+</div>
+<p>Lalu restart nginx atau jalankan secara normal (menggunakan command <code class="docutils literal notranslate"><span class="pre">nginx</span> <span class="pre">-g</span> <span class="pre">&quot;daemon</span> <span class="pre">on&quot;</span></code>)</p>
+<p>Untuk mengecek dapat menggunakan command berikut:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">ss</span> <span class="o">-</span><span class="n">lptn</span> <span class="s1">&#39;sport = :80&#39;</span>
+<span class="n">atau</span>
+<span class="n">sudo</span> <span class="n">netstat</span> <span class="o">-</span><span class="n">nlp</span> <span class="o">|</span> <span class="n">grep</span> <span class="p">:</span><span class="mi">80</span>
+<span class="n">atau</span>
+<span class="n">sudo</span> <span class="n">lsof</span> <span class="o">-</span><span class="n">n</span> <span class="o">-</span><span class="n">i</span> <span class="p">:</span><span class="mi">80</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">LISTEN</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="permission">
+<h3>Permission<a class="headerlink" href="#permission" title="Permalink to this headline">¶</a></h3>
+<p>Apabila terdapat error dalam menulis file log seperti berikut</p>
+<img alt="_images/lemp-stack-1.8-php-laravel-5-5-permission-denied-log-write.png" src="_images/lemp-stack-1.8-php-laravel-5-5-permission-denied-log-write.png" />
+<p>maka itu dikarenakan file log (/var/www/myapp/storage/logs/laravel.log) memiliki user/group <code class="docutils literal notranslate"><span class="pre">root</span></code>, sehingga tidak dapat di-write oleh service php-fpm (yang menggunakan user www-data)</p>
+<p>Laravel hanya membutuhkan 2 directory yaitu <code class="docutils literal notranslate"><span class="pre">bootstrap</span></code> dan <code class="docutils literal notranslate"><span class="pre">resources</span></code> untuk dapat di write/read</p>
+<p>kedua directory itu biasa untuk menyimpan cache, seperti <code class="docutils literal notranslate"><span class="pre">bootstrap</span></code> untuk cache framework utama, <code class="docutils literal notranslate"><span class="pre">resource</span></code> untuk view cache, cache object (ketika menggunakan code <code class="docutils literal notranslate"><span class="pre">Cache::remember()</span></code> akan disimpan disini)</p>
+<p>Untuk lebih memastikan berikut untuk mengecek service php-fpm, dia menggunakan user apa</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ps</span> <span class="n">aux</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">php</span>
+</pre></div>
+</div>
+<p>dimana ternyata php-fpm <cite>worker</cite> running sebagai user <code class="docutils literal notranslate"><span class="pre">www-data</span></code>, maka dari itu 2 directory tersebut perlu diganti user dan groupnya</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chown</span> <span class="o">-</span><span class="n">R</span> <span class="n">www</span><span class="o">-</span><span class="n">data</span><span class="p">:</span> <span class="n">bootstrap</span><span class="o">/</span> <span class="n">storage</span><span class="o">/</span>
+</pre></div>
+</div>
+<img alt="_images/lemp-stack-1.9-php-laravel-5-5.png" src="_images/lemp-stack-1.9-php-laravel-5-5.png" />
+<div class="section" id="permission-dengan-user-non-root-dalam-laravel">
+<h4>Permission dengan user non-root dalam laravel<a class="headerlink" href="#permission-dengan-user-non-root-dalam-laravel" title="Permalink to this headline">¶</a></h4>
+<p>Menggunakan user <code class="docutils literal notranslate"><span class="pre">root</span></code> kurang disarankan karena ini mengakibatkan semua privilege akan dimiliki.</p>
+<p>Di directory project laravel sendiri sebaiknya hindari user <code class="docutils literal notranslate"><span class="pre">root</span></code> sebagai user dan group, dan sebagai gantinya gunakan user lain (non-root)</p>
+<p>Berikut tahap pembuatannya</p>
+<ul>
+<li><p>buat user (adduser)</p>
+<blockquote>
+<div><p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">adduser</span> <span class="n">forge</span>
+</pre></div>
+</div>
+<img alt="_images/lemp-stack-1.10.adduser.png" src="_images/lemp-stack-1.10.adduser.png" />
+<p>Secara otomatis akan membuat directory <code class="docutils literal notranslate"><span class="pre">/home/forge</span></code> (home directory untuk user forge)</p>
+</div></blockquote>
+</li>
+<li><p>Buat user forge untuk dapat run <cite>sudo command</cite></p>
+<blockquote>
+<div><p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usermod</span> <span class="o">-</span><span class="n">aG</span> <span class="n">sudo</span> <span class="n">forge</span>
+</pre></div>
+</div>
+<p>param <code class="docutils literal notranslate"><span class="pre">-aG</span></code> adalah <code class="docutils literal notranslate"><span class="pre">append</span> <span class="pre">secondary</span> <span class="pre">group</span></code>, artinya memberikan <cite>superuser privilege</cite> (sudo) ke user forge</p>
+<p>User ini dapat mengeksekusi <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">&lt;command&gt;</span></code> dengan memberikan password (dari pembuatan user sebelumnya)</p>
+</div></blockquote>
+</li>
+<li><p>Memindah project laravel directory ke home user baru</p>
+<blockquote>
+<div><p>Pindahkan project laravel ke directory home user forge, kemudian ubah owner (dari awalnya <code class="docutils literal notranslate"><span class="pre">root</span></code> atau <code class="docutils literal notranslate"><span class="pre">www-data</span></code> menjadi <code class="docutils literal notranslate"><span class="pre">forge</span></code>)</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">mv</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">myapp</span><span class="o">/</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">forge</span>
+<span class="n">sudo</span> <span class="n">chown</span> <span class="o">-</span><span class="n">R</span> <span class="n">forge</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">forge</span><span class="o">/</span><span class="n">myapp</span><span class="o">/</span>
+</pre></div>
+</div>
+<img alt="_images/lemp-stack-1.11.owner-non-root.png" src="_images/lemp-stack-1.11.owner-non-root.png" />
+<p>lalu ubah konfigurasi di nginx (path access)</p>
+<p>file /etc/nginx/sites-availables/default:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+
+<span class="n">root</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">forge</span><span class="o">/</span><span class="n">myapp</span><span class="o">/</span><span class="n">public</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>restart nginx dan php</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">nginx</span> <span class="n">reload</span> <span class="n">dan</span> <span class="n">sudo</span> <span class="n">service</span> <span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">fpm</span> <span class="n">reload</span>
+</pre></div>
+</div>
+<img alt="_images/lemp-stack-1.12.nginx-php-fpm-restart.png" src="_images/lemp-stack-1.12.nginx-php-fpm-restart.png" />
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Jika melakukan penggantion <code class="docutils literal notranslate"><span class="pre">owner/group</span></code> project laravel seperti diatas, direkomendasikan untuk menghapus cache</p>
+<p>Karena jika tidak, apabila sebelumnya sudah terdapat cache pada <code class="docutils literal notranslate"><span class="pre">/storage/framework/views/</span></code> maka selanjutnya akan menggunakan cache tersebut, dan itu cukup berbahaya.</p>
+<p>Karena pada pembuatan cache selanjurnya akan membuat file log baru, yang mana nantinya akan terdapat adanya error write log <code class="docutils literal notranslate"><span class="pre">/home/forge/myapp/storage/logs/laravel.log</span></code></p>
+<p>Pastikan menghapus semua file di <code class="docutils literal notranslate"><span class="pre">storage/framework/views/</span></code></p>
+</div>
+<p>Dikarenakan seluruh project laravel diubah owner dan group, maka seperti sebelumnya akan terdapat error writing log.</p>
+<p>Cara termudah tentu mengubah direktori bootstrap, resources dan storages ke dalam www-data</p>
+<p>Namun terdapat cara lain yaitu mengubah user untuk service php-fpm,     yaitu mengubah konfigurasi di file <code class="docutils literal notranslate"><span class="pre">/etc/php/7.1/fpm/pool.d/www.conf</span></code></p>
+<p>di bagian user dan group ubah menjadi <code class="docutils literal notranslate"><span class="pre">forge</span></code>, kemudian restart php dan cek kembali (ps aux | grep php)</p>
+<p>selanjutnya php-fpm akan running sebagai user forge</p>
+<img alt="_images/lemp-stack-1.13.php-fpm-change-user.png" src="_images/lemp-stack-1.13.php-fpm-change-user.png" />
+<img alt="_images/lemp-stack-1.14.php-fpm-change-user.png" src="_images/lemp-stack-1.14.php-fpm-change-user.png" />
+</div></blockquote>
+</li>
+<li><p>Membuat user forge run command service php-fpm reload tanpa sudo (<strong>OPTIONAL</strong>)</p>
+<blockquote>
+<div><p>Pada command menggunakan super user pada user <cite>non-root</cite> biasanya perlu melakukan masukkan password seperti misal restart php <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">service</span> <span class="pre">php7.1-fpm</span> <span class="pre">reload</span></code> -&gt; enter password</p>
+<p>Untuk menghilangkan password tersebut dapat menggunakan fitur di <cite>sudoer</cite>, yaitu menambahkan command pada file di <code class="docutils literal notranslate"><span class="pre">/etc/sudoers.d/&lt;nama-file-command&gt;</span></code></p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">visudo</span> <span class="o">-</span><span class="n">f</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sudoers</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">php</span><span class="o">-</span><span class="n">fpm</span>
+
+<span class="n">forge</span> <span class="n">ALL</span><span class="o">=</span><span class="n">NOPASSWD</span><span class="p">:</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">service</span> <span class="n">php7</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="n">fpm</span> <span class="n">reload</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Pengeditan di <cite>sudoer</cite> sangat berbahya, karena jika terjadi kesalahan/error pada file tersebut, maka tidak akan bisa melakukan command <code class="docutils literal notranslate"><span class="pre">sudo</span></code> lagi dan akan memungkinkan tidak akan bisa masuk ke server dengan user root.</p>
+<p>Oleh karenanya disarankan menggunakan editor <code class="docutils literal notranslate"><span class="pre">visudo</span></code> sebagai ganti daripada <code class="docutils literal notranslate"><span class="pre">nano</span></code></p>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="konfigurasi-php">
+<h3>Konfigurasi php<a class="headerlink" href="#konfigurasi-php" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Section berikut akan membahas tentang beberapa konfigurasi kecil dalam php</p>
+</div>
+<div class="section" id="module-php">
+<h4>module php<a class="headerlink" href="#module-php" title="Permalink to this headline">¶</a></h4>
+<p>Secara default ketika menginstall <code class="docutils literal notranslate"><span class="pre">php</span></code> maka otomatis di directori <code class="docutils literal notranslate"><span class="pre">/etc/php</span></code> akan terdapat lebih dari 1 versi php (dari versi 5.3, 5.6, 7.0, 7.1 bahkan sampai yang terbaru) yang kesemuanya untuk konfigurasi php (meskipun yang digunakan adalah yang diinstall, misal dalam case ini adalah <code class="docutils literal notranslate"><span class="pre">7.1</span></code>)</p>
+<p>Dalam php dikenal istilah SAPI (server api) yang mana ini adalah mekanisme untuk mengontrol interaksi antara “outside world” dan php (zend engine), atau singkatnya untuk menggunakan php.</p>
+<p>SAPI pada php dipisah menjadi 2 bagian yaitu <code class="docutils literal notranslate"><span class="pre">fpm</span></code> (php-fpm) dan <code class="docutils literal notranslate"><span class="pre">cli</span></code> (command line php) yang berada di direktori konfigurasi (<code class="docutils literal notranslate"><span class="pre">/etc/php/&lt;versi-php&gt;/</span></code>)</p>
+<p>cli pada php dijalankan/run pada command line, misal command <code class="docutils literal notranslate"><span class="pre">php</span> <span class="pre">-v</span></code> untuk melihat versi php, atau <code class="docutils literal notranslate"><span class="pre">php</span> <span class="pre">&lt;nama-file.php&gt;</span></code> untuk me-execute file php.</p>
+<p>sedangkan fpm adalah ketika menjalankan php melalui web request (via web server seperti <code class="docutils literal notranslate"><span class="pre">nginx</span></code>)</p>
+<p>SAPI ini dapat diberikan module yang disediakan pada <code class="docutils literal notranslate"><span class="pre">mods-available</span></code>.</p>
+<p>Untuk mengaplikasikan module tersebut, hanya perlu membuat <code class="docutils literal notranslate"><span class="pre">symlink</span></code>, misal untuk fpm diletakkan di <code class="docutils literal notranslate"><span class="pre">fpm/conf.d/</span></code> dan cli diletakkan di <code class="docutils literal notranslate"><span class="pre">cli/conf.d/</span></code></p>
+<p>Antara module pada cli dan module fpm bisa berbeda tergantung pengaturan symlink.</p>
+<p>Misalkan menghilangkan module <code class="docutils literal notranslate"><span class="pre">xdebug</span></code>, yang dapat dicek ketika command melihat versi php <code class="docutils literal notranslate"><span class="pre">php</span> <span class="pre">-v</span></code></p>
+<p>Untuk menghilangkannya hapus file <code class="docutils literal notranslate"><span class="pre">cli/conf.d/20-xdebug.ini</span></code></p>
+<p>maka ketika melakukan command <code class="docutils literal notranslate"><span class="pre">php</span> <span class="pre">-v</span></code> akan menghilang</p>
+<p>Kemudian untuk membuat symlink daripada module xdebug tersebut gunakan command dibawah</p>
+<p>commmand:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">php</span><span class="o">/</span><span class="mf">7.1</span><span class="o">/</span><span class="n">mods</span><span class="o">-</span><span class="n">available</span><span class="o">/</span><span class="n">xdebug</span><span class="o">.</span><span class="n">ini</span> <span class="mi">20</span><span class="o">-</span><span class="n">xdebug</span><span class="o">.</span><span class="n">ini</span>
+</pre></div>
+</div>
+<p>tidak perlu me-restart saat menghapus symlink pada cli</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>adanya penomoran pada module SAPI hanya untuk prioritas saja</p>
+</div>
+<p>Terdapat pula cara lain untuk disable / enable module tersebut dengan command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">phpdismod</span> <span class="o">-</span><span class="n">s</span> <span class="n">cli</span> <span class="n">xdebug</span>
+
+<span class="n">sudo</span> <span class="n">phpenmod</span> <span class="o">-</span><span class="n">s</span> <span class="n">cli</span> <span class="n">xdebug</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Jika melakukan perubahan di SAPI <code class="docutils literal notranslate"><span class="pre">fpm</span></code> maka service php perlu di-restart</p>
+</div>
+</div>
+</div>
+<div class="section" id="instalasi-mysql">
+<h3>Instalasi MySQL<a class="headerlink" href="#instalasi-mysql" title="Permalink to this headline">¶</a></h3>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">mysql</span><span class="o">-</span><span class="n">server</span>
+</pre></div>
+</div>
+<div class="section" id="secure-mysql">
+<h4>Secure mysql<a class="headerlink" href="#secure-mysql" title="Permalink to this headline">¶</a></h4>
+<p>Berikut untuk lebih mengamankan MySQL</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">mysql_secure_installation</span>
+</pre></div>
+</div>
+<p>Setelah memasukkan password, selanjutnya akan ada beberapa pertanyaan</p>
+<ul>
+<li><p>VALIDATE PASSWORD PLUGIN</p>
+<blockquote>
+<div><p>ini untuk lebih membuat secure password, jawab <code class="docutils literal notranslate"><span class="pre">no</span></code> (n)</p>
+</div></blockquote>
+</li>
+<li><p>change password for the root</p>
+<blockquote>
+<div><p>jawab <code class="docutils literal notranslate"><span class="pre">no</span></code> (n)</p>
+</div></blockquote>
+</li>
+<li><p>remove anonymous user</p>
+<blockquote>
+<div><p>jawab <code class="docutils literal notranslate"><span class="pre">yes</span></code> (y)</p>
+</div></blockquote>
+</li>
+<li><p>disallow root login remotely ?</p>
+<blockquote>
+<div><p>jawab <code class="docutils literal notranslate"><span class="pre">yes</span></code>, yang artinya saat user root melakukan login, tidak akan bisa dilakukan dengan remote (login <code class="docutils literal notranslate"><span class="pre">root</span></code> harus melalui server/cloud di mana MySQL diinstall)</p>
+</div></blockquote>
+</li>
+<li><p>remove test database</p>
+<blockquote>
+<div><p>jawab <code class="docutils literal notranslate"><span class="pre">yes</span></code> (y)</p>
+</div></blockquote>
+</li>
+<li><p>reload privileges</p>
+<blockquote>
+<div><p>jawab <code class="docutils literal notranslate"><span class="pre">yes</span></code> (y)</p>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="user-non-root-di-mysql">
+<h4>User non-root di MySQL<a class="headerlink" href="#user-non-root-di-mysql" title="Permalink to this headline">¶</a></h4>
+<p>create user and database</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">create</span> <span class="n">user</span> <span class="n">myuser</span><span class="nd">@localhost</span> <span class="n">identified</span> <span class="n">by</span> <span class="s1">&#39;secret&#39;</span><span class="p">;</span>
+
+<span class="n">create</span> <span class="n">database</span> <span class="n">myapp</span> <span class="n">charset</span> <span class="n">utf8mb4</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Diatas adalah membuat user <code class="docutils literal notranslate"><span class="pre">myuser</span></code> yang nantinya hanya bisa mengakses (login) lewat localhost (dimana mysql diinstall)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>mb4 adalah verrsi complete dari utf8 (memiliki 4 bit character) yang mana pada versi ini dapat memasukkan karakter tambahan seperti <cite>emoji</cite></p>
+</div>
+<p>grant user</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grant</span> <span class="nb">all</span> <span class="n">privileges</span> <span class="n">on</span> <span class="n">myapp</span><span class="o">.*</span> <span class="n">to</span> <span class="n">myuser</span><span class="nd">@localhost</span>
+
+<span class="n">flush</span> <span class="n">privileges</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Direkomendasikan untuk tidak membuat user dengan host private network pada MySQL.</p>
+<p>Karena itu berarti jika semisal server/cloud berada di GCP (Google Cloud Platform), maka hanya server pada GCP yang dapat mengakses MySQL (secara remote) dengan menggunakan private network tersebut.</p>
+<p>Jika server lain berada di luar GCP, misal AWS maka pengaksesan tidak akan bisa.</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Jika menggunakan GCP pastikan telah membuat setting network <code class="docutils literal notranslate"><span class="pre">VPC</span></code> (untuk membuka port) agar nantinya tiap software yang diinstall dapat mengakses port nya.</p>
+<p>Alternatif lain dapat menggunakan lewat package terminal yaitu <code class="docutils literal notranslate"><span class="pre">iptables</span></code> atau <code class="docutils literal notranslate"><span class="pre">ufw</span></code></p>
+</div>
+</div>
+</div>
+<div class="section" id="redis">
+<h3>redis<a class="headerlink" href="#redis" title="Permalink to this headline">¶</a></h3>
+<p>Install redis</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">redis</span><span class="o">-</span><span class="n">server</span>
+</pre></div>
+</div>
+<p>Untuk menggunakan redis di laravel edit <code class="docutils literal notranslate"><span class="pre">file</span> <span class="pre">.env</span></code></p>
+<p>file <code class="docutils literal notranslate"><span class="pre">.env</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CACHE_DRIVER</span><span class="o">=</span><span class="n">redis</span>
+<span class="n">SESSION_DRIVER</span><span class="o">=</span><span class="n">redis</span>
+</pre></div>
+</div>
+<p>Kemudian jika terdapat error (require redis) install package tersebut</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">composer</span> <span class="n">require</span> <span class="n">predis</span><span class="o">/</span><span class="n">redis</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="docker-compose-laravel">
+<h2>Docker Compose laravel<a class="headerlink" href="#docker-compose-laravel" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Dockerfile memerlukan context karena itu akan menjadi default root path</p>
+<p>coba lihat repo <a class="reference external" href="https://github.com/mhilker/docker-nginx-php-example">https://github.com/mhilker/docker-nginx-php-example</a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Setiap ada perubahan, terutama di dockerfile, apalagi jika semisal terdapat file nginx.conf (file /etc/nginx/conf.d) yang dibuild di dockerfile
+juga harus melakukan build ulang
+jika tidak maka ini akan menggunakan image sebelumnya</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Jika hanya file volume (mount)
+dari docker-compose bisa distop (Ctrl + C) lalu docker-compose up</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>jangan melakukan git clone di Dockerfile, karena dia hanya akan disimpan di image
+seharusnya itu stateful, disimpan di volume docker atau local computer dan di mount</p>
+<p>jika semisal ingin membuat docker-compose yang sekali jadi, seperti docker-compose, dockerfile dan laravel
+sebaiknya</p>
+<p>nah idenya begini, jadi biarkan saja docker dan segala file confignya
+terus buat deh file executable, disitu akan git clone, dan juga buat virtual host (file .conf nginx) dan dibuat juga di /etc/hosts
+jadi lengkap sudah kan hehe</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>jadi ketika menggunakan docker-compose dimana ini menggunakan app maka bisa melakukan adanya</p>
+<p>misal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#PHP Service</span>
+<span class="n">app</span><span class="p">:</span>
+        <span class="n">build</span><span class="p">:</span>
+        <span class="n">context</span><span class="p">:</span> <span class="o">./</span><span class="n">service</span><span class="o">/</span><span class="n">php</span><span class="o">/</span><span class="n">image</span>
+        <span class="n">dockerfile</span><span class="p">:</span> <span class="n">php</span><span class="o">.</span><span class="n">dockerfile</span>
+        <span class="n">container_name</span><span class="p">:</span> <span class="n">prefixapp</span>
+        <span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
+        <span class="n">tty</span><span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
+<p>maka hasilnya adalah container dengan nama prefix app</p>
+<blockquote>
+<div><p>Name”: “/prefixapp”,</p>
+</div></blockquote>
+<p>lalu di networks terdapat aliases</p>
+<blockquote>
+<div><dl>
+<dt>“Networks”: {</dt><dd><dl>
+<dt>“laravel55-docker_app-network”: {</dt><dd><p>“IPAMConfig”: null,
+“Links”: null,
+“Aliases”: [</p>
+<blockquote>
+<div><p>“6d8db977702f”,
+“app”</p>
+</div></blockquote>
+<p>],</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p>nah itu bisa menggunakan app:9000 atau prefixapp:9000 (di nginx config)</p>
+<p>dicoba di image nginx juga bisa ping app:9000 atau prefixapp:9000, tapi paling pas ya gunain container_name (jadinya prefixapp:9000)</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>opsi tty: true pada docker-compose.yml sebenarnya untuk melakukan adanya interactive shell jika semisal ingin menggunakan docker-compose</p>
+<p>lebih lanjut terdapat 2 opsi:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">stdin_open</span><span class="p">:</span> <span class="n">true</span> <span class="c1"># docker run -i</span>
+<span class="n">tty</span><span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Penamaan container</p>
+<ol class="arabic">
+<li><p>harus merepresentasikan parent</p>
+<blockquote>
+<div><p>misal apakah itu reference project, single proejct (edg)</p>
+</div></blockquote>
+</li>
+<li><p>nama container harus menggunakan nama script</p>
+<blockquote>
+<div><p>MIsal apakah php, nginx dan bukan scripting, webserver</p>
+</div></blockquote>
+</li>
+</ol>
+<p>kombinasinya adalah</p>
+<p>php-rd (service php di project reference)</p>
+<p>nginx-edg (service nginx di project reference)</p>
+<p>jika semisal menggunakan lebih dari 1 service sama tidak bingung</p>
+<p>webserver-rd dan webserver-edg atau nginx-rd, nginx-edg</p>
+<p>malah brand nya lebih susah</p>
+<ol class="arabic" start="3">
+<li><p>keterangan versi dan tipe tidak diperlukan</p>
+<blockquote>
+<div><p>karena ini akan lebih menyusahkan, seperti msial php.7.0</p>
+<p>tapi sebaiknya ditulis di docker-compose</p>
+<p>tipe juga jangan misal php7.0-fpm, terlalu sulit</p>
+<p>jadi biar php saja</p>
+</div></blockquote>
+</li>
+</ol>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Ingat konsep environment,</p>
+<p>jika terdapat environment di docker-compose</p>
+<p>maka itu tidak lain adalah menambahkan adanya environment layaknya docker run -e [nama-environment] [value-environment]</p>
+<p>dan itu seperti dimasukkan sebelum adanya cmd/entrypoint (dalam dockerfile)</p>
+<p>jadi bisa untuk overwrite dari environment sebelumnya, atau bisa juga untuk membuat environment baru</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Pada docker-compose adanya image adalah untuk membuat adanya nama image</p>
+<p>sama halnya dengan command build</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">build</span> <span class="n">webapp</span><span class="p">:</span><span class="mf">1.0</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>artinya ini perlu diberikan jika akan membuat image (melalui Dockerfile)</p>
+<p>jika tidak nama daripada image akan menggunakan format [nama-directory_nama-image]</p>
+</div>
+<div class="section" id="basic-laravel">
+<h3>Basic Laravel<a class="headerlink" href="#basic-laravel" title="Permalink to this headline">¶</a></h3>
+<p>Membahas docker di dalam laravel, dan tidak terlalu banyak</p>
+<p>Secara default sebenarnya konfigurasi dalam laravel tidak terlalu banyak, terlebih pada PHP</p>
+<p>jadi ternyata volume itu bisa langsung overwrite file</p>
+<p>contoh:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">volumes</span><span class="p">:</span>
+        <span class="o">-</span> <span class="o">./</span><span class="n">src</span><span class="p">:</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">html</span>
+        <span class="o">-</span> <span class="o">./</span><span class="n">nginx</span><span class="o">/</span><span class="n">default</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">conf</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">default</span><span class="o">.</span><span class="n">conf</span>
+</pre></div>
+</div>
+<p>misal yang dioverwrite adalah file default.conf</p>
+<p>tapi disarankan tentu adalah folder, karena jika semisal multi conf bagaimana ?</p>
+<p>nah terkadang kalau hanya docker-compose up itu hanya akan menggunakan yang telah ada
+jadi lets say kan ada Dockerfile, nah kalau file Dockerfile itu ada pembaharuan
+maka harus dibuild (jadi image)
+nah disarankan menggunakan</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span> <span class="o">--</span><span class="n">build</span>
+</pre></div>
+</div>
+<p>jika tidak, meski sudah mengubah Dockerfile maka itu tidak akan update</p>
+<p>jadi katakanlah ada perubahan di docker-compose.yml selain image dockerfile seperti ports dll, maka itu tidak perlu di build (karena build hanya untuk image)</p>
+<p>dan satu lagi ternyata dalam docker build image, biasanya dia tidak menunjukkan kapan dia akan build
+jadi katakanlah sudah dibuat baru kan, lalu di build, maka akan menunjuka</p>
+<p>misal
+php7.0-fpm adalah 20 months ago
+php7.2-fpm adalah 2 months ago
+php7.4-fpm adalah 2 weeks ago</p>
+<p>jadi tergantung dari image docker (docker hub repo)</p>
+<p>dan bukan ketika build</p>
+<p>git clone laravel 55</p>
+<p>git clone –single-branch –branch 5.5 <a class="reference external" href="mailto:git&#37;&#52;&#48;github&#46;com">git<span>&#64;</span>github<span>&#46;</span>com</a>:laravel/laravel.git .</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ini artinya ketika buat docker-composer dimana php dan nginx terpisah, maka hanya bisa menggunakan tcp</p>
+<p>atau dijadikan satu container</p>
+<p><a class="reference external" href="https://gist.github.com/Machy8/f7bd27b2e6b01dd9e057c2e90e5f49d3">https://gist.github.com/Machy8/f7bd27b2e6b01dd9e057c2e90e5f49d3</a></p>
+</div>
+<p>Pada laravel terdapat berbagai hal yang perlu dipersiapkan, semisal adalah extension php (mbstring, gd, dll)  atau composer (package installer php)</p>
+<p>Untuk memudahkan dalam pembuatan docker laravel maka sebaiknya gunakan directory baru sebagai root path, semisal <code class="docutils literal notranslate"><span class="pre">docker-laravel</span></code></p>
+</div>
+<div class="section" id="advance-laravel">
+<h3>Advance Laravel<a class="headerlink" href="#advance-laravel" title="Permalink to this headline">¶</a></h3>
+<p>membahas laravel secara lebih dalam (php docker file ada tambahan, lalu ada node lengkap)</p>
+</div>
+<div class="section" id="multi-laravel-docker">
+<h3>Multi Laravel docker<a class="headerlink" href="#multi-laravel-docker" title="Permalink to this headline">¶</a></h3>
+<p>Multi laravel docker diperuntukkan</p>
+<p>directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>├── app
+│   └── laravel
+├── config
+│   ├── mysql
+│   │   └── my.cnf
+│   ├── nginx
+│   │   └── conf.d
+│   │       └── laravelmaster.conf
+│   └── php-fpm
+│       ├── Dockerfile
+│       └── php.ini
+└── docker-compose.yml
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Untuk keterangan lebih lanjut bisa melihat pada section <cite>docker compose project recommendation</cite></p>
+</div>
+</div>
+<div class="section" id="directory-structure">
+<h3>Directory structure<a class="headerlink" href="#directory-structure" title="Permalink to this headline">¶</a></h3>
+<p>based on <a class="reference external" href="https://github.com/shsma/laravel-docker">https://github.com/shsma/laravel-docker</a></p>
+<p>directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>├── app
+│   └── laravel
+├── config
+│   ├── mysql
+│   │   └── my.cnf
+│   ├── nginx
+│   │   └── conf.d
+│   │       └── laravelmaster.conf
+│   └── php-fpm
+│       ├── Dockerfile
+│       └── php.ini
+└── docker-compose.yml
+</pre></div>
+</div>
+<p>file docker-compose.yml:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span>
+<span class="n">services</span><span class="p">:</span>
+
+  <span class="c1">#PHP Service</span>
+  <span class="n">app</span><span class="p">:</span>
+    <span class="n">build</span><span class="p">:</span>
+      <span class="n">context</span><span class="p">:</span> <span class="o">./</span><span class="n">config</span><span class="o">/</span><span class="n">php</span><span class="o">-</span><span class="n">fpm</span>
+      <span class="n">dockerfile</span><span class="p">:</span> <span class="n">Dockerfile</span>
+    <span class="n">container_name</span><span class="p">:</span> <span class="n">app</span>
+    <span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
+    <span class="n">tty</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">environment</span><span class="p">:</span>
+      <span class="n">SERVICE_NAME</span><span class="p">:</span> <span class="n">app</span>
+      <span class="n">SERVICE_TAGS</span><span class="p">:</span> <span class="n">dev</span>
+    <span class="n">working_dir</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span>
+    <span class="n">volumes</span><span class="p">:</span>
+      <span class="o">-</span> <span class="o">./</span><span class="n">app</span><span class="p">:</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span>
+      <span class="o">-</span> <span class="o">./</span><span class="n">config</span><span class="o">/</span><span class="n">docker</span><span class="o">/</span><span class="n">php</span><span class="o">/</span><span class="n">local</span><span class="o">.</span><span class="n">ini</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">php</span><span class="o">/</span><span class="n">conf</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">local</span><span class="o">.</span><span class="n">ini</span>
+    <span class="n">networks</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">app</span><span class="o">-</span><span class="n">network</span>
+
+  <span class="c1">#Nginx Service</span>
+  <span class="n">webserver</span><span class="p">:</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">nginx</span><span class="p">:</span><span class="n">alpine</span>
+    <span class="n">container_name</span><span class="p">:</span> <span class="n">webserver</span>
+    <span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
+    <span class="n">tty</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">environment</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">VIRTUAL_PORT</span><span class="o">=</span><span class="mi">80</span>
+    <span class="o">-</span> <span class="n">VIRTUAL_HOST</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">local</span>
+    <span class="n">ports</span><span class="p">:</span>
+      <span class="o">-</span> <span class="s2">&quot;80:80&quot;</span>
+      <span class="o">-</span> <span class="s2">&quot;443:443&quot;</span>
+    <span class="n">volumes</span><span class="p">:</span>
+      <span class="o">-</span> <span class="o">./</span><span class="n">app</span><span class="p">:</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span>
+      <span class="o">-</span> <span class="o">./</span><span class="n">config</span><span class="o">/</span><span class="n">docker</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">conf</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="p">:</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">conf</span><span class="o">.</span><span class="n">d</span><span class="o">/</span>
+    <span class="n">networks</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">app</span><span class="o">-</span><span class="n">network</span>
+
+  <span class="c1">#MySQL Service</span>
+  <span class="n">db</span><span class="p">:</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">mysql</span><span class="p">:</span><span class="mf">5.7</span><span class="o">.</span><span class="mi">22</span>
+    <span class="n">container_name</span><span class="p">:</span> <span class="n">db</span>
+    <span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
+    <span class="n">tty</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">ports</span><span class="p">:</span>
+      <span class="o">-</span> <span class="s2">&quot;3306:3306&quot;</span>
+    <span class="n">environment</span><span class="p">:</span>
+      <span class="n">MYSQL_ROOT_PASSWORD</span><span class="p">:</span> <span class="n">root</span>
+      <span class="n">MYSQL_DATABASE</span><span class="p">:</span> <span class="n">laravel</span>
+      <span class="n">MYSQL_USER</span><span class="p">:</span> <span class="n">root</span>
+      <span class="n">MYSQL_PASSWORD</span><span class="p">:</span> <span class="n">root</span>
+      <span class="n">SERVICE_TAGS</span><span class="p">:</span> <span class="n">dev</span>
+      <span class="n">SERVICE_NAME</span><span class="p">:</span> <span class="n">mysql</span>
+    <span class="n">volumes</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">dbdata</span><span class="p">:</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span>
+      <span class="o">-</span> <span class="o">./</span><span class="n">config</span><span class="o">/</span><span class="n">docker</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">my</span><span class="o">.</span><span class="n">cnf</span><span class="p">:</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">my</span><span class="o">.</span><span class="n">cnf</span>
+    <span class="n">networks</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">app</span><span class="o">-</span><span class="n">network</span>
+
+<span class="c1">#Docker Networks</span>
+<span class="n">networks</span><span class="p">:</span>
+  <span class="n">app</span><span class="o">-</span><span class="n">network</span><span class="p">:</span>
+    <span class="n">driver</span><span class="p">:</span> <span class="n">bridge</span>
+<span class="c1">#Volumes</span>
+<span class="n">volumes</span><span class="p">:</span>
+  <span class="n">dbdata</span><span class="p">:</span>
+    <span class="n">driver</span><span class="p">:</span> <span class="n">local</span>
+</pre></div>
+</div>
+<p>file config/mysql/my.cnf:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">mysqld</span><span class="p">]</span>
+<span class="n">general_log</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">general_log_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">general</span><span class="o">.</span><span class="n">log</span>
+</pre></div>
+</div>
+<p>file config/nginx/conf.d/laravelmaster.conf:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>server {
+    listen 80;
+    index index.php index.html;
+    error_log  /var/log/nginx/error.log;
+    access_log /var/log/nginx/access.log;
+    root /var/www/public;
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass app:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+        gzip_static on;
+    }
+}
+</pre></div>
+</div>
+<p>file config/php-fpm/Dockerfile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>FROM php:7.2-fpm
+MAINTAINER ryan &lt;ryan.asnans@gmail.com&gt;
+
+# Copy composer.lock and composer.json
+# COPY composer.lock composer.json /var/www/
+
+# Set working directory
+WORKDIR /var/www
+
+# Install dependencies
+RUN apt-get update &amp;&amp; apt-get install -y \
+        apt-utils \
+    build-essential \
+    libssl-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libmcrypt-dev \
+    libpng-dev \
+    libxml2-dev \
+    locales \
+    git \
+    unzip \
+    zip \
+    curl \
+    zlibc \
+    &amp;&amp; docker-php-ext-install -j$(nproc) iconv \
+    &amp;&amp; docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    &amp;&amp; docker-php-ext-install -j$(nproc) gd
+
+# Clear cache
+RUN apt-get clean &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+# Install extensions
+RUN apt-get install -y\
+    g++ \
+    libicu-dev &amp;&amp;\
+    docker-php-ext-install intl
+
+RUN docker-php-ext-install pdo_mysql mbstring  exif pcntl json tokenizer phar pdo mysqli xml xmlrpc zip
+RUN pecl install mcrypt-1.0.1 &amp;&amp; docker-php-ext-enable mcrypt
+
+# RUN pecl install mongodb &amp;&amp;\
+#    echo &quot;extension=mongodb.so&quot; &gt;&gt; `php --ini | grep &quot;Loaded Configuration&quot; | sed -e &quot;s|.*:\s*||&quot;`
+
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Add user for laravel application
+# RUN groupadd -g 1000 www
+# RUN useradd -u 1000 -ms /bin/bash -g www www
+
+# Copy existing application directory contents
+# COPY . /var/www
+
+# Copy existing application directory permissions
+# COPY --chown=www:www . /var/www
+
+# Change current user to www
+# USER www
+
+# Expose port 9000 and start php-fpm server
+# EXPOSE 9000
+# CMD [&quot;php-fpm&quot;]
+</pre></div>
+</div>
+<p>file config/php-fpm/php.ini:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">upload_max_filesize</span><span class="o">=</span><span class="mi">40</span><span class="n">M</span>
+<span class="n">post_max_size</span><span class="o">=</span><span class="mi">40</span><span class="n">M</span>
+</pre></div>
+</div>
+<p>clone laravel repository di direktori <code class="docutils literal notranslate"><span class="pre">app</span></code></p>
+<p>jika ingin dalam satu image (nginx + php + composer)</p>
+<p><a class="reference external" href="https://gist.github.com/Machy8/f7bd27b2e6b01dd9e057c2e90e5f49d3">https://gist.github.com/Machy8/f7bd27b2e6b01dd9e057c2e90e5f49d3</a></p>
+</div>
+<div class="section" id="real-notelog">
+<h3>real notelog<a class="headerlink" href="#real-notelog" title="Permalink to this headline">¶</a></h3>
+<p>mengapa menggunakan docker-php-ext karena jika menggunakan standard php, maka ini akan mengkonfigurasikan seluruh nya dan memakan waktu yang cukup lama</p>
+<p>multi dockerfile
+<a class="reference external" href="https://nickjanetakis.com/blog/docker-tip-10-project-structure-with-multiple-dockerfiles-and-docker-compose">https://nickjanetakis.com/blog/docker-tip-10-project-structure-with-multiple-dockerfiles-and-docker-compose</a></p>
+<p>command composer install atau composer update tidak dapat dijalankan di Dockerfile (build image)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Composer update akan menginstall package apabila belum ada package yang terinstall</p>
+</div>
+<p><a class="reference external" href="https://stackoverflow.com/questions/34875581/get-composer-php-dependency-manager-to-run-on-a-docker-image-build">https://stackoverflow.com/questions/34875581/get-composer-php-dependency-manager-to-run-on-a-docker-image-build</a>
+lumayan lucu
+karena ternyata ada command yang tidak dapat dieksekusi</p>
+<p>walaupun ini juga cukup ambigu karena menginstall php depedency (menggunakan composer) pada saat build image</p>
+<p>biasanya saat build image cuma install php dan composer, setelah nya install php depedency melalui docker exec</p>
+<p>tapi bagus juga idenya, artinya dibundle saat pembuatan image kan
+keren artinya gak perlu harus melakukan composer install/composer  update setelah image jadi</p>
+<p>tapi kemungkinan karena ini tidak menggunaan executable file (mungkin karena shell)
+yang jelas butuh docker history (lihat log layer yang dibuat)</p>
+<p>list user</p>
+<p>cat /etc/passwd</p>
+<p>compgen -u</p>
+<p>list group</p>
+<p>cat /etc/group</p>
+<p>compgen -g</p>
+<p>cek current user</p>
+<p>whoami</p>
+<p>cek group dari current user</p>
+<p>groups</p>
+<p>cek list group pada user (user memiliki/ikut group siapa saja)</p>
+<p>groups &lt;nama-user&gt;</p>
+<p>cek list user pada group (member user daripada group)</p>
+<p>grep docker /etc/group</p>
+<p>cek uid, gid dan list group pada current user (current user memiliki uid, gid dan memiliki/ikut group siapa saja)</p>
+<p>id</p>
+<p>jadi biasanya ketika menginstall ubuntu (atau os linux lain) maka pada awalnya akan disuruh untuk membuat adanya default user OS</p>
+<p>dan default user biasanya akan diberikan uid dan gid 1000</p>
+<p>nah masalahnya ketika menggunakan docker, terkadang uid dan gid tersebut belum ada, sehingga ketika menjalankan application akan menggunakan others (bukan owner atau group)</p>
+<p>untuk itu perlu ditambah uid dan gid</p>
+<p>namun saat membuat user dengan uid dan gid 1000 di docker container, jangan gunakan nama yang sama denga ndefault user OS</p>
+<p>berikan saja sesuai dengan application yang akan dijalankan</p>
+<p>misal default user OS adalah ryan (uid dan gid 1000), maka user pada docekr container (uid dan gid 1000) adalah www (jika untuk nginx)</p>
+<p>masalah dengan uid gid 1000 (openvpn)</p>
+<p><a class="reference external" href="https://hub.docker.com/r/linuxserver/openvpn-as/">https://hub.docker.com/r/linuxserver/openvpn-as/</a></p>
+<p>User / Group Identifiers
+When using volumes (-v flags) permissions issues can arise between the host OS and the container, we avoid this issue by allowing you to specify the user PUID and group PGID.</p>
+<p>Ensure any volume directories on the host are owned by the same user you specify and any permissions issues will vanish like magic.</p>
+<p>In this instance PUID=1000 and PGID=1000, to find yours use id user as below:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>$ id username</dt><dd><p>uid=1000(dockeruser) gid=1000(dockergroup) groups=1000(dockergroup)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Masalah utama adalah karena secara default biasanya directory di OS utama adalah root, sehingga tidak dapat diakses (karena uid dan gid bukan 1000)</p>
+<p>just remember bahwa saat OS utama mengakses docker , maka akan menggunakan uid dan gid 1000 (meski mungkin namanya berbeda)</p>
+<p>BUKTIKAN</p>
+<p><a class="reference external" href="https://medium.com/&#64;mccode/understanding-how-uid-and-gid-work-in-docker-containers-c37a01d01cf">https://medium.com/&#64;mccode/understanding-how-uid-and-gid-work-in-docker-containers-c37a01d01cf</a></p>
+<p>sebenarnya yang digunakan untuk permission itu adalah uid dan gid bukan nama user</p>
+<p>Step by step analysis of uid/gid security</p>
+<p>To start, let’s review how uids and gids are implemented.</p>
+<p>The linux kernel is responsible for managing the uid and gid space, and it’s kernel-level syscalls that are used to determine if requested privileges should be granted.</p>
+<p>For example, when a process attempts to write to a file, the uid and gid that created the process are examined by the kernel to determine if it has enough privileges to modify the file.</p>
+<p>The username isn’t used here, the uid is used.</p>
+<p><a class="reference external" href="https://medium.com/&#64;mccode/understanding-how-uid-and-gid-work-in-docker-containers-c37a01d01cf">https://medium.com/&#64;mccode/understanding-how-uid-and-gid-work-in-docker-containers-c37a01d01cf</a></p>
+<p>nah ternyata benar ketika uid dan gid sama antara host OS dan docker container, maka itu berlaku sama</p>
+<p>masalah terbesar pada container memang selalu menjalankan dengan root</p>
+<p>docker run -it emdecho:1.0 whoami
+root
+intel&#64;intel-Satellite-C55t-C:~/coba-docker/cmd$ docker run -it emdecho:1.0 id
+uid=0(root) gid=0(root) groups=0(root)
+intel&#64;intel-Satellite-C55t-C:~/coba-docker/cmd$</p>
+<p>jadi pelajari saja <a class="reference external" href="https://medium.com/&#64;mccode/understanding-how-uid-and-gid-work-in-docker-containers-c37a01d01cf">https://medium.com/&#64;mccode/understanding-how-uid-and-gid-work-in-docker-containers-c37a01d01cf</a></p>
+<p>penjelasan tentang dns (dan /etc/hosts)</p>
+<p>asumsi, sejatinya dns disimpan terpusat
+kalau di local itu ya konfigurasi di file /etc/hosts
+dimana kita bisa</p>
+<p><a class="reference external" href="https://informatikalogi.com/domain-name-system-dns-cara-modifikasi-file-host-pada-windows/">https://informatikalogi.com/domain-name-system-dns-cara-modifikasi-file-host-pada-windows/</a></p>
+<p>jadi /etc/hosts itu hanya akan mengefek ke http saja kalau sudah https gak bisa</p>
+<p>127.0.0.1       informatikalogi.com</p>
+<p>artinya kalau di local akses informatikalogi.com yang artinya <a class="reference external" href="http://informatikalogi.com">http://informatikalogi.com</a></p>
+<p>maka nantinya akan ke 127.0.0.1</p>
+<p>nah kalau misal gak ada artinya ketika <a class="reference external" href="http://informatikalogi.com">http://informatikalogi.com</a> dia akan membaca nginx
+dan ternyata itu pakai ssl dan otomatis akan merubah ke
+<a class="reference external" href="https://informatikalogi.com">https://informatikalogi.com</a></p>
+<p>done</p>
+<ol class="arabic simple">
+<li><p>install php nginx composer laravel di cloud baru</p></li>
+<li><p>lanjutkan</p></li>
+</ol>
+<p>btw lebih enak pake dnsmasq karena bisa pakai asterisk, kalau /etc/hosts kan gak bisa</p>
+<p>yg artinya ini akan berdampak pada banyaknya konfigurasi /etc/hosts, udah gitu bisa aja ke-restart (walau gak mungkin kn ya)</p>
+<p>btw dnsmasq itu layer pertama sebelum /etc/hosts</p>
+<p>jadi dari dnsmasp -&gt; hosts -&gt; nginx.conf</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Rekomendasi sebaiknya gunakan konsep</p>
+<p>docker-compose up –build</p>
+<p>dan</p>
+<p>docker-compose down</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Untuk mengetahui dimana docker-compose yang me-start service bisa dilihat dengan</p>
+<p>docker inspect [nama-service]</p>
+<p>lalu lihat di bagian “com.docker.compose.project.working_dir”</p>
+<p>contoh:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="s2">&quot;Labels&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;com.docker.compose.config-hash&quot;</span><span class="p">:</span> <span class="s2">&quot;4d72b336f87ab9715e8d18ceae59a1060960926e8a0351b8ef20c5c6420db21d&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;com.docker.compose.container-number&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;com.docker.compose.oneoff&quot;</span><span class="p">:</span> <span class="s2">&quot;False&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;com.docker.compose.project&quot;</span><span class="p">:</span> <span class="s2">&quot;laravel55-docker&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;com.docker.compose.project.config_files&quot;</span><span class="p">:</span> <span class="s2">&quot;docker-compose.yml&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;com.docker.compose.project.working_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/intel/docker-laravel/laravel55-docker&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;com.docker.compose.service&quot;</span><span class="p">:</span> <span class="s2">&quot;db&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;com.docker.compose.version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.26.1&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Untuk docker-compose, agar container tidak melakukan start ulang ketika host direstart
+bisa memberikan adanya opsi “unless-stopped”</p>
+<p>restart: unless-stopped</p>
+<p>jika menggunakan always maka ini akan melakukan start ulang saat host direstart</p>
+</div>
+</div>
+</div>
+<div class="section" id="desain-simple-laravel-5-5">
+<h2>desain simple laravel 5.5<a class="headerlink" href="#desain-simple-laravel-5-5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="directory-and-file-structure">
+<h3>directory and file structure<a class="headerlink" href="#directory-and-file-structure" title="Permalink to this headline">¶</a></h3>
+<p>tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>intel@intel-Satellite-C55t-C:~/Content/Projects/research-project/laravel-docker55$ tree
+.
+├── docker-compose.yml
+├── service
+│   ├── mysql
+│   │   ├── config
+│   │   └── image
+│   ├── nginx
+│   │   ├── config
+│   │   │   └── etc-nginx-conf.d
+│   │   │       └── laravel55.conf
+│   │   └── image
+│   └── php
+│       ├── config
+│       └── image
+│           └── phplaravel55.dockerfile
+└── stateful
+        ├── app
+        │   └── laravel55
+        └── db
+
+15 directories, 3 files
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="desain-reference-project-docker">
+<h2>desain reference project docker<a class="headerlink" href="#desain-reference-project-docker" title="Permalink to this headline">¶</a></h2>
+<p>Dikarenakan adanya perbedaan antara kebutuhan satu service dengan yang lain (misal php untuk laravel 55 yang biasanya php7.0 atau php untuk laravel 7 yang biasanya php7.4)</p>
+<p>maka akan dibuat adanya multi service php yang dibedakan dari port nya (dari 9001, 9002, dan seterusnya)</p>
+<p>hanya saja di nginx akan dibuat adanya file conf yang menggunakan service php tersebut (sesuai dengan portnya)</p>
+<p>file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="o">.</span><span class="n">yml</span>
+
+<span class="n">version</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span>
+<span class="n">services</span><span class="p">:</span>
+
+<span class="c1"># PHP FPM Service</span>
+
+<span class="c1">## php1</span>
+<span class="c1">#########################################################################################</span>
+<span class="c1">## image name           : phplaravel55:rp</span>
+<span class="c1">## description          :</span>
+<span class="c1">## php image for laravel version 5.5, this image for &#39;reference project&#39; (by tag &#39;rp&#39;)</span>
+<span class="c1">## NOTE : if using dockerfile for build image, then need include the &#39;image&#39; option, if not so the image name will adding prefix with &#39;parent directory&#39;)</span>
+<span class="c1">#########################################################################################</span>
+<span class="c1">## container name       : phplaravel55-rp</span>
+<span class="c1">## description          :</span>
+<span class="c1">## php container for reference project</span>
+<span class="c1">## if not using &#39;container_name&#39;, then the container name will using the alias (php1) with prefix &#39;parent directory&#39; (reference-project-docker_php1)</span>
+<span class="c1">#########################################################################################</span>
+<span class="c1">## version                      : php7.0-fpm</span>
+<span class="c1">## extension            : pdo_mysql, mbstring, exif, pcntl</span>
+<span class="c1">#########################################################################################</span>
+<span class="c1">## other                        : including composer and create user &#39;www&#39;</span>
+<span class="c1">## description          :</span>
+<span class="c1">#########################################################################################</span>
+<span class="n">php1</span><span class="p">:</span>
+        <span class="n">build</span><span class="p">:</span>
+        <span class="n">context</span><span class="p">:</span> <span class="o">./</span><span class="n">service</span><span class="o">/</span><span class="n">php</span><span class="o">/</span><span class="n">image</span>
+        <span class="n">dockerfile</span><span class="p">:</span> <span class="n">phplaravel55</span><span class="o">.</span><span class="n">dockerfile</span>
+        <span class="n">image</span><span class="p">:</span> <span class="n">phplaravel55</span><span class="p">:</span><span class="n">rp</span>
+        <span class="n">container_name</span><span class="p">:</span> <span class="n">phplaravel55</span><span class="o">-</span><span class="n">rp</span>
+        <span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
+        <span class="n">working_dir</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span>
+        <span class="n">volumes</span><span class="p">:</span>
+        <span class="o">-</span> <span class="o">./</span><span class="n">stateful</span><span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">edg</span><span class="o">-</span><span class="n">b2c</span><span class="p">:</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">edg</span><span class="o">-</span><span class="n">b2c</span>
+        <span class="o">-</span> <span class="o">./</span><span class="n">stateful</span><span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">ugm</span><span class="p">:</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">ugm</span>
+        <span class="n">networks</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">reference</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="n">network</span>
+
+
+<span class="c1">## php2</span>
+<span class="c1">#########################################################################################</span>
+<span class="c1">## image name           : phplaravel7:rp</span>
+<span class="c1">## description          :</span>
+<span class="c1">## php image for laravel version 7, this image for &#39;reference project&#39; (by tag &#39;rp&#39;)</span>
+<span class="c1">## NOTE : if using dockerfile for build image, then need include the &#39;image&#39; option, if not so the image name will adding prefix with &#39;parent directory&#39;)</span>
+<span class="c1">#########################################################################################</span>
+<span class="c1">## container name       : phplaravel7-rp</span>
+<span class="c1">## description          :</span>
+<span class="c1">## php container for reference project</span>
+<span class="c1">## if not using &#39;container_name&#39;, then the container name will using the alias (php-laravel-55) prefix with &#39;parent directory&#39;)</span>
+<span class="c1">#########################################################################################</span>
+<span class="c1">## version                      : php7.0-fpm</span>
+<span class="c1">## extension            : pdo_mysql, mbstring, exif, pcntl</span>
+<span class="c1">#########################################################################################</span>
+<span class="c1">## other                        : including composer and create user &#39;www&#39;</span>
+<span class="c1">## description          :</span>
+<span class="c1">#########################################################################################</span>
+<span class="n">php2</span><span class="p">:</span>
+        <span class="n">build</span><span class="p">:</span>
+        <span class="n">context</span><span class="p">:</span> <span class="o">./</span><span class="n">service</span><span class="o">/</span><span class="n">php</span><span class="o">/</span><span class="n">image</span>
+        <span class="n">dockerfile</span><span class="p">:</span> <span class="n">php</span><span class="o">-</span><span class="n">laravel</span><span class="o">-</span><span class="mf">7.</span><span class="n">dockerfile</span>
+        <span class="n">image</span><span class="p">:</span> <span class="n">php</span><span class="o">-</span><span class="n">laravel</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="n">rp</span>
+        <span class="n">container_name</span><span class="p">:</span> <span class="n">php</span><span class="o">-</span><span class="n">laravel</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="n">rp</span>
+        <span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
+        <span class="n">working_dir</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span>
+        <span class="n">volumes</span><span class="p">:</span>
+        <span class="o">-</span> <span class="o">./</span><span class="n">stateful</span><span class="o">/</span><span class="n">app</span><span class="p">:</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span>
+        <span class="n">networks</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">reference</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="n">network</span>
+
+
+<span class="c1"># Nginx Service</span>
+<span class="c1">## version  : alpine</span>
+<span class="c1">### desc : using port forwarding (from local/host to container)</span>
+<span class="n">nginx</span><span class="p">:</span>
+        <span class="n">image</span><span class="p">:</span> <span class="n">nginx</span><span class="p">:</span><span class="n">alpine</span>
+        <span class="n">container_name</span><span class="p">:</span> <span class="n">nginx</span>
+        <span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
+        <span class="n">ports</span><span class="p">:</span>
+        <span class="o">-</span> <span class="s2">&quot;8080:80&quot;</span>
+        <span class="n">volumes</span><span class="p">:</span>
+        <span class="o">-</span> <span class="o">./</span><span class="n">stateful</span><span class="o">/</span><span class="n">app</span><span class="p">:</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span>
+        <span class="o">-</span> <span class="o">./</span><span class="n">service</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">config</span><span class="o">/</span><span class="n">etc</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="n">conf</span><span class="o">.</span><span class="n">d</span><span class="p">:</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">conf</span><span class="o">.</span><span class="n">d</span>
+        <span class="n">networks</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">reference</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="n">network</span>
+
+<span class="c1"># MySQL Service</span>
+<span class="c1">## using default</span>
+<span class="c1">### desc : using port forwarding (from local/host to container)</span>
+<span class="n">mysql</span><span class="p">:</span>
+        <span class="n">image</span><span class="p">:</span> <span class="n">mysql</span><span class="p">:</span><span class="mf">5.7</span><span class="o">.</span><span class="mi">22</span>
+        <span class="n">container_name</span><span class="p">:</span> <span class="n">mysql</span>
+        <span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
+        <span class="n">ports</span><span class="p">:</span>
+        <span class="o">-</span> <span class="s2">&quot;3306:3306&quot;</span>
+        <span class="n">environment</span><span class="p">:</span>
+        <span class="n">MYSQL_ROOT_PASSWORD</span><span class="p">:</span> <span class="n">root</span>
+        <span class="n">volumes</span><span class="p">:</span>
+        <span class="o">-</span> <span class="o">./</span><span class="n">stateful</span><span class="o">/</span><span class="n">db</span><span class="p">:</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span>
+        <span class="n">networks</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">reference</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="n">network</span>
+
+<span class="c1">## please add this to environment to create database laravel by default and create user and password (user john with password doe) by default</span>
+        <span class="c1"># MYSQL_DATABASE: laravel</span>
+        <span class="c1"># MYSQL_USER: john</span>
+        <span class="c1"># MYSQL_PASSWORD: doe</span>
+
+<span class="c1"># Networks</span>
+<span class="n">networks</span><span class="p">:</span>
+<span class="n">reference</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="n">network</span><span class="p">:</span>
+        <span class="n">driver</span><span class="p">:</span> <span class="n">bridge</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="desain-single-app-single-docker">
+<h2>desain single app single docker<a class="headerlink" href="#desain-single-app-single-docker" title="Permalink to this headline">¶</a></h2>
+<p>untuk contoh selengkapnya bisa dilihat di repository berikut</p>
+<p><a class="reference external" href="https://github.com/ryanasnan/simple-docker-singlelaravel55">https://github.com/ryanasnan/simple-docker-singlelaravel55</a></p>
+<p>tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>intel@intel-Satellite-C55t-C:~/Content/Projects/research-project/simple-docker-singlelaravel55$ tree
+nama-project
+├── docker-compose.yml
+├── docker
+│   ├── mysql
+│   │   ├── config
+│   │   └── image
+│   ├── nginx
+│   │   ├── config
+│   │   └── image
+│   └── php
+│       ├── config
+│       └── image
+├── [directory-framework-1]
+├── [directory-framework-n]
+├── file-framework-1.ext
+└── file-framework-2.ext
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="docker-mern.html" class="btn btn-neutral float-right" title="Docker MERN (Mongo Express React Node)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dockerfile-collection.html" class="btn btn-neutral float-left" title="Kumpulan Dockerfile" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ryan
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

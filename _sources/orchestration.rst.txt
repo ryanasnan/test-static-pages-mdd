@@ -1,0 +1,236 @@
+Orchestration (Kubernetes)
+============================================
+
+konsep kubernetes adalah memiliki container yang dibungkus pada pod
+
+ketika butuh adanya resource yang lebih (karena total cpu sudah lebih dari 50%) maka akan membuat pod baru (yang otomatis adalah container baru)
+dengan begitu maka akan ada pengalihan beban yang lebih baik
+
+teknologi container itu tidak hanya memudahkan, tapi pada akhirnya ada cara untuk 'scaling up' lebih mudah
+yakni dengan kubernetes
+
+
+jadi konsep kubernetes itu
+
+- kenapa harus ada banyak nodes
+jadi konsepnya kalau tanpa 'container' alias vps, ketika satu server itu mati, entah kena serangan hacker, maka sudah done
+aplikasi tidak bisa digunakan, user request sudah stop ditangani
+tapi kalau pakai konsep kontainer, maka akan ada nodes yang dalam satu cluster, dimaan ketika satu nodes itu mati, entah kena serangan hacker atau apa, maka akan dibuatkan instance container baru di nodes satunya
+konsepnya sama seperti backup
+
+
+- kenapa sih harus ada load balancing dan mengapa juga harus container
+
+jadi katakan dengan monolith (diinstall di satu vps), maka hanya ada 'satu app' yang menangani request
+tentu kalau vpsnya spec tinggi akan cepat juga
+
+tapi kalau dibuat konsep container, yang artinya satu vps itu ada 'banyak apps'
+maka ketika ada request masuk dia bisa menyalurkan ke 'salah satu container/service'
+kalau ada request lagi maka ke container/service yang lain
+jadi benar benar ada 'banyak apps' yang akan memproses
+note : intinya jadi gak ada 'satu app penuh' untuk memproses setiap request
+
+dengan begini maka microservice akan lebih 'baik' dalam hal 'penanganan request' (karena dibagi bagi, tentuynya sesuai dengan request/atau endpointnya)
+
+
+dan lagi microservice akan memberi kemudahan, misal bisa beda bahasa
+
+
+
+
+
+https://www.routecloud.net/blog/mengenal-kubernetes-untuk-solusi-devops/
+https://medium.com/easyread/membuat-kubernetes-cluster-di-google-cloud-ae14bee317ba
+https://www.routecloud.net/blog/mengenal-kubernetes-untuk-solusi-devops/
+https://tuanpembual.wordpress.com/2018/12/27/implementasi-docker-kubernetes-kops-di-binar-academy-bagian-3/
+
+load balancing adalah teknik membagi beban ke server lain
+dengan begini maka traffic yang tinggi dapat 
+
+jadi memang benar bahwa
+ternyata docker swarm itu sama dengan kubernetes
+
+.. note::
+
+	pada materi orchestration tidak akan membahas mengenai docker swarm, tapi akan fokus ke kubernetes
+
+
+
+pod itu satu set container container
+
+node itu machine berisikan pod
+
+cluster itu adalah satu set node node
+
+
+
+A Kubernetes cluster is a set of node machines for running containerized applications. If you’re running Kubernetes, you’re running a cluster.
+
+cluster adalah satu set node machine untuk menjalankan container.
+
+
+At a minimum, a cluster contains a worker node and a master node.
+
+The master node is responsible for maintaining the desired state of the cluster, such as which applications are running and which container images they use. 
+Worker nodes actually run the applications and workloads.
+
+The cluster is the heart of Kubernetes’ key advantage: the ability to schedule and run containers across a group of machines, be they physical or virtual, on premises or in the cloud. 
+
+Kubernetes containers aren’t tied to individual machines. Rather, they’re abstracted across the cluster
+
+
+aku rasa ip private network itu berlaku pada orchestration (kubernetes) karena akan digunakan untuk komunikasi antar
+
+
+penjelasan mengapa harus ada virtual box di local computer (untuk menjalankan kubernete)
+12-02 Kubernetes in Development and Production
+
+
+mengapa tidak menggunakan loadbalancer di kubernete
+15-01 Load Balancer Services
+
+
+
+https://software.endy.muhardin.com/linux/intro-docker/
+https://software.endy.muhardin.com/devops/docker-workflow/
+https://software.endy.muhardin.com/java/cluster-ready-app/
+https://software.endy.muhardin.com/devops/deploy-google-container-engine/
+
+
+
+https://software.endy.muhardin.com/aplikasi/konsep-clustering/
+
+
+jika menggunakan konsep kubernetes maka jangan menggunakan adanya supervisor di container
+jadi 1 container 1 service
+
+
+nginx load balance atau kubernetes saja 
+menurutku di kubernetes itu udah ada load balance, gak usah banyak setup
+https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0
+
+menurutku load balancing itu adalah istilah untuk membagi process saja (worker dan master)
+jadi menggunakan kubernetes itu sudah sama dengan load balancing (karena di dalam cluster itu ada service yang akan membagi bagikannya)
+
+
+
+================================
+kubernetes
+================================
+
+kubernetes sering ditulis k8s (angka 8 interpretasi huruf antara k dan s)
+
+
+replikasi
+contoh satu application jalan di dua instance
+
+tapi replikasi gak boleh kalau 1 host kenapa
+
+tujuan replikasi
+- menambah kapasitas
+misal ada 10000 concurrent user (10000 user mengakses secara bersamaan)
+kalau ada replikasi bisa nambah misal 20000 user, atau tps (transaction per second)
+- high availability
+kalau misal node mati (satu server mati) karena power supply, hdd rusak, ram habis, dll aplikasi masih bisa jalan
+
+
+nah kalau masih 1 host, ya gak sesuai tujuan replikasi
+
+nah makanya replikasi itu di tempat berbeda
+install application lagi
+
+
+medode 12 factor (ini metode pengembangan web seperti dev, staging, production)
+kalau bagian application dia stateless, artinya aktif:aktif yaitu webserver a jalan, webserver b juga jalan, bisa melayani request
+
+tapi gak untuk database
+kalau database itu aktif:pasif, mysql a aktif mysql b pasif,
+mysql a sebagai master dan mysql b sebagai slave
+nah nanti mysql a synchronize ke mysql b (mysql a kirim data ke mysql b)
+
+
+docker itu ada swarm
+tapi belakangan kurang diadopsi, karena apa
+karena google mengeluarkan kubernetes
+
+kubernetes itu menggunakan arsitektur borg
+borg -> sistem internal google untuk handling clustering google
+
+tujuan sebenarnya kubernetes ini untuk menyaingi aws
+karena di amazon sudah ada fitur auto scaling
+
+konsepnya auto scaling gini
+
+dia ada thresold atau batasan, katakanlah  apabila terjadi kondisi
+cpu > 80 %
+memory > 50 %
+maka dia akan membuat instance baru
+lantas apabila terjadi pengurangan
+cpu < 20%
+memory < 10 %
+maka dia akan menghapus (destroy) instance tersebut
+
+nah ini ada grace period
+misal min instance = 2 max instance = 100
+
+
+nah ansible ini bisa dikolaborasikan dengan kubernetes
+artinya tiap file yml itu bisa untuk install docker, kubelet, kubeadm
+
+istilah kubernetes
+-----------------------------------
+
+- container
+
+- pod
+
+- service
+
+- persistent volume
+
+  - persistent volume claim
+
+
+nah konsepnya gini
+
+dalam 1 node (1 machine atau 1 os host) itu kan bisa menjalankan banyak container
+misal ada container app dan container cache (redis)
+
+container ini akan jalan ke dalam pod
+container dalam 1 pod itu dianggap localhost
+
+
+intinya pod ini gak tahu disimpan di mana, ini semua di atur oleh kubernetes
+jangan berharap bisa diatur
+karena tujuan pake kubernetes, ini biar gak pusing container ini jalan dimana
+
+
+nah sesama pod gak bisa berkomunikasi
+makanya dibuatlah service
+service ini akan menghubungkan ke pod lain
+
+
+
+
+vendor spesifik, untuk mempublish web
+kan buat service, nah nanti servicenya jalannya load balancer (pod banyak)
+nanti vendor specific
+kalau do ada load balancer
+
+
+
+
+
+
+--------------------
+
+jadi sejatinya konsep cloud itu adalah kubernetes (clustering)
+
+ini sebabnya kenapa ada konsep cloud itu gak bakal down
+
+https://www.quora.com/If-the-cloud-is-basically-a-server-why-is-the-concept-of-cloud-storage-so-talked-about
+
+jadi kalau local vps atau server dedicated
+kalau dia down maka udah gak bisa diakses lagi
+
+

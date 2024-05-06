@@ -1,0 +1,1057 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Dockerfile &mdash; Docker and Kubernetes 1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sphinxcontrib-httpexample.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/sphinxcontrib-httpexample.js"></script>
+        <script src="_static/js/custom.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Docker compose" href="docker-compose.html" />
+    <link rel="prev" title="Menghapus Objects pada docker" href="docker-delete-objects.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Docker and Kubernetes
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="docker-intro.html">Pengenalan Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-architecture.html">Arsitektur Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-objects.html">Docker Objects (Image, Container, Volume, Networks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-delete-objects.html">Menghapus Objects pada docker</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dockerfile</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Dockerfile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#instruction-run-cmd-dan-entrypoint-pada-file-dockerfile">Instruction <code class="docutils literal notranslate"><span class="pre">RUN</span></code>, <code class="docutils literal notranslate"><span class="pre">CMD</span></code> dan <code class="docutils literal notranslate"><span class="pre">ENTRYPOINT</span></code> pada file Dockerfile</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#shell-vs-executable-file"><strong>Shell</strong> VS <strong>Executable File</strong></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#shell-vs-bash"><code class="docutils literal notranslate"><span class="pre">shell</span></code> vs <code class="docutils literal notranslate"><span class="pre">bash</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#shell-form-vs-exec-form-pada-instruction-run-cmd-dan-entrypoint">Shell Form vs Exec Form pada instruction RUN, CMD, dan ENTRYPOINT</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#run"><strong>RUN</strong></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cmd"><strong>CMD</strong></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#entrypoint"><strong>ENTRYPOINT</strong></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#substansial-pengaplikasian-run-cmd-dan-entrypoint">Substansial pengaplikasian RUN, CMD, dan ENTRYPOINT</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pengaplikasian-run">Pengaplikasian <strong>RUN</strong></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pengaplikasian-cmd">Pengaplikasian <strong>CMD</strong></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pengaplikasian-entrypoint">Pengaplikasian <strong>ENTRYPOINT</strong></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pengaplikasian-entrypoint-cmd">Pengaplikasian <code class="docutils literal notranslate"><span class="pre">ENTRYPOINT</span> <span class="pre">+</span> <span class="pre">CMD</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#jika-terjadi-error-atau-gagal-running">Jika terjadi Error atau gagal running</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#environment">Environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#environment-variable-pada-run-cmd-dan-entrypoint">Environment Variable pada RUN CMD dan ENTRYPOINT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overwrite-environment-variable-saat-pembuatan-image-docker-container-create-atau-saat-menjalankan-docker-run">Overwrite environment variable saat pembuatan image (docker container create) atau saat menjalankan (docker run)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#arg">ARG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#substansial-penggunaan-arg-dan-env">Substansial penggunaan ARG dan ENV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#volume">Volume</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#workdir">Workdir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add">Add</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#expose">Expose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mengupload-image-ke-registry">mengupload image ke registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#membuat-custom-image-dari-registry">Membuat custom image dari registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#membuat-custom-image-dari-base-image">Membuat custom image dari base image</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#base-image-alpine-vs-ubuntu">base image alpine vs ubuntu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#menjalankan-multi-service-pada-satu-container">Menjalankan multi service pada satu container</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#kalau-gagal-build-dockerfile">kalau gagal build dockerfile</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docker-compose.html">Docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html">Dockerfile vs docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orchestration.html">Orchestration (Kubernetes)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-collection.html">Kumpulan Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-laravel.html">Docker Laravel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-mern.html">Docker MERN (Mongo Express React Node)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notelog.html">NoteLog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glosarium.html">Glosarium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concept-program-on-linux.html">Konsep Program di Linux</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Docker and Kubernetes</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Dockerfile</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/dockerfile.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dockerfile">
+<h1>Dockerfile<a class="headerlink" href="#dockerfile" title="Permalink to this headline">¶</a></h1>
+<p>Pada <cite>registry hub docker</cite> sendiri sebenarnya telah banyak image yang dapat digunakan.</p>
+<p>Namun terkadang masih dibutuhkan adanya library atau tools lain dalam menjalankannya.</p>
+<p>Oleh karenanya dibutuhkan membuat file bernama <strong>Dockerfile</strong> dalam membuat custom image.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Untuk lebih memahami pembuatan <strong>Dockerfile</strong>, penulis menyarankan untuk membaca dahulu section <strong>concept program di linux</strong>.</p>
+<p>Karena pada pembuatan dockerfile hal yang paling krusial adalah <cite>bagaimana menjalankan service dari container?</cite>.</p>
+</div>
+<div class="section" id="id1">
+<h2>Dockerfile<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Dalam docker untuk membuat suatu <cite>image</cite> dibutuhkan satu file bernama <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>.</p>
+<p>Dockerfile adalah file yang berisikan <code class="docutils literal notranslate"><span class="pre">instruction</span></code> yang nantinya akan di-build menjadi <cite>image</cite>.</p>
+<p>Ketika akan membuat custom image (menggunakan <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>) maka diperlukan adanya <strong>Base Image</strong> sebagai parent layer.</p>
+<p>Parent layer ini diambil dari registry hub,</p>
+<p>Parent layer ini bisa sebagai OS, atau bahkan dari docker image.</p>
+<p>Semisal jika dari OS</p>
+<p>code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">18.04</span>
+</pre></div>
+</div>
+<p>atau jika semisal dari suatu image yang telah ada di registry</p>
+<p>code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">golang</span><span class="p">:</span><span class="mf">1.11</span><span class="o">.</span><span class="mi">4</span>
+
+<span class="n">COPY</span> <span class="n">main</span><span class="o">.</span><span class="n">go</span> <span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">main</span><span class="o">.</span><span class="n">go</span>
+
+<span class="n">CMD</span> <span class="p">[</span><span class="s2">&quot;go&quot;</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span> <span class="s2">&quot;/app/main.go&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>kemudian untuk membuild image dari file Dockerfile</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">build</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>dimana command tersebut dijalankan pada direktori utama (root) yang mana terdapat file <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code></p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Jika ingin menggunakan specific file <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> (Dockerfile dengan nama lain) dapat menggunakan path lengkap</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">build</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/&lt;</span><span class="n">Dockerfile</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>Jika ingin menamai image beserta tag nya dapat memberikan tambahan parameter –tag dengan memberikannya dengan format <code class="docutils literal notranslate"><span class="pre">&lt;nama-image:tag&gt;</span></code></p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">build</span> <span class="o">--</span><span class="n">tag</span> <span class="n">app</span><span class="o">-</span><span class="n">golang</span><span class="p">:</span><span class="mf">1.0</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>Setelahnya image yang dibuat dapat dicek</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">images</span>
+<span class="n">atau</span>
+<span class="n">docker</span> <span class="n">image</span> <span class="n">ls</span>
+</pre></div>
+</div>
+<p>konsep pembuatan image dengan <cite>dockerfile</cite> itu bagaikan bawang yang berlapis lapis di dalamnya.</p>
+<p>ketika membuat image dari Dockerfile maka tiap <cite>instruction</cite> di dalamnya akan membuat sebuah image baru.</p>
+<p>Dan ketika terdapat perintah di bawahnya lagi maka docker akan membuat imaage baru dan me-overwrite image tersebut, begitu sampai pada perintah terakhir.</p>
+<p>Image yang di-overwrite tersebut sering disebut <cite>intermediate image</cite>.</p>
+<p>Namun intermediate image tersebut, tidak akan langsung dihapus melainkan disimpan ke dalam cache.</p>
+<p>Dimana jika terdapat kesamaan <cite>instruction</cite> maka proses pembuatan intermediate image akan menggunakan cache tersebut.</p>
+</div>
+<div class="section" id="instruction-run-cmd-dan-entrypoint-pada-file-dockerfile">
+<h2>Instruction <code class="docutils literal notranslate"><span class="pre">RUN</span></code>, <code class="docutils literal notranslate"><span class="pre">CMD</span></code> dan <code class="docutils literal notranslate"><span class="pre">ENTRYPOINT</span></code> pada file Dockerfile<a class="headerlink" href="#instruction-run-cmd-dan-entrypoint-pada-file-dockerfile" title="Permalink to this headline">¶</a></h2>
+<p>Pada Dockerfile biasanya terdapat 3 instruction <strong>RUN</strong>, <strong>CMD</strong> dan <strong>ENTRYPOINT</strong>.</p>
+<p>Ketiganya bisa dikatakan memiliki fungsionalitas yang sama yaitu menjalankan <strong>command</strong>, namun memiliki behavior yang berbeda.</p>
+<p>Sebelum masuk ke bahasan ketiga bentuk diatas akan dipelajari dulu tentang menjalankan program pada linux (UNIX) secara umumnya.</p>
+<p>Ini merupakan bahasan yang cukup fundamental dalam mengetahui bentuk command daripada docker.</p>
+<div class="section" id="shell-vs-executable-file">
+<h3><strong>Shell</strong> VS <strong>Executable File</strong><a class="headerlink" href="#shell-vs-executable-file" title="Permalink to this headline">¶</a></h3>
+<p>Pada unix system biasanya ketika akan menjalankan sebuah program maka diperlukan adanya file yang akan di-execute.</p>
+<p>Terdapat 2 cara dalam menjalankan file execute tersebut, yaitu <strong>shell</strong> dan <strong>executable</strong>.</p>
+<p>Secara ringkas, pada umumnya <code class="docutils literal notranslate"><span class="pre">shell</span></code> adalah representasi daripada symbolic link daripada file yang akan menjalankan program, atau mudahnya ini adalah shortcut ke file utama (execute file).</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Symbolic link (disebut symlink atau soft link), adalah jenis file khusus yang mengarah ke file lain, seperti shortcut di Windows atau alias pada Macintosh.</p>
+</div>
+<p>Standard daripada command di linux (dalam menjalankan sebuah program) adalah menggunakan shell command, dan diberikan dengan adanya alias, sehingga cukup ringkas dalam menjalankannya.</p>
+<p>misalkan ketika menggunakan command <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">hello</span> <span class="pre">world</span></code> maka yang sebenarnya terjadi adalah mejalankan <code class="docutils literal notranslate"><span class="pre">/bin/sh</span> <span class="pre">&quot;echo</span> <span class="pre">\&quot;hello</span> <span class="pre">world\&quot;&quot;</span></code></p>
+<img alt="_images/notelog-shell-execute-1.1.basic-command-linux.png" src="_images/notelog-shell-execute-1.1.basic-command-linux.png" />
+<p>Sedangkan <code class="docutils literal notranslate"><span class="pre">executable</span> <span class="pre">file</span></code> adalah file utama dalam menjalankan program tersebut.</p>
+<p>Misalkan pada echo sendiri dapat dijalankan menggunakan file execute di <code class="docutils literal notranslate"><span class="pre">/bin/echo</span></code></p>
+<img alt="_images/notelog-shell-execute-1.2.execute-command-linux.png" src="_images/notelog-shell-execute-1.2.execute-command-linux.png" />
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Sepengetahuan penulis hampir semua software di linux akan dijalankan dengan shell command, sangat jarang langsung dijalankan menggunakan executable file</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Biasanya pada linux setelah software terinstall maka secara otomatis akan menambahkan adanya shell/symbolic link (ke directory <code class="docutils literal notranslate"><span class="pre">/bin/sh</span></code>) dan juga alias untuk menjalankannya.</p>
+<p>Dan executable file dari software tersebut akan ditaruh ke dalam directory <code class="docutils literal notranslate"><span class="pre">/usr/bin/</span></code></p>
+<img alt="_images/notelog-shell-execute-1.3.shell-and-execute-file-php-ubuntu.png" src="_images/notelog-shell-execute-1.3.shell-and-execute-file-php-ubuntu.png" />
+</div>
+<div class="section" id="shell-vs-bash">
+<h4><code class="docutils literal notranslate"><span class="pre">shell</span></code> vs <code class="docutils literal notranslate"><span class="pre">bash</span></code><a class="headerlink" href="#shell-vs-bash" title="Permalink to this headline">¶</a></h4>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Bahasan ini hanya untuk memperjelas bagaimana masuk ke dalam <cite>session terminal</cite> suatu container docker (tidak ada hubungannya dengan <code class="docutils literal notranslate"><span class="pre">RUN</span> <span class="pre">vs</span> <span class="pre">CMD</span> <span class="pre">vs</span> <span class="pre">ENTRYPOINT</span></code>), namun cukup penting untuk diketahui.</p>
+</div>
+<p>Antara shell dan bash sebenarnya keduanya hampir sama, yaitu masuk ke dalam session terminal (session baru).</p>
+<p>Bahkan keduanya biasanya terdapat di direktori yang sama yaitu <cite>/bin</cite>.</p>
+<p>Untuk menjalankan shell melalui <code class="docutils literal notranslate"><span class="pre">/bin/sh</span></code> sedangkan untuk menjalankan bash melalui <code class="docutils literal notranslate"><span class="pre">/bin/bash</span></code>.</p>
+<img alt="_images/notelog-shell-execute-1.4.shell-vs-bash.png" src="_images/notelog-shell-execute-1.4.shell-vs-bash.png" />
+<p>Perbedaan mendasar adalah <code class="docutils literal notranslate"><span class="pre">bash</span></code> memiliki lebih banyak fitur daripada shell (sh)</p>
+<p>Misalkan pada sh tidak terdapat keterangan nama user dan machine, dan juga tombol panah (arrow up,down,left,right) tidak akan berfungsi (hanya akan memunculkan huruf “^[[B^[[A^[[D^[[C”)</p>
+<p>Namun sayangnya bahwa tidak semua distro linux akan selalu memiliki kedua session terminal tersebut.</p>
+<p>Sedangkan docker sendiri, tiap image bisa saja memiliki OS docker-daemon yang berbeda (debian, centos, fedor, dll).</p>
+<p>Namun standard yang biasa digunakan pada docker untuk masuk ke dalam session terminal adalah <code class="docutils literal notranslate"><span class="pre">bash</span></code> (/bin/bash).</p>
+<p>Dan apabila session terminal bash tidak ditemukan (dimana ini mungkin selain OS debian kernel) maka yang digunakan adalah <code class="docutils literal notranslate"><span class="pre">shell</span></code> (/bin/sh).</p>
+</div>
+<div class="section" id="shell-form-vs-exec-form-pada-instruction-run-cmd-dan-entrypoint">
+<h4>Shell Form vs Exec Form pada instruction RUN, CMD, dan ENTRYPOINT<a class="headerlink" href="#shell-form-vs-exec-form-pada-instruction-run-cmd-dan-entrypoint" title="Permalink to this headline">¶</a></h4>
+<p>Terdapat 2 bentuk utama dalam instruction RUN, CMD dan ENTRYPOINT, yaitu <cite>Shell form</cite> dan <cite>Exec form</cite>.</p>
+<p>Kegunaan daripada shell form dan exec form sama seperti penjelasan diatas, yaitu <code class="docutils literal notranslate"><span class="pre">shell</span></code> akan menjalankan melalui symbolic link (<code class="docutils literal notranslate"><span class="pre">/bin/sh</span> <span class="pre">-c</span> <span class="pre">&lt;command&gt;</span></code>) sedangkan <code class="docutils literal notranslate"><span class="pre">exec</span></code> akan menjalankan melalui file executable.</p>
+<p>Hanya saja dalam implementasinya akan dibedakan menjadi 2 bentuk, dimana untuk shell akan menggunakan bentuk <strong>string</strong>, dan untuk exec akan menggunakan bentuk <strong>array</strong> (JSON array).</p>
+<p>Berikut bentuk daripada RUN, CMD dan ENTRYPOINT</p>
+<ul>
+<li><p>RUN</p>
+<blockquote>
+<div><p>shell form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RUN</span> <span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>exec form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RUN</span> <span class="p">[</span><span class="s2">&quot;executable&quot;</span><span class="p">,</span> <span class="s2">&quot;param1&quot;</span><span class="p">,</span> <span class="s2">&quot;param2&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>CMD</p>
+<blockquote>
+<div><p>shell form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CMD</span> <span class="n">command</span> <span class="n">param1</span> <span class="n">param2</span>
+</pre></div>
+</div>
+<p>exec form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CMD</span> <span class="p">[</span><span class="s2">&quot;executable&quot;</span><span class="p">,</span><span class="s2">&quot;param1&quot;</span><span class="p">,</span><span class="s2">&quot;param2&quot;</span><span class="p">]</span>
+<span class="n">CMD</span> <span class="p">[</span><span class="s2">&quot;param1&quot;</span><span class="p">,</span><span class="s2">&quot;param2&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>bentuk <code class="docutils literal notranslate"><span class="pre">CMD</span> <span class="pre">[&quot;param1&quot;,&quot;param2&quot;]</span></code> akan berlaku jika dikombinasikan dengan ENTRYPOINT (<code class="docutils literal notranslate"><span class="pre">ENTRYPOINT</span> <span class="pre">+</span> <span class="pre">CMD</span></code>) yang akan dijelaskan di bawah secara lebih lanjut.</p>
+</div>
+</div></blockquote>
+</li>
+<li><p>ENTRYPOINT</p>
+<blockquote>
+<div><p>shell form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ENTRYPOINT</span> <span class="n">command</span> <span class="n">param1</span> <span class="n">param2</span>
+</pre></div>
+</div>
+<p>exec form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&quot;executable&quot;</span><span class="p">,</span> <span class="s2">&quot;param1&quot;</span><span class="p">,</span> <span class="s2">&quot;param2&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p><code class="docutils literal notranslate"><span class="pre">command</span></code> yang dimaksud pada bentuk diatas adalah penggunaan untuk shell command (symbolic link/symlink)</p>
+<p>referensi : <a class="reference external" href="https://www.quora.com/What-are-the-differences-between-an-executable-program-and-command-in-Linux">https://www.quora.com/What-are-the-differences-between-an-executable-program-and-command-in-Linux</a></p>
+</div>
+<p>Dalam implementasinya instruction <strong>RUN</strong> akan menggunakan bentuk <code class="docutils literal notranslate"><span class="pre">Shell</span> <span class="pre">form</span></code>, sedangkan pada CMD dan ENTRYPOINT akan menggunakan bentuk <code class="docutils literal notranslate"><span class="pre">Exec</span> <span class="pre">Form</span></code>.</p>
+</div>
+</div>
+<div class="section" id="run">
+<h3><strong>RUN</strong><a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h3>
+<p>RUN adalah perintah yang akan dijalankan ketika <strong>MEMBUAT image</strong>, yang artinya ini hanya dijalankan sekali saat pembuatan <cite>image</cite>.</p>
+<p>Misalkan adalah menginstall software git pada image ubuntu berikut</p>
+<p>file <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">18.04</span>
+
+<span class="n">RUN</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
+
+<span class="n">RUN</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span>
+</pre></div>
+</div>
+<img alt="_images/dockerfile-1.1-run-basic.png" src="_images/dockerfile-1.1-run-basic.png" />
+<img alt="_images/dockerfile-1.2-run-basic.png" src="_images/dockerfile-1.2-run-basic.png" />
+<img alt="_images/dockerfile-1.3-run-basic.png" src="_images/dockerfile-1.3-run-basic.png" />
+<img alt="_images/dockerfile-1.4-run-basic.png" src="_images/dockerfile-1.4-run-basic.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Perlu diketahui bahwa tiap instruction di Dockerfile (RUN, CMD atau ENTRYPOINT) akan membuat adanya layer (intermediate image).</p>
+<p>Dan setiap ada instruction baru akan me-overwrite layer yang lama.</p>
+</div>
+</div>
+<div class="section" id="cmd">
+<h3><strong>CMD</strong><a class="headerlink" href="#cmd" title="Permalink to this headline">¶</a></h3>
+<p>CMD adalah perintah untuk <strong>EKSEKUSI command default</strong> saat menjalankan container.</p>
+<p>Yang artinya perintah <code class="docutils literal notranslate"><span class="pre">CMD</span></code> ini hanya dijalankan ketika image di-running (menjadi container) dan tidak akan dijalankan ketika pembuatan image.</p>
+<p>file <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">18.04</span>
+
+<span class="n">CMD</span> <span class="n">echo</span> <span class="s2">&quot;Hello world&quot;</span>
+</pre></div>
+</div>
+<img alt="_images/dockerfile-2.1.cmd-basic.png" src="_images/dockerfile-2.1.cmd-basic.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Perlu diketahui bahwa CMD hanya bisa satu untuk satu dockerfile dan jika lebih dari satu CMD maka <strong>CMD terakhir</strong> yang akan dijalankan.</p>
+</div>
+<p>Semisal jika dalam bentuk exec form (dan lebih direkomendasikan)</p>
+<p>file <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">18.04</span>
+
+<span class="n">CMD</span> <span class="p">[</span><span class="s2">&quot;/bin/echo&quot;</span><span class="p">,</span> <span class="s2">&quot;hello world&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<img alt="_images/dockerfile-2.2-run-basic-exec.png" src="_images/dockerfile-2.2-run-basic-exec.png" />
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Dalam menuliskan array pada CMD dan ENTRYPOINT harus menggunakan double quote (<code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>), jika hanya satu quote akan memunculkan <cite>error</cite>.</p>
+</div>
+</div>
+<div class="section" id="entrypoint">
+<h3><strong>ENTRYPOINT</strong><a class="headerlink" href="#entrypoint" title="Permalink to this headline">¶</a></h3>
+<p>ENTRYPOINT adalah perintah eksekusi command yang tidak dapat di-overwrite..</p>
+<p>Berbeda dengan CMD, maka ENTRYPOINT akan pasti dieksekusi dan tidak dapat digantikan dengan command selanjutnya.</p>
+<p>Dan kalaupun diberikan adanya parameter maka akan dianggap sebagai lanjutan dari command sebelumnya.</p>
+<p>file <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">18.04</span>
+
+<span class="n">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&quot;/bin/echo&quot;</span><span class="p">,</span> <span class="s2">&quot;Hello&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<img alt="_images/dockerfile-3.1-entrypoint-basic.png" src="_images/dockerfile-3.1-entrypoint-basic.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Perlu diketahui bahwa ENTRYPOINT hanya bisa satu untuk satu dockerfile dan jika lebih dari satu ENTRYPOINT maka <strong>ENTRYPOINT terakhir</strong> yang akan dijalankan.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Persamaan dan Perbedaan CMD dan ENTRYPOINT</p>
+<ul>
+<li><p>Persamaan</p>
+<blockquote>
+<div><p>Persamaan CMD dan ENTRYPOINT adalah instruction tersebut akan dieksekusi satu kali, dan jika lebih dari 1 maka instruction terakhir yang akan digunakan.</p>
+<p>Artinya apa ?</p>
+<p>Kedua instruction tersebut <strong>hanya akan digunakan</strong> untuk menjalankan service.</p>
+<p>Namun ada pengecualian jika mengkombinasikan antara <code class="docutils literal notranslate"><span class="pre">ENTRYPOINT</span> <span class="pre">+</span> <span class="pre">CMD</span></code>, dimana ENTRYPOINT akan tetap dijalankan dengan menggunakan CMD sebagai parameter (bukan command), untuk lebih lengkapnya silahkan menuju bagian dibawah.</p>
+<p>Selain itu biasanya CMD dan ENTRYPOINT akan menggunakan bentuk <code class="docutils literal notranslate"><span class="pre">exec</span> <span class="pre">form</span></code>, berbeda dengan RUN karena pada RUN biasanya hanya akan digunakan untuk pembuatan image, sedangkan CMD atau ENTRYPOINT digunakan untuk eksekusi (command) image.</p>
+</div></blockquote>
+</li>
+<li><p>Perbedaan</p>
+<blockquote>
+<div><p>Perbedaan CMD dan ENTRYPOINT seperti yang telah dituliskan diatas adalah pada CMD masih dapat untuk me-overwrite perintah baru, sedangkan pada ENTRYPOINT akan tetap menggunakan perintah pada Dockerfile (dan jika masih dituliskan maka akan dianggap sebagai satu bagian command).</p>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="substansial-pengaplikasian-run-cmd-dan-entrypoint">
+<h3>Substansial pengaplikasian RUN, CMD, dan ENTRYPOINT<a class="headerlink" href="#substansial-pengaplikasian-run-cmd-dan-entrypoint" title="Permalink to this headline">¶</a></h3>
+<p>Jika diringkas maka berikut adalah penggunaan substansial ketiga <cite>instruction</cite> pada dockerfile tersebut.</p>
+<div class="section" id="pengaplikasian-run">
+<h4>Pengaplikasian <strong>RUN</strong><a class="headerlink" href="#pengaplikasian-run" title="Permalink to this headline">¶</a></h4>
+<p>RUN biasa digunakan untuk:</p>
+<ul class="simple">
+<li><p>membuat direktori</p></li>
+<li><p>update/upgrade</p></li>
+<li><p>install software</p></li>
+<li><p>beberapa command lain selain menjalankan service</p></li>
+</ul>
+<p>Misal adalah mengupdate dan menginstall software berikut</p>
+<p>code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RUN</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> \
+  <span class="n">bzr</span> \
+  <span class="n">cvs</span> \
+  <span class="n">git</span> \
+  <span class="n">mercurial</span> \
+  <span class="n">subversion</span>
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>RUN sebaiknya hanya dituliskan dalam satu baris.</p>
+<p>Mengapa ?</p>
+<p>Karena ketika memiliki lebih dari 1 instruction RUN, maka layer yang dibuat (intermediate image) juga akan lebih dari 1, karena saat menjalankan instruction RUN maka akan membuat layer (intermediate image) dan menghapusnya begitu ada instruction baru.</p>
+</div>
+</div>
+<div class="section" id="pengaplikasian-cmd">
+<h4>Pengaplikasian <strong>CMD</strong><a class="headerlink" href="#pengaplikasian-cmd" title="Permalink to this headline">¶</a></h4>
+<p>Tujuan utama CMD adalah untuk memberikan command default saat menjalankan container dari image.</p>
+<p>Yang secara mudahnya gunakan CMD ketika menjalankan container (run image) tanpa adanya tambahan command (yang akan me-overwrite).</p>
+<p>Contoh pengaplikasian sederhana daripada CMD dapat dilihat dari image official <code class="docutils literal notranslate"><span class="pre">nginx</span></code>, dimana ketika menjalankan container (run image) maka service daripada nginx akan langsung dijalankan.</p>
+<img alt="_images/dockerfile-4.1-cmd-implementation.png" src="_images/dockerfile-4.1-cmd-implementation.png" />
+<p>Ini dikarenakan pada image official <code class="docutils literal notranslate"><span class="pre">nginx</span></code> pada file <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> membuat default CMD yaitu <code class="docutils literal notranslate"><span class="pre">CMD</span> <span class="pre">[&quot;nginx&quot;,</span> <span class="pre">&quot;-g&quot;,</span> <span class="pre">&quot;daemon</span> <span class="pre">off;&quot;]</span></code>.</p>
+<p>Dengan CMD juga masih dapat untuk menggunakan command selain daripada <cite>default command</cite>, seperti misalkan untuk melihat list user</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">cat</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">passwd</span>
+</pre></div>
+</div>
+<img alt="_images/dockerfile-4.2-cmd-implementation.png" src="_images/dockerfile-4.2-cmd-implementation.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Hampir kebanyakan image yang menjalankan service akan menggunakan CMD dan jarang menggunakan ENTRYPOINT, karena pada CMD masih dapat di overwrite.</p>
+<p>Sehingga akan cocok dalam melakukan debug.</p>
+<p>Jika tidak terdapat instruction CMD, maka satu satunya cara untuk menjalankan command di container adalah dengan melakukan docker exec (docker container exec).</p>
+</div>
+</div>
+<div class="section" id="pengaplikasian-entrypoint">
+<h4>Pengaplikasian <strong>ENTRYPOINT</strong><a class="headerlink" href="#pengaplikasian-entrypoint" title="Permalink to this headline">¶</a></h4>
+<p>Sedangkan ENTRYPOINT adalah untuk membuat image yang dijalankan (container) menjadi seperti <code class="docutils literal notranslate"><span class="pre">executable</span> <span class="pre">file</span></code>.</p>
+<p>Artinya command daripada ENTRYPOINT tidak akan tergantikan, dan apabila ditambahkan maka akan dianggap sebagai <code class="docutils literal notranslate"><span class="pre">parameter</span></code></p>
+<p>Contohnya misalkan terdapat image <code class="docutils literal notranslate"><span class="pre">redis</span></code>.</p>
+<p>Daripada harus menuliskan command secara utuh seperti misal dalam mendapatkan key dengan command <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span> <span class="pre">redisimg</span> <span class="pre">redis</span> <span class="pre">-H</span> <span class="pre">something</span> <span class="pre">-u</span> <span class="pre">toto</span> <span class="pre">get</span> <span class="pre">key</span></code></p>
+<p>Maka akan jauh lebih mudah untuk menuliskan ENTRYPOINT di Dockerfile dengan command utama seperti berikut</p>
+<p>code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">,</span> <span class="s2">&quot;-H&quot;</span><span class="p">,</span> <span class="s2">&quot;something&quot;</span><span class="p">,</span> <span class="s2">&quot;-u&quot;</span><span class="p">,</span> <span class="s2">&quot;toto&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Kemudian menjalankan container (run image) dengan menambahkan parameter selanjutnya.</p>
+<p>Misal jika ingin mendapatkan <code class="docutils literal notranslate"><span class="pre">key</span></code></p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="n">redisimg</span> <span class="n">get</span> <span class="n">key</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Jika ingin menggunakan docker-compose akan sangat disarankan untuk menggunakan ENTRYPOINT karena akan lebih memastikan tidak terdapat command lain yang akan me-overwrite.</p>
+</div>
+</div>
+<div class="section" id="pengaplikasian-entrypoint-cmd">
+<h4>Pengaplikasian <code class="docutils literal notranslate"><span class="pre">ENTRYPOINT</span> <span class="pre">+</span> <span class="pre">CMD</span></code><a class="headerlink" href="#pengaplikasian-entrypoint-cmd" title="Permalink to this headline">¶</a></h4>
+<p>Selain itu terdapat adanya kombinasi daripada <code class="docutils literal notranslate"><span class="pre">ENTRYPOINT</span> <span class="pre">+</span> <span class="pre">CMD</span></code> yaitu untuk membuat eksekusi dengan adanya parameter default</p>
+<p>gunakan untuk keperluan dimana ini tidak menggunakan variable environment</p>
+<p>file <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">18.04</span>
+<span class="n">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&quot;/bin/echo&quot;</span><span class="p">,</span> <span class="s2">&quot;Hello&quot;</span><span class="p">]</span>
+<span class="n">CMD</span> <span class="p">[</span><span class="s2">&quot;world&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<img alt="_images/dockerfile-5.1-entrypoint-cmd-implementation.png" src="_images/dockerfile-5.1-entrypoint-cmd-implementation.png" />
+<p>atau jika ingin mengimplementasikan ke redis dengan default value get key</p>
+<p>code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">,</span> <span class="s2">&quot;-H&quot;</span><span class="p">,</span> <span class="s2">&quot;something&quot;</span><span class="p">,</span> <span class="s2">&quot;-u&quot;</span><span class="p">,</span> <span class="s2">&quot;toto&quot;</span><span class="p">]</span>
+<span class="n">CMD</span> <span class="p">[</span><span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="s2">&quot;key&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Jika ingin mengkombinasikan antara CMD dengan ENTRYPOINT maka keduanya harus menggunakan <strong>JSON ARRAY</strong>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="jika-terjadi-error-atau-gagal-running">
+<h3>Jika terjadi Error atau gagal running<a class="headerlink" href="#jika-terjadi-error-atau-gagal-running" title="Permalink to this headline">¶</a></h3>
+<p>docker build -f ./php52.dockerfile –tag php-yii1-rs:app .</p>
+<p>atau misal berada di suatu path yang sangat jauh</p>
+<dl class="simple">
+<dt>cd /home/me/myapp/some/dir/really/deep</dt><dd><p>docker build -f /home/me/myapp/dockerfiles/debug /home/me/myapp
+docker build -f ../../../../dockerfiles/debug /home/me/myapp</p>
+</dd>
+</dl>
+<p>fungsi context adalah kalau misal di file Dockerfile itu ada perintah <strong>COPY</strong> atau yang berhubungan dengan directory</p>
+<p>bagaimana kalau docker-compose ada ‘exited with code 0’ atau code 1 ?</p>
+<p>gampang
+itu pasti dari image yang dibuild tapi nyatanya gak jalan</p>
+<p>nah makanya coba cek bagian yang dari Dockerfile</p>
+<p>katakan abis build
+docker build -t php-yii1-rs:app .
+lalu run
+docker run –rm php-yii1-rs:app
+Usage: /usr/local/sbin/php-fpm {start|stop|quit|restart|reload|logrotate}</p>
+<p>jangan utak utik yang lain (service yang lain)
+pokoknya yang ada file Dockerfile
+coba jalanin secara manual (build image lalu run, apa ada error)</p>
+<p>biasanya sih karena masalah ‘beda versi’</p>
+</div>
+</div>
+<div class="section" id="environment">
+<h2>Environment<a class="headerlink" href="#environment" title="Permalink to this headline">¶</a></h2>
+<p>Environment pada Dockerfile layaknya environment variable di terminal.</p>
+<p>Misalkan contoh di terminal</p>
+<img alt="_images/dockerfile-6.1-environment-in-terminal.png" src="_images/dockerfile-6.1-environment-in-terminal.png" />
+<p>Jika diimplementasikan ke Dockerfile</p>
+<p>file Dockerfile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">18.04</span>
+<span class="n">ENV</span> <span class="n">NAME</span> <span class="n">john</span>
+<span class="n">ENV</span> <span class="n">FULLNAME</span> <span class="n">john</span> <span class="n">doe</span>
+<span class="n">CMD</span> <span class="n">echo</span> <span class="s2">&quot;hello my name is $NAME and my fullname is $FULLNAME&quot;</span>
+</pre></div>
+</div>
+<img alt="_images/dockerfile-6.2-dockerfile-environment.png" src="_images/dockerfile-6.2-dockerfile-environment.png" />
+<p>Terdapat 2 bentuk daripada ENV yaitu menggunakan single env dan multi env.</p>
+<p>code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ENV</span> <span class="o">&lt;</span><span class="n">key</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+<span class="n">ENV</span> <span class="o">&lt;</span><span class="n">key1</span><span class="o">&gt;=&lt;</span><span class="n">value1</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">key2</span><span class="o">&gt;=&lt;</span><span class="n">value2</span><span class="o">&gt;</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>bentuk 1 adalah untuk mengeset 1 variable dalam 1 baris, sedangkan bentuk 2 adalah untuk mengeset multi variable dalam 1 baris.</p>
+<div class="section" id="environment-variable-pada-run-cmd-dan-entrypoint">
+<h3>Environment Variable pada RUN CMD dan ENTRYPOINT<a class="headerlink" href="#environment-variable-pada-run-cmd-dan-entrypoint" title="Permalink to this headline">¶</a></h3>
+<p>Penggunaan Environment pada instruction RUN, CMD dan ENTRYPOINT tidak akan dapat dijalankan apabila ketiga instruction tersebut menggunakan executable file (exec form).</p>
+<p>Pada dockerfile jika menggunakan exec form maka ini tidak akan melalui shell command, oleh karenanya environment variable tidak akan berjalan.</p>
+<p>Semisal berikut contohnya</p>
+<img alt="_images/dockerfile-6.3-dockerfile-environment-in-exec-form.png" src="_images/dockerfile-6.3-dockerfile-environment-in-exec-form.png" />
+<p>Hal ini juga berlaku pada ENTRYPOINT</p>
+<img alt="_images/dockerfile-6.4-dockerfile-environment-in-exec-form.png" src="_images/dockerfile-6.4-dockerfile-environment-in-exec-form.png" />
+<p>Sejatinya variable environment hanya dapat berjalan pada terminal session.</p>
+<p>Sehingga jika ingin menggunakan environment variable pada dockerfile harus dijalankan <strong>melalui</strong> terminal session (shell command atau bisa juga <strong>bash</strong>)</p>
+<p>contoh menggunakan shell command</p>
+<p>code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">18.04</span>
+<span class="n">ENV</span> <span class="n">NAME</span> <span class="n">john</span>
+<span class="n">CMD</span> <span class="p">[</span><span class="s2">&quot;/bin/sh&quot;</span><span class="p">,</span> <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="s2">&quot;echo hello my name is </span><span class="se">\&quot;</span><span class="s2">$NAME</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<img alt="_images/dockerfile-6.5-dockerfile-environment-in-exec-form.png" src="_images/dockerfile-6.5-dockerfile-environment-in-exec-form.png" />
+<p>contoh menggunakan bash command</p>
+<p>code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">18.04</span>
+<span class="n">ENV</span> <span class="n">NAME</span> <span class="n">john</span>
+<span class="n">CMD</span> <span class="p">[</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span> <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="s2">&quot;echo hello my name is </span><span class="se">\&quot;</span><span class="s2">$NAME</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<img alt="_images/dockerfile-6.6-dockerfile-environment-in-exec-form.png" src="_images/dockerfile-6.6-dockerfile-environment-in-exec-form.png" />
+</div>
+<div class="section" id="overwrite-environment-variable-saat-pembuatan-image-docker-container-create-atau-saat-menjalankan-docker-run">
+<h3>Overwrite environment variable saat pembuatan image (docker container create) atau saat menjalankan (docker run)<a class="headerlink" href="#overwrite-environment-variable-saat-pembuatan-image-docker-container-create-atau-saat-menjalankan-docker-run" title="Permalink to this headline">¶</a></h3>
+<p>Environment variable ini juga dapat ditambahkan/overwrite pada saat pembuatan container (docker container create) atau berlaku juga pada saat menggunakan docker run</p>
+<p>Berikut contoh overwrite environment variable:</p>
+<ul>
+<li><p>Semisal memberikan environment dengan langsung running image (docker run)</p>
+<blockquote>
+<div><img alt="_images/dockerfile-7.3-arg.png" src="_images/dockerfile-7.3-arg.png" />
+</div></blockquote>
+</li>
+<li><p>Semisal memberikan environment variable dari container</p>
+<blockquote>
+<div><img alt="_images/dockerfile-7.4-arg.png" src="_images/dockerfile-7.4-arg.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Saat menggunakan docker container start untuk dapat memberikan standard out standerd error (STDOUT/STDERR) harus memberikan parameter <code class="docutils literal notranslate"><span class="pre">-a</span></code></p>
+</div>
+</div></blockquote>
+</li>
+</ul>
+<p>flow daripada environment variable adalah</p>
+<ul class="simple">
+<li><p>build image ‘x’ dari file <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code></p></li>
+<li><p><cite>environment variable</cite> akan tercipta di image ‘x’</p></li>
+<li><p>saat menciptakan container atau menjalankan container maka <cite>environment variable</cite> ini dapat dioverwrite</p></li>
+<li><p>exec command <strong>CMD/ENTRYPOINT</strong></p></li>
+</ul>
+<p>Secara singkat sebenarnya <cite>environment variable</cite> dapat ditulis di dockerfile (pre-create image) atau saat menjalankan image (create image)</p>
+<p>Namun sejatinya ENV tersebut tidak akan dapat dioverwrite untuk proses build (lihat lebih detail pada Substansial penggunaan ARG dan ENV dibawah)</p>
+<p>Selain itu selalu ingat bahwa ketika menjalankan container (running image) maka sejatinya akan menjalankan command pada <strong>CMD/ENTRYPOINT</strong>, sehingga sebelum CMD atau ENTRYPOINT maka environment variable masih dapat diubah(overwrite).</p>
+</div>
+</div>
+<div class="section" id="arg">
+<h2>ARG<a class="headerlink" href="#arg" title="Permalink to this headline">¶</a></h2>
+<p>Instruction ARG sebenarnya memiliki konsep yang sama dengan instruction <cite>ENV</cite> di Dockerfile, yaitu sebagai suatu variable.</p>
+<p>Namun behavior antara ARG dengan ENV sangat berbeda.</p>
+<p>Secara mudahnya ARG hanya dapat digunakan untuk proses build image dari file Dockerfile</p>
+<p>Artinya ARG ini tidak bisa digunakan di container (running image).</p>
+<p>Misalkan berikut</p>
+<p>file Dockerfile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>FROM ubuntu:16.04
+
+ARG foo=bar
+ENV baz qux
+ENV foobar=thud
+
+RUN echo $foo
+RUN echo $baz
+
+CMD echo &#39;foo variable&#39; has value $foo \
+  and &#39;baz variable&#39; has value $baz \
+  and &#39;foo bar variable&#39; has value $foobar
+</pre></div>
+</div>
+<img alt="_images/dockerfile-7.1-arg.png" src="_images/dockerfile-7.1-arg.png" />
+<p>Sepintas hampir mirip namun perlu diketahui bahwa ARG tidak akan menjadi environment variable di dalam container.</p>
+<p>Apabila dicek maka hanya instruction ENV yang akan masuk ke dalam container sebagai variable</p>
+<img alt="_images/dockerfile-7.2-arg.png" src="_images/dockerfile-7.2-arg.png" />
+<img alt="_images/dockerfile-7.5.arg-vs-env-dockerfile.png" src="_images/dockerfile-7.5.arg-vs-env-dockerfile.png" />
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>ARG bisa di overwrite pada saat pembuatan image (build image dari Dockerfile)</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">build</span> <span class="o">--</span><span class="n">build</span><span class="o">-</span><span class="n">args</span>  <span class="o">-</span><span class="n">t</span> <span class="o">&lt;</span><span class="n">nama</span><span class="o">-</span><span class="n">image</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">tag</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Instruction ARG dapat diletakkan sebelum instruction FROM.</p>
+<p>Namun setelah FROM maka value daripada ARG tidak akan dapat digunakan.</p>
+</div>
+</div>
+<div class="section" id="substansial-penggunaan-arg-dan-env">
+<h2>Substansial penggunaan ARG dan ENV<a class="headerlink" href="#substansial-penggunaan-arg-dan-env" title="Permalink to this headline">¶</a></h2>
+<p>Semisal terdapat Dockerfile sebagai berikut</p>
+<p>file Dockerfile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>ARG OS_VERSION=18.04
+FROM ubuntu:$OS_VERSION
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update \
+    &amp;&amp; apt-get install -y curl zip unzip git sqlite3
+
+ENV PHP_VERSION=7.2
+
+RUN apt-get install -y php$PHP_VERSION-fpm
+
+CMD echo &#39;success install phpfpm version $PHP_VERSION on OS ubuntu version $OS_VERSION&#39;
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Saat tulisan ini dibuat, repository untuk package php7.2-fpm sudah terdapat di ubuntu versi 18.04, pada ubuntu versi sebelumnya belum tersedia sehingga perlu menambahkan repository php dahulu (ondrejphp).</p>
+</div>
+<img alt="_images/dockerfile-7.6.arg-vs-env-dockerfile.png" src="_images/dockerfile-7.6.arg-vs-env-dockerfile.png" />
+<p>Kemudian apabila sudah dibuild maka saat mencoba overwrite ENV tidak akan dapat mengulangi proses build (dalam case ini menginstall package php versi lain)</p>
+<img alt="_images/dockerfile-7.7.env-cannot-overwrite-to-build-image.png" src="_images/dockerfile-7.7.env-cannot-overwrite-to-build-image.png" />
+<p>Jika dilihat dari behavior antara ARG dan ENV diatas maka dapat disimpulkan substansial keduanya sebagai berikut:</p>
+<ul>
+<li><p>ARG direkomendasikan untuk pemilihan versioning package</p>
+<blockquote>
+<div><p>semisal saat penginstallan versi OS atau pacakge, seperti ubuntu versi 16 atau 18 dan php versi 7.1 atau 7.2</p>
+<p>Berbeda dengan ENV, instruction <code class="docutils literal notranslate"><span class="pre">ARG</span></code> dapat diberikan sebelum instruction <code class="docutils literal notranslate"><span class="pre">FROM</span></code></p>
+<p>Jika menggunakan instruction ENV maka hasilnya akan error, seperti misal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>ENV version=16.04
+FROM ubuntu:$version
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>ENV direkomendasikan sebagai environment variable yang dapat dioverwrite pada saat running container</p>
+<blockquote>
+<div><p>seperti penentuan port.</p>
+<p>Misalkan saat menjalankan node js dimana port nya bisa sembarang,</p>
+<p>file <code class="docutils literal notranslate"><span class="pre">http.js</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">http</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">);</span>
+
+<span class="n">function</span> <span class="n">serve</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">http</span><span class="o">.</span><span class="n">createServer</span><span class="p">(</span><span class="n">function</span> <span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">writeHead</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">});</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Some Secrets:&quot;</span><span class="p">);</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">process</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">SECRET_PASSPHRASE</span><span class="p">);</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">process</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">SECRET_TWO</span><span class="p">);</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">There is no place like &quot;</span><span class="o">+</span><span class="n">ip</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="n">port</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="p">);</span>
+        <span class="p">})</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">ip</span><span class="p">);</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Server running at http://&#39;</span><span class="o">+</span><span class="n">ip</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="n">port</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="o">//</span><span class="n">Create</span> <span class="n">a</span> <span class="n">server</span> <span class="n">listening</span> <span class="n">on</span> <span class="nb">all</span> <span class="n">networks</span>
+<span class="n">serve</span><span class="p">(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="mi">9000</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Berikut contoh menjalankan app node js diatas pada port 9000</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PORT</span><span class="o">=</span><span class="mi">9000</span> <span class="n">node</span> <span class="n">server</span><span class="o">.</span><span class="n">js</span>
+</pre></div>
+</div>
+<p>Apabila dibuat di container maka ketika menjalankannya dapat me-overwrite dengan memberikan port yang dikehendaki.</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">--</span><span class="n">rm</span> <span class="o">-</span><span class="n">e</span> <span class="n">port</span><span class="o">=</span><span class="mi">9000</span> <span class="n">nodeexpress</span><span class="p">:</span><span class="n">latest</span>
+</pre></div>
+</div>
+<p>Tentunya cara ini dilakukan apabila di Dockerfile tidak memberikan instruction <strong>EXPOSE</strong>  (karena pada <cite>Node js</cite> sendiri bisa dikatakan tidak memiliki default port).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Sekedar referensi pada <strong>image official MySQL</strong>, di dalamnya terdapat penggunaan environment variable untuk membuat root password (MYSQL_ROOT_PASSWORD)</p>
+<p>environment <code class="docutils literal notranslate"><span class="pre">MYSQL_ROOT_PASSWORD</span></code> ini terletak pada file bash <cite>docker-entrypoint.sh</cite></p>
+<p>Saat menjalankan container (running image) CMD atau ENTRYPOINT ini akan menuju file tersebut.</p>
+<p>Dimana jika tidak memberikan environment <code class="docutils literal notranslate"><span class="pre">MYSQL_ROOT_PASSWORD</span></code> maka akan terjadi error karena mysql belum membuatkan user root</p>
+<p>file <code class="docutils literal notranslate"><span class="pre">docker-entrypoint.sh</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>...
+if [ -z &quot;$MYSQL_ROOT_PASSWORD&quot; -a -z &quot;$MYSQL_ALLOW_EMPTY_PASSWORD&quot; -a -z &quot;$MYSQL_RANDOM_ROOT_PASSWORD&quot; ]; then
+        mysql_error $&#39;Database is uninitialized and password option is not specified\n\tYou need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ALLOW_EMPTY_PASSWORD and MYSQL_RANDOM_ROOT_PASSWORD&#39;
+fi
+...
+</pre></div>
+</div>
+<p>ref: <a class="reference external" href="https://github.com/docker-library/mysql/blob/master/8.0/docker-entrypoint.sh">https://github.com/docker-library/mysql/blob/master/8.0/docker-entrypoint.sh</a></p>
+</div>
+</div></blockquote>
+</li>
+</ul>
+<p>Lebih jauh lagi penulis merekomendasikan ARG atau ENV di Dockerfile yang dikombinasikan dengan <strong>docker compose</strong></p>
+<p>Alasannya sederhana, yaitu karena jika menggunakan <strong>docker compose</strong> maka dapat me-overwrite baik ARG atau ENV pada dockerfile secara lebih mudah</p>
+<p>Nah nantinya pada file <strong>Dockerfile</strong> ARG dan ENV dapat dijadikan sebagai default value saja.</p>
+</div>
+<div class="section" id="volume">
+<h2>Volume<a class="headerlink" href="#volume" title="Permalink to this headline">¶</a></h2>
+<p>Sebenarnya instruction Volume di Dockerfile bersifat opsional.</p>
+<p>Instruction volume ini digunakan apabila service akan menghasilkan data dinamis, atau dalam arti lain tidak setiap service memerlukan instruction ini.</p>
+<p>Konsep Volume pada Dockerfile sejatinya hanya untuk membuat <cite>volume objects</cite> ketika menjalankan container (running image)</p>
+<p>Substansial instruction volume di dockerfile adalah apabila service yang dijalankan menghasilkan data dynamic (statefull) maka perlu dibuatkan object volume.</p>
+<p>Nantinya setelah membuat image (dari file Dockerfile) dan merunning container maka data tersebut akan disimpan ke dalam volume.</p>
+<p>Contoh sederhana adalah misal pada Database MySQL.</p>
+<p>Secara default MySQL akan menyimpan semua data-datanya di directory <code class="docutils literal notranslate"><span class="pre">/var/lib/mysql</span></code></p>
+<p>Kemudian coba perhatikan file <cite>Dockerfile</cite> pada Image official MySQL di <a class="reference external" href="https://github.com/docker-library/mysql/blob/master/8.0/Dockerfile#L77">https://github.com/docker-library/mysql/blob/master/8.0/Dockerfile#L77</a></p>
+<p>code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">VOLUME</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql</span>
+</pre></div>
+</div>
+<p>Disitu terlihat bahwa file Dockerfile pada MySQL akan membuat volume yang mana <cite>mount destination</cite> nya berada di <code class="docutils literal notranslate"><span class="pre">/var/lib/mysql</span></code>.</p>
+<p>Ketika pull image (yang mana otomatis menggunakan file Dockerfile tersebut) dan menjalankan container (running image) maka akan tercipta volume object tanpa nama (random id)</p>
+<p>Tujuan daripadanya adalah ketika menghentikan container (stop container) lalu memulai kembali (start container) maka data di mysql seperti database/schema akan masih ada.</p>
+<p>Jika tidak terdapat instruction VOLUME pada dockerfile MySQL tersebut, maka ketika menghentikan container dan memulainya kembali data akan hilang.</p>
+</div>
+<div class="section" id="workdir">
+<h2>Workdir<a class="headerlink" href="#workdir" title="Permalink to this headline">¶</a></h2>
+<p>Any consecutive RUN, CMD, ADD, COPY, or ENTRYPOINT instruction will be executed in the specified working directory.</p>
+<p>penggunaan workdir</p>
+<p>jadi workdir itu adalah change directory pada container (bukan di local)</p>
+<p><a class="reference external" href="https://stackoverflow.com/questions/51066146/what-is-the-point-of-workdir-on-dockerfile">https://stackoverflow.com/questions/51066146/what-is-the-point-of-workdir-on-dockerfile</a></p>
+<p>dan ternyata workdir itu bisa diberikan env, artinya saat build dia akan memakai variable environment untuk keperluan seperti run (cmd kayaknya gak bisa)</p>
+<p><a class="reference external" href="https://docs.docker.com/engine/reference/builder/#workdir">https://docs.docker.com/engine/reference/builder/#workdir</a></p>
+</div>
+<div class="section" id="add">
+<h2>Add<a class="headerlink" href="#add" title="Permalink to this headline">¶</a></h2>
+<p>add vs volume</p>
+<p><a class="reference external" href="https://stackoverflow.com/questions/27735706/docker-add-vs-volume">https://stackoverflow.com/questions/27735706/docker-add-vs-volume</a></p>
+<p>add vs copy</p>
+<p>copy hanya mengcopy file/folder biasa
+add memiliki mengambil file dari remote url (download) serta ada fitur extract file tar</p>
+</div>
+<div class="section" id="expose">
+<h2>Expose<a class="headerlink" href="#expose" title="Permalink to this headline">¶</a></h2>
+<p>Perlu dicoba
+jadi saat di dockerfile itu gak dikasih expose
+tapi saat run dikasih -p</p>
+<p>docker run –rm -p 80:8080 nginx
+lalu apakah jalan</p>
+<p>nah ternyata saat dikasih -p itu ada host nya</p>
+<p>misal pada mysql yang mana dockerfilenya telah ada expose 3306 (atau 33060)
+jika di run dengan port destination yang sama di container</p>
+<p>docker run –rm -e MYSQL_ROOT_PASSWORD=root -p 3307:3306 mysql:latest</p>
+<p>maka hasilnya bisa connect
+mysql -h 127.0.0.1 –port=3307 -u root -proot</p>
+<p>tapi kalau misal mengguanakn</p>
+<p>docker run –rm -e MYSQL_ROOT_PASSWORD=root -p 3307:3307 mysql:latest</p>
+<p>maka akan gagal
+mysql -h 127.0.0.1 –port=3307 -u root -proot
+mysql: [Warning] Using a password on the command line interface can be insecure.</p>
+<p>jadi ya harus ditulis expose ini</p>
+</div>
+<div class="section" id="mengupload-image-ke-registry">
+<h2>mengupload image ke registry<a class="headerlink" href="#mengupload-image-ke-registry" title="Permalink to this headline">¶</a></h2>
+<p>Untuk bisa mengupload ke registry (misal docker hub) maka harus memberikan nama tag sesuai</p>
+<p>docker tag &lt;nama-image&gt;:&lt;tag-image&gt; &lt;reponame&gt;:&lt;tag-docker-hub&gt;</p>
+<p>docker tag app-golang:1.0 ryan/app-golang:1.0</p>
+<p>maka saat dilihat di list container akan terdapat baru yang mana terdapat</p>
+<p>untuk melakukan push di terminal, diperlukan adanya login agar dapat melakukan push</p>
+<p>docker login</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Jika melakukan pembuatan image menggunakan image yang sudah ada (pada case diatas adalah golang), maka tidak akan melakukan push secara keseluruhan</p>
+<p>Karena jika menggunakan image yang berasal dari registry maka saat push ke registry tersebut, registry akan menggunakan image yang sudah ada.</p>
+</div>
+<p>Untuk melakukan pengecekan docker container telah berjalan (setelah docker container start)</p>
+<p>docker container logs &lt;nama-container&gt;</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>biasanya jika sudah jalan maka akan memunculkan adanya keterangan <strong>started …</strong></p>
+</div>
+<p>Untuk membuat adanya environment variable</p>
+<p>docker container create –name &lt;nama-container&gt; -p &lt;outside-port&gt;:&lt;inside-port&gt; -e &lt;key-variable&gt;=&lt;value-variable&gt; &lt;image&gt;:&lt;tag&gt;</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Jika ingin memberikan lebih dari satu environment dapat dengan menggunakan parameter e lebih dari satu kali</p>
+<p>-e NAME=DOCKER -e USER=DOCKER</p>
+</div>
+<p>untuk mengecek adanya environment variable</p>
+<p>docker container inspect &lt;nama-container&gt;</p>
+</div>
+<div class="section" id="membuat-custom-image-dari-registry">
+<h2>Membuat custom image dari registry<a class="headerlink" href="#membuat-custom-image-dari-registry" title="Permalink to this headline">¶</a></h2>
+<p>Kebanyakan image di repository registry hub khususnya image official telah memiliki adanya standard library.</p>
+<p>Namun terkadang dalam suatu application masih membutuhkan adanya library lain yang belum disertakan di image official tersebut.</p>
+<p>Contohnya seperti image official php (<a class="reference external" href="https://hub.docker.com/_/php">https://hub.docker.com/_/php</a>).</p>
+<p>Pada image official tersebut, hanya terdapat common library atau library umum yang ada di php.</p>
+<p>Jika semisal membutuhkan library seperti <code class="docutils literal notranslate"><span class="pre">gd</span></code> atau <code class="docutils literal notranslate"><span class="pre">imagick</span></code> (untuk keperluan mengolah file image) maka harus menginstall sendiri ke dalam containernya.</p>
+<p>berikut contoh penambahan library tersebut ke dalam dockerfile</p>
+<p>file <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">belum</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="membuat-custom-image-dari-base-image">
+<h2>Membuat custom image dari base image<a class="headerlink" href="#membuat-custom-image-dari-base-image" title="Permalink to this headline">¶</a></h2>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Sebaiknya agar lebih memperkuat bagian custom image dapat mempelajari pada materi concept program on linux</p>
+</div>
+<p>custom image dapat dibuat dengan memberikan base image</p>
+<div class="section" id="base-image-alpine-vs-ubuntu">
+<h3>base image alpine vs ubuntu<a class="headerlink" href="#base-image-alpine-vs-ubuntu" title="Permalink to this headline">¶</a></h3>
+<p>alpine itu menggunakan busybox makanya kecil</p>
+<p>busybox itu ya diperuntukkan untuk awal bagnet, misal ngasih perintah paling awal
+alpine itu udah linux (cuma ga ada isinya)</p>
+<p>sedangkan ubuntu itu lebih gede</p>
+</div>
+<div class="section" id="menjalankan-multi-service-pada-satu-container">
+<h3>Menjalankan multi service pada satu container<a class="headerlink" href="#menjalankan-multi-service-pada-satu-container" title="Permalink to this headline">¶</a></h3>
+<p>sebenarnya penulis lebih menyarankan 1 service 1 container
+dimana jika itu dibuat di dockerfile maka dijalankan dengan cmd/entrypoint
+penggunaan seperti supervisor mungkin bisa, tapi kan supervisor itu third party, ditambah jika menggunakan supervisor maka service yang dibuat harus foreground (nodaemon=true)
+karena jika service bberjalan di foreground container akan berhenti
+maka dari itu sebaiknya 1 service saja</p>
+<p>ref : <a class="reference external" href="https://devops.stackexchange.com/questions/447/why-it-is-recommended-to-run-only-one-process-in-a-container">https://devops.stackexchange.com/questions/447/why-it-is-recommended-to-run-only-one-process-in-a-container</a></p>
+<p>ingat jika bingung bagaimana execute service dengan dockerfile dapat dengan</p>
+<p><a class="reference external" href="mailto:intel&#37;&#52;&#48;intel-Satellite-C55t-C">intel<span>&#64;</span>intel-Satellite-C55t-C</a>:/etc/systemd/system/multi-user.target.wants$ cat php7.2-fpm.service
+[Unit]
+Description=The PHP 7.2 FastCGI Process Manager
+Documentation=man:php-fpm7.2(8)
+After=network.target</p>
+<p>[Service]
+Type=notify
+ExecStart=/usr/sbin/php-fpm7.2 –nodaemonize –fpm-config /etc/php/7.2/fpm/php-fpm.conf
+ExecStartPost=-/usr/lib/php/php-fpm-socket-helper install /run/php/php-fpm.sock /etc/php/7.2/fpm/pool.d/www.conf 72
+ExecStopPost=-/usr/lib/php/php-fpm-socket-helper remove /run/php/php-fpm.sock /etc/php/7.2/fpm/pool.d/www.conf 72
+ExecReload=/bin/kill -USR2 $MAINPID</p>
+<p>[Install]
+WantedBy=multi-user.target</p>
+<p>referensi : <a class="reference external" href="https://docs.docker.com/config/containers/multi-service_container/">https://docs.docker.com/config/containers/multi-service_container/</a></p>
+<p>Terdapat berbagai cara dalam</p>
+<ul class="simple">
+<li><p>command yang telah disediakan</p></li>
+<li><p>melalui script bash (file <code class="docutils literal notranslate"><span class="pre">.sh</span></code>)</p></li>
+<li><p>supervisor</p></li>
+</ul>
+<p>semisal ketika telah memiliki OS (ubuntu)</p>
+<p>lalu menginstall service (misal nginx, mysql, php)</p>
+<p>lantas bagaimana run service nya</p>
+<p>sebenere masih pakai cmd atau entrypoint
+hanya saja banyak cara dalam melakukanny</p>
+<p>penjelasan yang cukup comprehensive (menggunakan script .sh)
+<a class="reference external" href="http://phusion.github.io/baseimage-docker/">http://phusion.github.io/baseimage-docker/</a>
+<a class="reference external" href="https://github.com/onjin/docker-alpine-vsftpd">https://github.com/onjin/docker-alpine-vsftpd</a>
+<a class="reference external" href="https://github.com/helderco/docker-php">https://github.com/helderco/docker-php</a></p>
+<p>menggunakan command dari software (command default yang mana ini akan menggunakan foreground)
+<a class="reference external" href="https://medium.com/&#64;pablo_ezequiel/creating-a-docker-image-with-mongodb-4c8aa3f828f2">https://medium.com/&#64;pablo_ezequiel/creating-a-docker-image-with-mongodb-4c8aa3f828f2</a></p>
+<p>comphrehensive (all solution)</p>
+<p>referensi</p>
+<p>membuat image dengan custom software/application dari dockerfile</p>
+<p><a class="reference external" href="https://linuxize.com/post/how-to-build-docker-images-with-dockerfile/">https://linuxize.com/post/how-to-build-docker-images-with-dockerfile/</a></p>
+<p>repository docker khusus untuk membuat custom application dari base image (OS ubuntu bahkan alpine)</p>
+<p><a class="reference external" href="https://github.com/docker-library">https://github.com/docker-library</a>
+misal
+<a class="reference external" href="https://github.com/docker-library/mysql/tree/master/5.7">https://github.com/docker-library/mysql/tree/master/5.7</a></p>
+<p>bahkan official application saja forked dari situ</p>
+<p><a class="reference external" href="https://github.com/mysql/mysql-docker">https://github.com/mysql/mysql-docker</a></p>
+<p>membuat deploy docker (dengan network)</p>
+<p><a class="reference external" href="https://codefresh.io/docker-tutorial/build-docker-image-dockerfiles/">https://codefresh.io/docker-tutorial/build-docker-image-dockerfiles/</a></p>
+<p><a class="reference external" href="https://medium.com/learnfazz/docker-dan-deployment-4709c5ee43c8">https://medium.com/learnfazz/docker-dan-deployment-4709c5ee43c8</a>
+<a class="reference external" href="https://medium.com/learnfazz/deployment-dengan-docker-d23249895a0b">https://medium.com/learnfazz/deployment-dengan-docker-d23249895a0b</a></p>
+<p>panduan membuat dockerfile (cukup compherensive dan menggunakan npm)
+<a class="reference external" href="https://www.docker.com/blog/speed-up-your-development-flow-with-these-dockerfile-best-practices/">https://www.docker.com/blog/speed-up-your-development-flow-with-these-dockerfile-best-practices/</a></p>
+</div>
+</div>
+<div class="section" id="kalau-gagal-build-dockerfile">
+<h2>kalau gagal build dockerfile<a class="headerlink" href="#kalau-gagal-build-dockerfile" title="Permalink to this headline">¶</a></h2>
+<p>tips pake dockerfile</p>
+<p>kalau gagal build jangan hapus image atau container, rugi
+pokoknya setiap ada perubahan di dockerfile langsung build aja,
+docker build -t &lt;nama-image&gt; .</p>
+<p>kalau ada salah, lihat dimana salahnya atau di baris apa
+lalu di sebelumnya kasih</p>
+<p>RUN sh -c ‘sleep 3600’</p>
+<p>nah katakan ini bisa hold image, jadi dia running (as container)
+lalu masuk
+docker exec -it &lt;nama-container&gt; /bin/bash</p>
+<p>lalu check apakah semua library udah benar, atau folder udah bener</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="docker-compose.html" class="btn btn-neutral float-right" title="Docker compose" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="docker-delete-objects.html" class="btn btn-neutral float-left" title="Menghapus Objects pada docker" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ryan
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

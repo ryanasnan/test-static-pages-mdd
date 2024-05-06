@@ -1,0 +1,787 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Kumpulan Dockerfile &mdash; Docker and Kubernetes 1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sphinxcontrib-httpexample.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/sphinxcontrib-httpexample.js"></script>
+        <script src="_static/js/custom.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Docker Laravel" href="docker-laravel.html" />
+    <link rel="prev" title="Orchestration (Kubernetes)" href="orchestration.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Docker and Kubernetes
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="docker-intro.html">Pengenalan Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-architecture.html">Arsitektur Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-objects.html">Docker Objects (Image, Container, Volume, Networks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-delete-objects.html">Menghapus Objects pada docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile.html">Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-compose.html">Docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html">Dockerfile vs docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orchestration.html">Orchestration (Kubernetes)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Kumpulan Dockerfile</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#docker-php">Docker php</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dockerfile-php-5-2-fpm">Dockerfile php 5.2 fpm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#proses-configure-enable-install">Proses configure/enable/install</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#environment-variable-pada-dockerfile">Environment Variable pada Dockerfile</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#patch">Patch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#apa-itu-php-cgi-php-fpm-dan-php-cli">Apa itu php-cgi, php-fpm dan php-cli</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#dockerfile-php-7-4-alpine">Dockerfile php 7.4 alpine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dockerfile-php-7-4-debian">Dockerfile php 7.4 debian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-php-alpine-3-15-vs-docker-php-alpine-3-16">docker php alpine 3.15 vs docker php alpine 3.16</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#bahaya-penggunaan-apt-get-purge-autoremove">Bahaya penggunaan apt-get purge –autoremove</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docker-laravel.html">Docker Laravel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-mern.html">Docker MERN (Mongo Express React Node)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notelog.html">NoteLog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glosarium.html">Glosarium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concept-program-on-linux.html">Konsep Program di Linux</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Docker and Kubernetes</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Kumpulan Dockerfile</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/dockerfile-collection.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="kumpulan-dockerfile">
+<h1>Kumpulan Dockerfile<a class="headerlink" href="#kumpulan-dockerfile" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="docker-php">
+<h2>Docker php<a class="headerlink" href="#docker-php" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="dockerfile-php-5-2-fpm">
+<h3>Dockerfile php 5.2 fpm<a class="headerlink" href="#dockerfile-php-5-2-fpm" title="Permalink to this headline">¶</a></h3>
+<p>Berikut adalah file Dockerfile untuk menginstall php versi 5.2.17 dari <cite>source code</cite></p>
+<p>file <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>FROM debian:jessie-slim
+
+ENV PHP_VERSION 5.2.17
+ENV PHP_INI_DIR /usr/local/etc/php
+ENV DATA_DIR=&quot;data&quot;
+ENV DATA_BIN_DIR=&quot;$DATA_DIR/binaries&quot;
+ENV DATA_CONFIG_DIR=&quot;$DATA_DIR/config&quot;
+ENV DATA_PATCH_DIR=&quot;$DATA_DIR/patch&quot;
+
+# Creating directories for php location and default html
+RUN set -eux; \
+    mkdir -p &quot;$PHP_INI_DIR/conf.d&quot;; \
+    [ ! -d /var/www/html ] &amp;&amp; \
+    mkdir -p /var/www/html &amp;&amp; \
+    chown www-data:www-data /var/www/html &amp;&amp; \
+    chmod 777 /var/www/html; \
+    [ ! -d /usr/src/php ] &amp;&amp; \
+    mkdir -p /usr/src/php;
+
+# dependencies required for running &quot;phpize&quot;
+ENV PHPIZE_DEPS \
+        autoconf \
+        g++ \
+        gcc \
+        libc-dev \
+        make \
+        pkg-config \
+        re2c
+        # dpkg-dev \
+        # file \
+
+# persistent / runtime deps
+ENV RUNTIME_DEPS \
+        $PHPIZE_DEPS \
+        ca-certificates \
+        curl \
+        libmysqlclient18 \
+        libxml2 \
+        sendmail \
+        freetds-dev
+        # libsqlite3-0 \
+        # libpcre3 \
+        # librecode0 \
+        # xz-utils \
+
+# Install for phpize dependency and runtime dependency
+RUN set -eux; \
+    apt-get update &amp;&amp; apt-get install -y --no-install-recommends \
+        $RUNTIME_DEPS; \
+    apt-get clean; \
+    rm -r /var/lib/apt/lists/*
+
+# PHP build dependencies
+ENV PHP_BUILD_DEPS \
+        bzip2 \
+        libcurl4-openssl-dev \
+        libjpeg-dev \
+        libmysqlclient-dev \
+        libpng12-dev \
+        libreadline6-dev \
+        libssl-dev \
+        libxml2-dev \
+        patch
+        # autoconf2.13 \ -&gt; for php 5.2 need this
+        # libbison-dev \
+        # libfl-dev \
+        # libpcre3-dev \
+        # librecode-dev \
+        # libsqlite3-dev \
+
+# Install php build dependency
+RUN set -eux; \
+    apt-get update &amp;&amp; apt-get install -y $PHP_BUILD_DEPS --no-install-recommends &amp;&amp; rm -rf /var/lib/apt/lists/*;
+
+# Copy PHP file and patches
+COPY $DATA_DIR/php-${PHP_VERSION}.tar.gz /usr/src/
+COPY $DATA_PATCH_DIR/php-${PHP_VERSION}*.patch /tmp/
+COPY $DATA_BIN_DIR/docker-php-source /usr/local/bin/
+
+# Extract artifacts
+RUN set -eux; \
+    cd /usr/src; \
+    mv php-${PHP_VERSION}.tar.gz php.tar.gz; \
+    docker-php-source extract;
+
+
+# you can download the php-fpm patch on  https://php-fpm.org/downloads/
+# Apply patches
+RUN set -eux; \
+    cd /usr/src/php; \
+    patch -p1 &lt; /tmp/php-${PHP_VERSION}-libxml2.patch; \
+    patch -p1 &lt; /tmp/php-${PHP_VERSION}-openssl.patch; \
+    patch -p1 &lt; /tmp/php-${PHP_VERSION}-fpm.patch; \
+    patch -p0 &lt; /tmp/php-${PHP_VERSION}-curl.patch || true; \
+# Create php.tar.gz
+    cd /usr/src; \
+    rm -rf php.tar.gz; \
+    tar -zcvf php.tar.gz php; \
+    rm -rf php; \
+# # Clean-up
+    rm -rf /tmp/php-*;
+
+# create symlink for libsybdb.a into /usr/lib
+RUN ln -s /usr/lib/x86_64-linux-gnu/libsybdb.a /usr/lib/
+
+# Install php from source
+RUN set -eux; \
+    ln -s /usr/lib/x86_64-linux-gnu/libmysqlclient* /usr/lib/; \
+    cd /usr/src; \
+    docker-php-source extract; \
+    cd /usr/src/php; \
+    ./configure \
+        --with-config-file-path=&quot;${PHP_INI_DIR}&quot; \
+        --with-config-file-scan-dir=&quot;${PHP_INI_DIR}/conf.d&quot; \
+        --with-fpm-conf=&quot;/usr/local/etc/php-fpm.conf&quot; \
+        \
+        --enable-fastcgi \
+        --enable-fpm \
+        --enable-force-cgi-redirect \
+        \
+        --enable-mbstring \
+        --enable-pdo \
+        --enable-soap \
+        \
+        --with-curl \
+        --with-mysql \
+        --with-mysqli \
+        --with-mssql \
+        --with-openssl \
+        --with-pdo-mysql \
+        --with-readline \
+        --with-zlib; \
+    sed -i &#39;s/-lxml2 -lxml2 -lxml2/-lcrypto -lssl/&#39; Makefile; \
+    make -j&quot;$(nproc)&quot;; \
+    make install; \
+# Clean-up
+    { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all &#39;{}&#39; + || true; }; \
+    apt-get purge -y --auto-remove $PHP_BUILD_DEPS; \
+    make clean; \
+    cd /; \
+    docker-php-source delete; \
+    rm -rf /var/lib/apt/*; \
+    rm -rf /var/cache/apt/*;
+
+COPY $DATA_BIN_DIR/docker-php-* /usr/local/bin/
+COPY $DATA_BIN_DIR/php-fpm-binary-alternative /usr/local/sbin/php-fpm
+COPY $DATA_CONFIG_DIR/php-fpm.conf /usr/local/etc/
+COPY $DATA_CONFIG_DIR/php.ini /usr/local/etc/php/php.ini
+
+WORKDIR /app
+EXPOSE 9000
+CMD [&quot;php-fpm&quot;, &quot;start&quot;]
+</pre></div>
+</div>
+<p>Untuk mengetahui file selengkapnya tentang file diatas, bisa mengunjungi repository berikut : <a class="reference external" href="https://github.com/ryanasnan/docker-php-5-version">https://github.com/ryanasnan/docker-php-5-version</a></p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Jangan menghapus file <code class="docutils literal notranslate"><span class="pre">php.tar.gz</span></code> karena nantinya ketika membuat adanya file dockerfile baru dengan base image yang sama, maka untuk <code class="docutils literal notranslate"><span class="pre">configure/enable/install</span></code> akan menggunakan kembali file php.tar.gz</p>
+<p>File semacam``docker-php-ext-configure`` atau <code class="docutils literal notranslate"><span class="pre">docker-php-ext-install</span></code> akan berhubungan dengan <code class="docutils literal notranslate"><span class="pre">docker-php-source</span></code> yang mana ini akan kembali mengekstrak file <code class="docutils literal notranslate"><span class="pre">php.tar.gz</span></code></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">--no-install-recommends</span></code> mengindikasikan untuk menginstall package yang penting saja (package utama serta dependency nya), sedangkan <cite>package recommended</cite> tidak diinstal.</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p><code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">eux</span></code> dapat dipahami satu persatu sebagai berikut:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">e</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>e akan menghentikan script jika terjadi error (misal file tidak ada), sehingga script dibawahnya tidak akan dieksekusi</p>
+</div></blockquote>
+<ul>
+<li><p>x</p>
+<blockquote>
+<div><p>x digunakan untuk debugging, yaitu akan memunculkan tiap proses dari baris script (meski tidak dilakukan echo)</p>
+</div></blockquote>
+</li>
+<li><p>u</p>
+<blockquote>
+<div><p>seperti misal mengeksekusi perintah berikut <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">$x</span> <span class="pre">$y</span></code> di terminal, maka tidak akan terjadi error, namun dengan tambahan -u akan terjadi error <cite>unbound variable</cite></p>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="proses-configure-enable-install">
+<h4>Proses configure/enable/install<a class="headerlink" href="#proses-configure-enable-install" title="Permalink to this headline">¶</a></h4>
+<p>Pada repository diatas terdapat adanya file yang akan berurusan dengan <strong>php</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>- docker-php-entrypoint
+
+    Untuk menjadi entrypoint daripada program php, yakni file **php-fpm**
+
+- docker-php-ext-configure
+
+    Untuk melakukan adanya configure module sebelum melakukan penginstalan ulang pada php.
+
+- docker-php-ext-enable
+
+    Untuk melakukan adanya `enable` module sebelum melakukan penginstalan ulang php php.
+
+- docker-php-ext-install
+
+    Akan menginstall php dengan argumennya berupa module php.
+
+- docker-php-source
+
+    Untuk mengekstrak file php.tar.gz pada directory ``/usr/usr/``
+</pre></div>
+</div>
+<p>Pada file <cite>docker-php-ext-configure</cite> dan <cite>docker-php-ext-install</cite> akan ada command seperti berikut:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>: ${CFLAGS:=$PHP_CFLAGS}
+: ${CPPFLAGS:=$PHP_CPPFLAGS}
+: ${LDFLAGS:=$PHP_LDFLAGS}
+export CFLAGS CPPFLAGS LDFLAGS
+</pre></div>
+</div>
+<p>Dimana command <strong>export</strong> tersebut adalah semacam <cite>env_variable</cite> yang akan dijalankan di ‘child bash’, dan tidak akan menganggu adanya env di bash yang sedang berjalan.</p>
+<p>Tujuan adanya <cite>env_variable</cite> tersebut adalah untuk mengoptimasi compile seperti bisa memperkecil size (ukuran) instalasi, namun untuk case ini tidak digunakan.</p>
+</div>
+<div class="section" id="environment-variable-pada-dockerfile">
+<h4>Environment Variable pada Dockerfile<a class="headerlink" href="#environment-variable-pada-dockerfile" title="Permalink to this headline">¶</a></h4>
+<p>Terdapat 3 Environment Variable (dalam dockerfile) yakni :</p>
+<ul>
+<li><p>PHPIZE_DEPS</p>
+<blockquote>
+<div><p>phpize ini sejatinya adalah suatu script (bash) yang mana digunakan untuk menyiapkan <cite>PHP extension</cite> dalam melakukan <strong>compiling</strong>.</p>
+<p>Namun disini penulis memberikan beberapa package yang memang dibutuhkan untuk proses compile seperti gcc, g++, make, dll.</p>
+</div></blockquote>
+</li>
+<li><p>RUNTIME_DEPS</p>
+<blockquote>
+<div><p>Persistence/RUNTIME adalah beberapa package yang digunakan untuk menjalankan php.</p>
+<p>Jadi package ini harus ada ketika php sudah diinstal.</p>
+<p>Seperti misal adalah <code class="docutils literal notranslate"><span class="pre">libmysqlclient18</span></code> dimana library ini harus ada di directory <code class="docutils literal notranslate"><span class="pre">/usr/lib/x86_64-linux-gnu</span></code>, dan jika tidak maka akan muncul error:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">libmysqlclient18</span> <span class="n">will</span> <span class="n">be</span> <span class="n">saved</span> <span class="ow">in</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">x86_64</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">gnu</span><span class="c1">#</span>
+<span class="n">php</span><span class="p">:</span> <span class="n">error</span> <span class="k">while</span> <span class="n">loading</span> <span class="n">shared</span> <span class="n">libraries</span><span class="p">:</span> <span class="n">libmysqlclient</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mi">18</span><span class="p">:</span> <span class="n">cannot</span> <span class="nb">open</span> <span class="n">shared</span> <span class="nb">object</span> <span class="n">file</span><span class="p">:</span> <span class="n">No</span> <span class="n">such</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">directory</span>
+</pre></div>
+</div>
+<p>Dan meski juga telah dilakukan penginstalan library <code class="docutils literal notranslate"><span class="pre">libmysqlclient</span></code>, namun library tersebut nantinya akan dihapus (purge), dan jika tidak terdapat library <code class="docutils literal notranslate"><span class="pre">libmysqlclient18</span></code> maka tidak akan bisa untuk menjalankan program php.</p>
+<p>Hal ini berlaku juga pada <code class="docutils literal notranslate"><span class="pre">libxml</span></code> dan <code class="docutils literal notranslate"><span class="pre">libxml-dev</span></code>.</p>
+</div></blockquote>
+</li>
+<li><p>PHP_BUILD_DEPS</p>
+<blockquote>
+<div><p>Package yang memang digunakan untuk ‘build php’, seperti misal untuk memberikan module <cite>xml</cite> maka dibutuhkan <code class="docutils literal notranslate"><span class="pre">libxml-dev</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Untuk Package yang berada di PHP_BUILD_DEPS boleh dihapus (dengan <code class="docutils literal notranslate"><span class="pre">apt-get</span> <span class="pre">purge</span> <span class="pre">-y</span> <span class="pre">--auto-remove</span> <span class="pre">$PHP_BUILD_DEPS;</span></code>)</p>
+<p>Adanya package dengan akhiran <a href="#id1"><span class="problematic" id="id2">*</span></a>-dev biasanya adalah package yang berisikan <cite>headers</cite> yang berhubungan dengan suatu interface library</p>
+<p>Adanya penghapusan package dengan akhiran <a href="#id3"><span class="problematic" id="id4">*</span></a>-dev tidak akan berpengaruh pada program (seperti dalam case ini adalah php dan php-cgi), sehingga jika dihapus maka tidak akan terpengaruh.</p>
+<p>Namun memang dalam penginstallan suatu package (seperti dalam case ini php), maka dibutuhkan adanya packge dengan akhiran <a href="#id5"><span class="problematic" id="id6">*</span></a>-dev tersebut.</p>
+<p>Arti daripada <code class="docutils literal notranslate"><span class="pre">apt-get</span> <span class="pre">purge</span> <span class="pre">-y</span> <span class="pre">--auto-remove</span> <span class="pre">$PHP_BUILD_DEPS;</span></code></p>
+<p>Syntax tersebut akan melakukan penghapusan (purge) pada package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">purge</span> <span class="o">-</span><span class="n">y</span> <span class="o">--</span><span class="n">auto</span><span class="o">-</span><span class="n">remove</span> <span class="n">bzip2</span> <span class="n">libcurl4</span><span class="o">-</span><span class="n">openssl</span><span class="o">-</span><span class="n">dev</span> <span class="n">libjpeg</span><span class="o">-</span><span class="n">dev</span> <span class="n">libmysqlclient</span><span class="o">-</span><span class="n">dev</span> <span class="n">libpng12</span><span class="o">-</span><span class="n">dev</span> <span class="n">libreadline6</span><span class="o">-</span><span class="n">dev</span> <span class="n">libssl</span><span class="o">-</span><span class="n">dev</span> <span class="n">libxml2</span><span class="o">-</span><span class="n">dev</span> <span class="n">patch</span>
+<span class="n">Reading</span> <span class="n">package</span> <span class="n">lists</span><span class="o">...</span>
+<span class="n">Building</span> <span class="n">dependency</span> <span class="n">tree</span><span class="o">...</span>
+<span class="n">Reading</span> <span class="n">state</span> <span class="n">information</span><span class="o">...</span>
+<span class="n">The</span> <span class="n">following</span> <span class="n">packages</span> <span class="n">will</span> <span class="n">be</span> <span class="n">REMOVED</span><span class="p">:</span>
+<span class="n">bzip2</span><span class="o">*</span> <span class="n">libcurl4</span><span class="o">-</span><span class="n">openssl</span><span class="o">-</span><span class="n">dev</span><span class="o">*</span> <span class="n">libjpeg</span><span class="o">-</span><span class="n">dev</span><span class="o">*</span> <span class="n">libjpeg62</span><span class="o">-</span><span class="n">turbo</span><span class="o">*</span>
+<span class="n">libjpeg62</span><span class="o">-</span><span class="n">turbo</span><span class="o">-</span><span class="n">dev</span><span class="o">*</span> <span class="n">libmysqlclient</span><span class="o">-</span><span class="n">dev</span><span class="o">*</span> <span class="n">libmysqlclient18</span><span class="o">*</span> <span class="n">libpng12</span><span class="o">-</span><span class="n">dev</span><span class="o">*</span>
+<span class="n">libreadline6</span><span class="o">-</span><span class="n">dev</span><span class="o">*</span> <span class="n">libssl</span><span class="o">-</span><span class="n">dev</span><span class="o">*</span> <span class="n">libtinfo</span><span class="o">-</span><span class="n">dev</span><span class="o">*</span> <span class="n">libxml2</span><span class="o">*</span> <span class="n">libxml2</span><span class="o">-</span><span class="n">dev</span><span class="o">*</span>
+<span class="n">mysql</span><span class="o">-</span><span class="n">common</span><span class="o">*</span> <span class="n">patch</span><span class="o">*</span> <span class="n">zlib1g</span><span class="o">-</span><span class="n">dev</span><span class="o">*</span>
+<span class="mi">0</span> <span class="n">upgraded</span><span class="p">,</span> <span class="mi">0</span> <span class="n">newly</span> <span class="n">installed</span><span class="p">,</span> <span class="mi">16</span> <span class="n">to</span> <span class="n">remove</span> <span class="ow">and</span> <span class="mi">0</span> <span class="ow">not</span> <span class="n">upgraded</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Dan berikut script penghapusan yang lebih lengkap:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $PHP_BUILD_DEPS;
+</pre></div>
+</div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Adanya beberapa package yang di`comment` (#) tersebut berasal dari beberapa sumber repo/article yang ditemukan oleh penulis, hanya saja tampaknya tidak terlalu dibutuhkan dalam penginstallan.</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>untuk mengecek adanya suatu library, seperti apakah sudah terinstall atau belum bisa menggunakan syntax <code class="docutils literal notranslate"><span class="pre">dpkg</span> <span class="pre">-L</span> <span class="pre">&lt;packagename&gt;</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="o">@</span><span class="mf">19e3273243</span><span class="n">c2</span><span class="p">:</span><span class="o">/</span><span class="n">app</span><span class="c1"># dpkg -L libmysqlclient18</span>
+<span class="o">/.</span>
+<span class="o">/</span><span class="n">usr</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">x86_64</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">gnu</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">x86_64</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">gnu</span><span class="o">/</span><span class="n">libmysqlclient</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mf">18.0</span><span class="o">.</span><span class="mi">0</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">doc</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span><span class="n">libmysqlclient18</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span><span class="n">libmysqlclient18</span><span class="o">/</span><span class="n">changelog</span><span class="o">.</span><span class="n">Debian</span><span class="o">.</span><span class="n">gz</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span><span class="n">libmysqlclient18</span><span class="o">/</span><span class="n">changelog</span><span class="o">.</span><span class="n">gz</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span><span class="n">libmysqlclient18</span><span class="o">/</span><span class="n">NEWS</span><span class="o">.</span><span class="n">Debian</span><span class="o">.</span><span class="n">gz</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span><span class="n">libmysqlclient18</span><span class="o">/</span><span class="n">copyright</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">x86_64</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">gnu</span><span class="o">/</span><span class="n">libmysqlclient</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mi">18</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">x86_64</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">gnu</span><span class="o">/</span><span class="n">libmysqlclient_r</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mi">18</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">x86_64</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">gnu</span><span class="o">/</span><span class="n">libmysqlclient_r</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mf">18.0</span><span class="o">.</span><span class="mi">0</span>
+
+<span class="n">root</span><span class="o">@</span><span class="mf">19e3273243</span><span class="n">c2</span><span class="p">:</span><span class="o">/</span><span class="n">app</span><span class="c1"># dpkg -L libjpeg-dev</span>
+<span class="n">dpkg</span><span class="o">-</span><span class="n">query</span><span class="p">:</span> <span class="n">package</span> <span class="s1">&#39;libjpeg-dev&#39;</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">installed</span>
+<span class="n">Use</span> <span class="n">dpkg</span> <span class="o">--</span><span class="n">info</span> <span class="p">(</span><span class="o">=</span> <span class="n">dpkg</span><span class="o">-</span><span class="n">deb</span> <span class="o">--</span><span class="n">info</span><span class="p">)</span> <span class="n">to</span> <span class="n">examine</span> <span class="n">archive</span> <span class="n">files</span><span class="p">,</span>
+<span class="ow">and</span> <span class="n">dpkg</span> <span class="o">--</span><span class="n">contents</span> <span class="p">(</span><span class="o">=</span> <span class="n">dpkg</span><span class="o">-</span><span class="n">deb</span> <span class="o">--</span><span class="n">contents</span><span class="p">)</span> <span class="n">to</span> <span class="nb">list</span> <span class="n">their</span> <span class="n">contents</span><span class="o">.</span>
+<span class="n">root</span><span class="o">@</span><span class="mf">19e3273243</span><span class="n">c2</span><span class="p">:</span><span class="o">/</span><span class="n">app</span><span class="c1">#</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="patch">
+<h4>Patch<a class="headerlink" href="#patch" title="Permalink to this headline">¶</a></h4>
+<p>PHP 5.2 membutuhkan adanya patch untuk menggunakan library <cite>libxml2</cite>, <cite>openssl</cite>, <cite>fpm</cite>, dan <cite>curl</cite>.</p>
+<p>Tanpa patch tersebut maka penginstallan akan <strong>gagal</strong>.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Apa itu file patch?</p>
+<p>Sebenarnya ini seperti adanya pembaharuan code suatu file, dimana jika dilihat filenya (file patch) maka seperti berisikan output perbedaan file dengan git command <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">diff</span></code></p>
+<p>contoh:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>diff --git a/configure b/configure
+index 2d88ed7..c490abf 100755
+--- a/configure
++++ b/configure
+@@ -773,6 +773,17 @@ ac_help=&quot;$ac_help
+--disable-path-info-check CGI: If this is disabled, paths such as
+                            /info.php/test?a=b will fail to work&quot;
+ac_help=&quot;$ac_help
++  --enable-fpm              FastCGI: If this is enabled, the fastcgi support
++                            will include experimental process manager code&quot;
++ac_help=&quot;$ac_help
++  --with-fpm-conf=PATH        Set the path for php-fpm configuration file [PREFIX/etc/php-fpm.conf]&quot;
++ac_help=&quot;$ac_help
++  --with-fpm-log=PATH         Set the path for php-fpm log file [PREFIX/logs/php-fpm.log]&quot;
++ac_help=&quot;$ac_help
++  --with-fpm-pid=PATH         Set the path for php-fpm pid file [PREFIX/logs/php-fpm.pid]&quot;
++ac_help=&quot;$ac_help
++  --with-xml-config=PATH      FPM: use xml-config in PATH to find libxml&quot;
++ac_help=&quot;$ac_help
+
+General settings:
+&quot;
+@@ -12153,11 +12164,30 @@ ext_output=$PHP_PATH_INFO_CHECK
+
+
+
++php_enable_fpm=no
++
++
++# Check whether --enable-fpm or --disable-fpm was given.
++if test &quot;${enable_fpm+set}&quot; = set; then
++  enableval=&quot;$enable_fpm&quot;
++  PHP_FPM=$enableval
++else
++
++  PHP_FPM=no
++
++  if test &quot;$PHP_ENABLE_ALL&quot; &amp;&amp; test &quot;no&quot; = &quot;yes&quot;; then
++    PHP_FPM=$PHP_ENABLE_ALL
++  fi
++
++fi
++
++
++ext_output=$PHP_FPM
+
+
+if test &quot;$PHP_SAPI&quot; = &quot;default&quot;; then
+echo $ac_n &quot;checking whether to build CGI binary&quot;&quot;... $ac_c&quot; 1&gt;&amp;6
+-echo &quot;configure:12161: checking whether to build CGI binary&quot; &gt;&amp;5
++echo &quot;configure:12435: checking whether to build CGI binary&quot; &gt;&amp;5
+if test &quot;$PHP_CGI&quot; != &quot;no&quot;; then
+    echo &quot;$ac_t&quot;&quot;yes&quot; 1&gt;&amp;6
+
+@@ -12194,8 +12224,25 @@ EOF
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="apa-itu-php-cgi-php-fpm-dan-php-cli">
+<h4>Apa itu php-cgi, php-fpm dan php-cli<a class="headerlink" href="#apa-itu-php-cgi-php-fpm-dan-php-cli" title="Permalink to this headline">¶</a></h4>
+<p>CGI adalah sebuah teknologi web dan protocol yang digunakan untuk <cite>web server</cite> (http) untuk berhubungan ke application lainnya (seprti php).</p>
+<p>Sedangkan php-cgi sendiri dapat diartikan sebagai file server-side php untuk menerima request http (take incoming http request).</p>
+<p>Sedangkan pengembangan selanjutnya dari cgi adalah FastCGI yang memungkinkan adanya optimisasi dalam penerimaan request http.</p>
+<p>Bagaimana dengan php-fpm ?</p>
+<p>Sebetulnya tidak jauh berbeda antara FastCGI dan FPM, karena FPM ini lebih kepada <cite>process manager</cite> untuk me-manage ‘FastCGI SAPI (server API)’.</p>
+<p>Jadi php-fpm adalah seperti php-cgi namun memiliki adanya process manager sehingga lebih terstruktur.</p>
+<p>php-fpm adalah implementasi server FastCGI yang dapat ditentukan pada beberapa web server seperti Apache or Nginx.</p>
+<p>Sedangkan php-cli adalah <cite>standalone tool</cite> untuk menjalankan <cite>PHP scripts</cite> di <cite>command line</cite> (php somescript.php).</p>
+<p>Untuk memudahkan pemahaman maka mudahnya pengaksesan <cite>file</cite> php itu ada 2 yakni cgi (lewat http) dan cli (melalui command line).</p>
+<p>Tentu yang biasa digunakan adalah http atau dalam hal ini <cite>cgi</cite>, sedangkan cli tentunya akan kurang begitu banyak diaplikasikan.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Untuk memahami lebih jelasnya, pada docker <code class="docutils literal notranslate"><span class="pre">php</span> <span class="pre">official</span></code>, pada file dockerfile php-cli, maka tidak akan terdapat adanya <code class="docutils literal notranslate"><span class="pre">fpm</span></code> (tidak terdapat <code class="docutils literal notranslate"><span class="pre">--enable-fpm</span></code>)</p>
+<p><a class="reference external" href="https://github.com/docker-library/php/blob/master/7.4/buster/cli/Dockerfile">https://github.com/docker-library/php/blob/master/7.4/buster/cli/Dockerfile</a></p>
+</div>
+<p>Referensi :</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://hub.docker.com/r/tommylau/php-5.2">https://hub.docker.com/r/tommylau/php-5.2</a> , <a class="reference external" href="https://github.com/TommyLau/docker-lnmpa">https://github.com/TommyLau/docker-lnmpa</a> dan <a class="reference external" href="https://github.com/TommyLau/docker-lnmpa/blob/master/php/5.2/Dockerfile">https://github.com/TommyLau/docker-lnmpa/blob/master/php/5.2/Dockerfile</a></p></li>
+<li><p><a class="reference external" href="https://git.plzen.eu/devops/php/-/blob/fpm-5.2-deb/Dockerfile">https://git.plzen.eu/devops/php/-/blob/fpm-5.2-deb/Dockerfile</a></p></li>
+<li><p><a class="reference external" href="https://staff.blog.ui.ac.id/jp/2015/07/08/kompilasi-php-5-2-pada-debian-jessie/">https://staff.blog.ui.ac.id/jp/2015/07/08/kompilasi-php-5-2-pada-debian-jessie/</a></p></li>
+<li><p><a class="reference external" href="https://www.phpinternalsbook.com/php5/build_system/building_php.html">https://www.phpinternalsbook.com/php5/build_system/building_php.html</a></p></li>
+<li><p><a class="reference external" href="https://www.baeldung.com/linux/set-command">https://www.baeldung.com/linux/set-command</a></p></li>
+</ul>
+<p>Download :</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://php-fpm.org/downloads/">https://php-fpm.org/downloads/</a></p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="dockerfile-php-7-4-alpine">
+<h3>Dockerfile php 7.4 alpine<a class="headerlink" href="#dockerfile-php-7-4-alpine" title="Permalink to this headline">¶</a></h3>
+<p>Pada alpine setiap penginstallan sudah ada opsi –no-cache, yang fungsinya adalah menghapus adanya cache dari penginstallan:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RUN</span> <span class="n">apk</span> <span class="n">add</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">cache</span> \
+            <span class="n">ca</span><span class="o">-</span><span class="n">certificates</span> \
+            <span class="n">curl</span> \
+            <span class="n">tar</span> \
+            <span class="n">xz</span> \
+            <span class="n">openssl</span>
+</pre></div>
+</div>
+<p>Dan dalam penginstallan, itu bisa diberikan adanya opsi –virtual, ini seperti menjadikan adanya ‘package wrapper’, dimana keuntungannya nanti adalah dapat menghapus seluruh package dengan ‘package wrapper’</p>
+<p>contoh:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>RUN set -eux; \
+    \
+    apk add --no-cache --virtual .fetch-deps gnupg; \
+    \
+    mkdir -p /usr/src; \
+    cd /usr/src; \
+    \
+    curl -fsSL -o php.tar.xz &quot;$PHP_URL&quot;; \
+    \
+    if [ -n &quot;$PHP_SHA256&quot; ]; then \
+        echo &quot;$PHP_SHA256 *php.tar.xz&quot; | sha256sum -c -; \
+    fi; \
+    \
+    if [ -n &quot;$PHP_ASC_URL&quot; ]; then \
+        curl -fsSL -o php.tar.xz.asc &quot;$PHP_ASC_URL&quot;; \
+        export GNUPGHOME=&quot;$(mktemp -d)&quot;; \
+        for key in $GPG_KEYS; do \
+            gpg --batch --keyserver keyserver.ubuntu.com --recv-keys &quot;$key&quot;; \
+        done; \
+        gpg --batch --verify php.tar.xz.asc php.tar.xz; \
+        gpgconf --kill all; \
+        rm -rf &quot;$GNUPGHOME&quot;; \
+    fi; \
+    \
+    apk del --no-network .fetch-deps
+</pre></div>
+</div>
+<p>dan pasti penghapusan (apk del &lt;nama-package&gt;) terletak di paling bawah</p>
+</div>
+<div class="section" id="dockerfile-php-7-4-debian">
+<h3>Dockerfile php 7.4 debian<a class="headerlink" href="#dockerfile-php-7-4-debian" title="Permalink to this headline">¶</a></h3>
+<p>Pada debian setiap penginstallan:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">install</span><span class="o">-</span><span class="n">recommends</span> \
+</pre></div>
+</div>
+<p>Maka harus diberikan adanya penghapusan lists:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">apt</span><span class="o">/</span><span class="n">lists</span><span class="o">/*</span>
+</pre></div>
+</div>
+<p>Contoh lengkap:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>RUN set -eux; \
+apt-get update; \
+apt-get install -y --no-install-recommends \
+    $PHPIZE_DEPS \
+    ca-certificates \
+    curl \
+    xz-utils \
+; \
+rm -rf /var/lib/apt/lists/*
+
+RUN set -eux; \
+apt-get update \
+    apt-get install -y --no-install-recommends gnupg dirmngr; \
+    rm -rf /var/lib/apt/lists/*; \
+</pre></div>
+</div>
+</div>
+<div class="section" id="docker-php-alpine-3-15-vs-docker-php-alpine-3-16">
+<h3>docker php alpine 3.15 vs docker php alpine 3.16<a class="headerlink" href="#docker-php-alpine-3-15-vs-docker-php-alpine-3-16" title="Permalink to this headline">¶</a></h3>
+<p>tidak ada perbedaan</p>
+<p>pas dicek cuma beda:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">FROM</span> <span class="n">alpine</span><span class="p">:</span><span class="mf">3.15</span>
+<span class="o">+</span><span class="n">FROM</span> <span class="n">alpine</span><span class="p">:</span><span class="mf">3.16</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="bahaya-penggunaan-apt-get-purge-autoremove">
+<h2>Bahaya penggunaan apt-get purge –autoremove<a class="headerlink" href="#bahaya-penggunaan-apt-get-purge-autoremove" title="Permalink to this headline">¶</a></h2>
+<p>Ketika menggunakan konsep penghapusan library untuk dependency menggunakan purge, maka ini tidak hanya menghapus library namun juga pada <cite>repository</cite></p>
+<p>Jadi katakan sudah melakukan adanya <cite>purge</cite>, maka selanjutnya tidak akan bisa menginstall library tanpa melakukan <cite>apt-get update</cite></p>
+<p>Semisal run ke salah satu image -&gt; <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span> <span class="pre">--rm</span> <span class="pre">-it</span> <span class="pre">php-fpm</span> <span class="pre">/bin/bash</span></code>, maka keselanjutnya tidak akan bisa melakukan penginstalan library baru.</p>
+<p>bash:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>root@d0c11542bbfb:/app# apt install libmcrypt-dev
+Reading package lists... Done
+Building dependency tree... Done
+E: Unable to locate package libmcrypt-dev
+root@d0c11542bbfb:/app# apt-get update
+Get:1 http://security.debian.org jessie/updates InRelease [44.9 kB]
+Get:2 http://security.debian.org jessie/updates/main amd64 Packages [992 kB]
+Ign http://deb.debian.org jessie InRelease
+Get:3 http://deb.debian.org jessie-updates InRelease [16.3 kB]
+Get:4 http://deb.debian.org jessie Release.gpg [1652 B]
+Get:5 http://deb.debian.org jessie Release [77.3 kB]
+Get:6 http://deb.debian.org jessie-updates/main amd64 Packages [20 B]
+Get:7 http://deb.debian.org jessie/main amd64 Packages [9098 kB]
+Fetched 10.2 MB in 1min 17s (133 kB/s)
+Reading package lists... Done
+root@d0c11542bbfb:/app# apt install libmcrypt-dev
+Reading package lists... Done
+Building dependency tree... Done
+The following extra packages will be installed:
+libmcrypt4
+Suggested packages:
+mcrypt
+The following NEW packages will be installed:
+libmcrypt-dev libmcrypt4
+0 upgraded, 2 newly installed, 0 to remove and 0 not upgraded.
+Need to get 164 kB of archives.
+After this operation, 662 kB of additional disk space will be used.
+Do you want to continue? [Y/n]
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="docker-laravel.html" class="btn btn-neutral float-right" title="Docker Laravel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="orchestration.html" class="btn btn-neutral float-left" title="Orchestration (Kubernetes)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ryan
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

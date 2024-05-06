@@ -1,0 +1,1042 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Konsep Program di Linux &mdash; Docker and Kubernetes 1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sphinxcontrib-httpexample.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/sphinxcontrib-httpexample.js"></script>
+        <script src="_static/js/custom.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Glosarium" href="glosarium.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Docker and Kubernetes
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="docker-intro.html">Pengenalan Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-architecture.html">Arsitektur Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-objects.html">Docker Objects (Image, Container, Volume, Networks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-delete-objects.html">Menghapus Objects pada docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile.html">Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-compose.html">Docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html">Dockerfile vs docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orchestration.html">Orchestration (Kubernetes)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-collection.html">Kumpulan Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-laravel.html">Docker Laravel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-mern.html">Docker MERN (Mongo Express React Node)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notelog.html">NoteLog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glosarium.html">Glosarium</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Konsep Program di Linux</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#process">Process</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#background-and-foreground-process">Background and Foreground Process</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#daemon">Daemon</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#daemon-vs-service-vs-process"><strong>Daemon</strong> vs <strong>Service</strong> vs <strong>Process</strong></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fungsionalitas-daemon">Fungsionalitas daemon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-pada-terminal-linux-dan-relativitas-dengan-daemon">Command pada terminal linux dan relativitas dengan daemon</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#management-process-linux">Management Process Linux</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#top">Top</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ps"><code class="docutils literal notranslate"><span class="pre">ps</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#menghentikan-process">Menghentikan <code class="docutils literal notranslate"><span class="pre">process</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#menghentikan-process-dari-package-top">Menghentikan process dari package top</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#menghentikan-semua-process-yang-berjalan-menggunakan-nama-aplikasi">Menghentikan Semua process yang Berjalan Menggunakan Nama Aplikasi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#membuat-custom-service-manual-menggunakan-supervisor-systemd-dan-upstart">Membuat custom service (manual) menggunakan supervisor, systemd dan upstart</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#system-manager-process-manager">System manager/Process manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pembuatan-manual-custom-service">Pembuatan Manual Custom Service</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#supervisor">Supervisor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#systemd">systemd</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#perbandingan-antara-systemd-sysvinit-dan-upstart">Perbandingan antara <code class="docutils literal notranslate"><span class="pre">systemd</span></code>, <code class="docutils literal notranslate"><span class="pre">sysvinit</span></code>, dan <code class="docutils literal notranslate"><span class="pre">upstart</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#penulisan-script">Penulisan script</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#supervisor-vs-systemd">supervisor vs systemd</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Docker and Kubernetes</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Konsep Program di Linux</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/concept-program-on-linux.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="konsep-program-di-linux">
+<h1>Konsep Program di Linux<a class="headerlink" href="#konsep-program-di-linux" title="Permalink to this headline">¶</a></h1>
+<p>Secara garis besar sejatinya dalam <cite>Distro Linux</cite>, setiap program akan dijalankan melalui file binary (execute file binary).</p>
+<p>Namun karena kompleksitas penggunaan suatu program menyebabkan banyaknya cara dalam me-manage <strong>bagaimana program itu dijalankan ?</strong>.</p>
+<p>Fungsionalitas suatu program tidak hanya untuk <cite>UI interface</cite> saja, melainkan bisa untuk proses lain yang lebih kompleks seperti lifetime (berjalan terus menerus), autostart (otomatis ketika startup), fleksibel dan lainnya</p>
+<p>Misalkan seperti database, firewall, atau program lain yang membutuhkan cara khusus untuk dijalankan.</p>
+<p>Karenanya hal tersebut maka memunculkan istilah istilah baru atau metode baru dalam menjalankan program seperti daemon, service, process dll.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Untuk bisa mengoperasikan docker, sebaiknya mengetahui dahulu tentang konsep program yang berjalan pada <cite>Distro Linux</cite> (linux).</p>
+<p>Karena ini menyangkut bagaimana suatu service itu bisa berjalan dan akan diaplikasikan ke dalam container.</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Karena materi ini cukup kompleks maka untuk mempermudah pemahaman akan menggunakan software mysql (pengolah database) sebagai implementasi yang sebenarnya.</p>
+</div>
+<div class="section" id="process">
+<h2>Process<a class="headerlink" href="#process" title="Permalink to this headline">¶</a></h2>
+<p>Saat menjalankan perangkat komputer, pasti ada beberapa program yang berjalan.</p>
+<p>Program-program ini biasanya disebut dengan <code class="docutils literal notranslate"><span class="pre">process</span></code>.</p>
+<p>Misalnya ketika membuka aplikasi browser <strong>Opera</strong> atau <strong>Chrome</strong>, maka akan ada proses yang berjalan untuk menjalankan masing-masing aplikasi ini.</p>
+<p>Suatu <code class="docutils literal notranslate"><span class="pre">process</span></code> dapat diartikan sebagai <strong>suatu program yang sedang berjalan atau dieksekusi</strong>.</p>
+<p>Biasanya terdiri dari instruksi program, pembacaan data dari file, atau input dari pengguna sistem</p>
+<div class="section" id="background-and-foreground-process">
+<h3>Background and Foreground Process<a class="headerlink" href="#background-and-foreground-process" title="Permalink to this headline">¶</a></h3>
+<p>Ada beberapa tipe <cite>process</cite> yang berjalan, khususnya di sistem operasi, yaitu <strong>foreground</strong> dan <strong>background</strong>.</p>
+<ul>
+<li><p>Foreground Processes</p>
+<blockquote>
+<div><p><cite>Foreground process</cite> adalah <cite>Process</cite> yang berjalan melalui <cite>initialization</cite> dan dapat dikontrol melalui terminal session.</p>
+<p><cite>Process</cite> ini terkadang juga disebut dengan nama <cite>interactive processes</cite>.</p>
+<p>Pengertian lain, <cite>Process</cite> ini berjalan setelah dijalankan oleh user.</p>
+<p>Sehingga tidak dapat berjalan secara otomatis.</p>
+</div></blockquote>
+</li>
+<li><p>Background Processes</p>
+<blockquote>
+<div><p>Kebalikan dari foreground <cite>process</cite>, <cite>Process</cite> ini tidak dikenali pada terminal session.</p>
+<p>Sehingga membuat <cite>process</cite> ini tidak mengharapkan input apapun dari user.</p>
+</div></blockquote>
+</li>
+</ul>
+<p><strong>Bagaimana Linux Mengidentifikasi Process ?</strong></p>
+<p>Linux merupakan sistem operasi yang <strong>Multi-User System</strong>, ini memungkinkan tidak hanya satu user saja berjalan pada waktu yang sama.</p>
+<p>Agar kernel dapat membedakan setiap instance suatu process, maka perlu dibedakan masing-masing proses secara <cite>unique</cite>.</p>
+<p>Cara membedakannya menggunakan <cite>Process ID</cite> (PID) dan untuk parent processes menggunakan <cite>Parent PID</cite> (PPID).</p>
+<p>Jadi ada dua kategori proses yang berjalan pada sistem operasi Linux, yaitu:</p>
+<ul>
+<li><p>Parent Processes</p>
+<blockquote>
+<div><p>Proses yang membuat proses lain pada saat run-time.</p>
+</div></blockquote>
+</li>
+<li><p>Child Processes</p>
+<blockquote>
+<div><p>Proses yang dibuat oleh proses lain pada saat run-time.</p>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="daemon">
+<h2>Daemon<a class="headerlink" href="#daemon" title="Permalink to this headline">¶</a></h2>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Daemon dalam OS <strong>Windows</strong> lebih dikenal dengan sebutan <code class="docutils literal notranslate"><span class="pre">service</span></code>, untuk selanjutnya istilah yang digunakan adalah <code class="docutils literal notranslate"><span class="pre">daemon</span></code> dan <code class="docutils literal notranslate"><span class="pre">service</span></code> yang berada di environment <cite>linux</cite>.</p>
+</div>
+<p>Sebelum melangkah lebih jauh akan dijelaskan sedikit mengenai Daemon, service dan process serta hubungan antara ketiganya.</p>
+<div class="section" id="daemon-vs-service-vs-process">
+<h3><strong>Daemon</strong> vs <strong>Service</strong> vs <strong>Process</strong><a class="headerlink" href="#daemon-vs-service-vs-process" title="Permalink to this headline">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Cukup banyak referensi mengenai ketiga istilah ini, oleh karenanya penulis akan merangkum pengertian ketiga istilah ini dengan memilih berdasarkan dari referensi yang paling banyak atau memiliki kesamaan yang lebih banyak (majority post reference)</p>
+</div>
+<p>Untuk lebih memudahkan ketiga istilah ini serta hubungan ketiganya maka akan dimulai dari pengertian <code class="docutils literal notranslate"><span class="pre">process</span></code>.</p>
+<p><cite>process</cite> seperti yang ditulis diatas adalah <strong>program yang berjalan</strong>.</p>
+<p>Untuk melihat keseluruhan process di linux dapat menggunakan command <code class="docutils literal notranslate"><span class="pre">ps</span> <span class="pre">aux</span></code></p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ps</span> <span class="n">aux</span>
+</pre></div>
+</div>
+<p>Di dalamnya akan terdapat keterangan seperti PID, jumlah penggunaan CPU, memory, waktu saat menjalankan sampai command dalam menjalakannya.</p>
+<p>Kemudian Daemon sendiri dapat diartikan sebagai tipe <cite>background processes</cite> yang berjalan bersamaan dengan sistem operasi (<cite>startup</cite>) dan akan tetap berjalan (tidak pernah berhenti kecuali dihentikan oleh user).</p>
+<p>Terakhir service dapat dikatakan sebagai <strong>pembangkit</strong> daemon, dalam artian singkat service bisa menjalankan (start) menghentikan (stop) dan restart daemon.</p>
+<p>Di linux dikenal command seperti <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">service</span> <span class="pre">&lt;package&gt;</span> <span class="pre">start</span></code>, <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">systemctl</span> <span class="pre">start</span> <span class="pre">&lt;package&gt;</span></code> atau <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">/etc/init.d/&lt;package&gt;</span> <span class="pre">start</span></code> yang kesemua command itu adalah service yang akan mengurusi daemon (start/stop/restart).</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Penulis tidak terlalu banyak menemukan referensi pada <strong>service</strong> (sekalipun wikipedia), maka dari itu penulis mengambil kesimpulan berdasarkan opini user di forum.</p>
+<p>Asumsi penulis <strong>service</strong> ini hanyalah berasal dari kultur <cite>Unix computing</cite> yang mana merupakan padanan kata dari process, atau dalam arti lain service adalah <cite>process</cite>.</p>
+<p>Namun jika dilihat lebih jauh lagi, <strong>service</strong> ini lebih mengarah ke bentuk <cite>file</cite> (script) yang nantinya akan menjalankan daemon (baik daemon yang sudah ada seperti mysqld atau suatu script yang dibuat manual dan dijalankan layaknya daemon).</p>
+<p>Atau secara singkat dapat diartikan ketika membuka suatu aplikasi yang tidak membutuhkan daemon maka itu <strong>bukan</strong> disebut sebagai service.</p>
+<p>Misalkan saja ketika membuka text editor, browser, atau application di desktop, maka itu bukanlah service karena tidak berhubungan dengan daemon (seperti chrome dan gedit tidak memiliki adanya process dengan berakhiran <code class="docutils literal notranslate"><span class="pre">d</span></code>), melainkan hanya <cite>process</cite> saja.</p>
+<p>kesimpulan singkat dari penulis adalah bahwa <cite>service</cite> itu fungsi utamanya untuk me-manage daemon (start/stop/restart)</p>
+</div>
+</div>
+<div class="section" id="fungsionalitas-daemon">
+<h3>Fungsionalitas daemon<a class="headerlink" href="#fungsionalitas-daemon" title="Permalink to this headline">¶</a></h3>
+<p><strong>Daemon</strong> adalah process yang berjalan sendiri secara periodik/realtime dan berjalan dibelakang layar (background).</p>
+<p>Kegunaan Daemon ini adalah menunggu permintaan (request) dari proses lainnya (yang biasanya diberikan user) dan akan menjalankan tugas sesuai dengan request tersebut.</p>
+<p>Bila tidak ada request, maka program ini akan berada dalam kondisi <code class="docutils literal notranslate"><span class="pre">idle</span></code> dan tidak menggunakan resource (CPU, RAM).</p>
+<p>Umumnya nama proses daemon di UNIX berakhiran <code class="docutils literal notranslate"><span class="pre">d</span></code>, misalnya <code class="docutils literal notranslate"><span class="pre">inetd</span></code>, <code class="docutils literal notranslate"><span class="pre">named</span></code> , <code class="docutils literal notranslate"><span class="pre">sshd</span></code>, <code class="docutils literal notranslate"><span class="pre">mysqld</span></code>, <code class="docutils literal notranslate"><span class="pre">mongod</span></code>.</p>
+<p>Contoh daemon adalah seperti halnya <strong>Apache Web Server HTTP daemon</strong> (file <code class="docutils literal notranslate"><span class="pre">httpd</span></code>).</p>
+<p>Daemon ini bekerja pada background dan menerima request HTTP pada port tertentu (biasanya <cite>80</cite> atau <cite>8080</cite>) dan memberikan respon terhadap request tersebut, berdasarkan tipe dari request tersebut.</p>
+<p>Contoh lain adalah seperti software <strong>mysql</strong>.</p>
+<p>ketika menginstall software <cite>mysql</cite> maka otomatis akan membuat 2 buah application (package) yang berupa <cite>daemon</cite> sebagai pelayan dan <cite>client</cite> sebagai peminta layanan.</p>
+<p>Biasanya 2 buah package itu disebut <code class="docutils literal notranslate"><span class="pre">mysql-server</span></code> dan <code class="docutils literal notranslate"><span class="pre">mysql-client</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mysql-server</span></code> adalah process layanan database (untuk menyimpan data) sedangkan <code class="docutils literal notranslate"><span class="pre">mysql-client</span></code> adalah untuk mengakses database tersebut (dengan query yang diberikan).</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Konsep docker sejatinya juga memiliki 2 buah package yaitu daemon (mengurusi object seperti container, volume, network, dll) dan juga client (command line untuk mengakses docker object).</p>
+</div>
+<p>Setelah menginstall MySQL, maka akan terdapat file seperti berikut:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">/usr/sbin/mysqld</span></code></p>
+<blockquote>
+<div><p>File daemon mysql.</p>
+<p>File ini adalah execution utama software mysql.</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/usr/bin/mysql</span></code></p>
+<blockquote>
+<div><p>File client mysql</p>
+<p>File ini untuk meminta request ke daemon mysql (mysqld)</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/etc/init.d/mysql</span></code></p>
+<blockquote>
+<div><p>Untuk menjalankan service daemon (start and stop mysql daemon/server), file inilah yang dianggap sebagai service (untuk start/stop/restart daemon mysql).</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/usr/bin/mysqld_safe</span></code></p>
+<blockquote>
+<div><p>Ini juga service yang akan menjalankan daemon mysql.</p>
+<p>Perbedaannya adalah <code class="docutils literal notranslate"><span class="pre">/usr/bin/mysqld_safe</span></code> dijalankan dengan cara executable file sedangkan pada <code class="docutils literal notranslate"><span class="pre">/etc/init.d/mysql</span></code> dijalankan dengan process manager (<strong>systemd</strong>, <strong>sysvinit</strong> atau <strong>upstart</strong>)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Tidak semua software/package menyediakan file seperti ini, bahkan biasanya metodenya adalah dengan menggunakan service dan me-execute file <cite>daemon</cite></p>
+</div>
+</div></blockquote>
+</li>
+</ul>
+<p>Beberapa ciri yang nampak pada daemon adalah:</p>
+<ul class="simple">
+<li><p>daemon berjalan di background dan tidak dalam <cite>interactive mode</cite> (dalam artian tidak bisa mengakses terminal)</p></li>
+<li><p>daemon tidak memiliki STDOUT, STDIN, maupun STDERR (berdasarkan dari poin pertama diatas yaitu daemon tidak dapat mengakses terminal),</p></li>
+<li><p>daemon memiliki file dengan akhiran <code class="docutils literal notranslate"><span class="pre">d</span></code> (mysqld, httpd, sshd)</p></li>
+<li><p>daemon tidak memiliki parent proses ID,</p></li>
+<li><p>daemon berjalan dalam previlege super user (atau user <cite>system</cite> yang sudah ditentukan oleh software tersebut).</p></li>
+</ul>
+<center>
+        <video width="800" controls>
+                <source src="../../resources/videos/process-manager-1.1.daemon-mysql.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+        </video>
+        <p>Caption</p>
+</center><p>Dari video tersebut terlihat mysql daemon telah berjalan pada tanggal 1 juni (saat pertama kali PC/laptop booting)</p>
+<p>kemudian command <code class="docutils literal notranslate"><span class="pre">mysql</span></code> adalah untuk login ke mysql.</p>
+<p>Nah command <code class="docutils literal notranslate"><span class="pre">mysql</span></code> (mysql-client) ini adalah untuk berinteraksi dengan daemon mysql (mysql server).</p>
+<p>Di dalamnya seperti bash/shell yaitu memiliki STDIN (input query), STDOUT (hasil query).</p>
+</div>
+<div class="section" id="command-pada-terminal-linux-dan-relativitas-dengan-daemon">
+<h3>Command pada terminal linux dan relativitas dengan daemon<a class="headerlink" href="#command-pada-terminal-linux-dan-relativitas-dengan-daemon" title="Permalink to this headline">¶</a></h3>
+<p>Dalam <cite>Distro Linux</cite>, untuk menjalankan program biasanya dapat dengan mengetikkan <strong>command</strong> di terminal.</p>
+<p>Seperti misalkan me-run mysql client seperti contoh diatas.</p>
+<p>Command tersebut sejatinya adalah <cite>execute file</cite> dari directory <strong>binary</strong></p>
+<p>Semua command di linux sebenarnya dibuat di dalam directory <strong>binary</strong> seperti:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/bin</span></code> -&gt; builtin binary seperti command <code class="docutils literal notranslate"><span class="pre">cat</span></code>, <code class="docutils literal notranslate"><span class="pre">ls</span></code>, <code class="docutils literal notranslate"><span class="pre">echo</span></code>, <code class="docutils literal notranslate"><span class="pre">pwd</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/sbin</span></code> -&gt; builtin binary namun membutuhkan super user privileges seperti command <code class="docutils literal notranslate"><span class="pre">reboot</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/usr/bin</span></code> -&gt; general system binary yang berisikan program external yang diinstall seperti command <code class="docutils literal notranslate"><span class="pre">mysql</span></code>, <code class="docutils literal notranslate"><span class="pre">7z</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/usr/sbin</span></code> -&gt; general system binary program external namun membutuhkan super user privileges seperti command  <code class="docutils literal notranslate"><span class="pre">mysqld</span></code>, <code class="docutils literal notranslate"><span class="pre">cron</span></code>, <code class="docutils literal notranslate"><span class="pre">ufw</span></code></p></li>
+</ul>
+<p>Singkatnya <code class="docutils literal notranslate"><span class="pre">command</span></code> di terminal linux adalah menjalankan <cite>file executable</cite> yang berada di directory <cite>binary</cite>.</p>
+<p>Seperti pada intro diatas, bahwa dalam menjalankan program di linux maka yang di-execute adalah <cite>file binary</cite>.</p>
+<p>Namun perlu diketahui bahwa <strong>tidak setiap file</strong> di directory <cite>binary</cite> adalah <cite>file binary</cite>.</p>
+<p>Beberapa diantaranya adalah file <cite>script</cite> untuk menjalankan file <cite>binary</cite> yang lain.</p>
+<p>file <cite>script</cite> ini biasa disebut <strong>service</strong> dalam kultur <cite>Distro Linux</cite>.</p>
+<p>Misalkan adalah file <code class="docutils literal notranslate"><span class="pre">/usr/bin/mysqld_safe</span></code> yang mana file ini adalah <cite>executable file</cite> untuk menjalankan daemon mysql.</p>
+<p>File ini berisikan script yang cukup kompleks, namun tujuan utamanya adalah mengeksekusi pada file binary <code class="docutils literal notranslate"><span class="pre">/usr/sbin/mysql</span></code>.</p>
+<p>Singkatnya sebenarnya software mysql dapat dijalankan dengan mengetikkan command <code class="docutils literal notranslate"><span class="pre">mysqld_safe</span></code>.</p>
+<p>Sedangkan untuk menjalankan mysql client dapat dijalankan dengan mengetikkan command <code class="docutils literal notranslate"><span class="pre">mysql</span></code> (execute binary file pada <code class="docutils literal notranslate"><span class="pre">/usr/bin/mysql</span></code>)</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Tidak setiap software/package di linux menggunakan konsep yang sama seperti mysql diatas.</p>
+<p>Biasanya file untuk menjalankan daemon (service) akan menggunakan konsep <cite>process manager</cite> yang mana akan meletakkan file service di salah satu directory berikut:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/etc/init.d/</span></code> -&gt; untuk process manager <strong>sysvinit</strong></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/etc/systemd/system/multi-user.target.wants/</span></code> -&gt; untuk process manager <strong>systemd</strong></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/etc/init/</span></code> -&gt; untuk process manager <strong>upstart</strong></p></li>
+</ul>
+<p>Untuk lebih lengkapnya dapat melihat pada section selanjutnya.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Ada beberapa jenis daemon yang tidak memiliki file akhiran <code class="docutils literal notranslate"><span class="pre">d</span></code></p>
+<p>contohnya adalah nginx (<code class="docutils literal notranslate"><span class="pre">usr/sbin/nginx</span></code>).</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Jika ingin membuat adanya custom command (yang dibuat manual), direkomendasikan untuk membuat <strong>alias</strong></p>
+<p>alias ini bekerja layaknya executable file di terminal.</p>
+<p>Caranya cukup mudah yaitu membuat file di directory home (root user) dengan nama <code class="docutils literal notranslate"><span class="pre">.bash_aliases</span></code></p>
+<p>file ~/.bash_aliases:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alias</span> <span class="n">art</span><span class="o">=</span><span class="s2">&quot;php artisan&quot;</span>
+</pre></div>
+</div>
+<p>Namun pastikan di file <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> akan membaca file <code class="docutils literal notranslate"><span class="pre">.bash_aliases</span></code> tersebut</p>
+<p>ref : <a class="reference external" href="https://www.codepolitan.com/cara-menggunakan-bash-alias-5a4d964105599">https://www.codepolitan.com/cara-menggunakan-bash-alias-5a4d964105599</a></p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Untuk mengetahui dimana <cite>file executable</cite> suatu <cite>command</cite> di terminal, dapat mengetikkan command <code class="docutils literal notranslate"><span class="pre">which</span> <span class="pre">&lt;nama-command&gt;</span></code>.</p>
+<p>Selain itu untuk mengetahui jenis suatu command, seperti apakah itu executable file, atau alias atau function dapat menggunakan command <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">&lt;nama-command&gt;</span></code>.</p>
+<img alt="_images/command-terminal-1.1.which-and-type.png" src="_images/command-terminal-1.1.which-and-type.png" />
+<p>referensi : <a class="reference external" href="https://bash.cyberciti.biz/guide/Type_command">https://bash.cyberciti.biz/guide/Type_command</a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Program seperti sublime text, chrome tidak akan disebut sebagai daemon.</p>
+<p>Biasanya semua file dan resource-assets program ini akan berada pada <cite>satu directory</cite> yang diletakkan di <code class="docutils literal notranslate"><span class="pre">/opt</span></code>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="management-process-linux">
+<h2>Management Process Linux<a class="headerlink" href="#management-process-linux" title="Permalink to this headline">¶</a></h2>
+<p>Ada banyak sekali perintah yang dapat digunakan untuk melakukan manajemen process di Linux.</p>
+<p>Namun yang paling banyak digunakan adalah <code class="docutils literal notranslate"><span class="pre">ps</span></code> dan <code class="docutils literal notranslate"><span class="pre">top</span></code>.</p>
+<p>Kedua perintah ini biasanya digunakan oleh pengguna Linux khususnya <cite>System Administrator</cite> untuk melihat proses yang banyak menggunakan sumber daya (resource).</p>
+<div class="section" id="top">
+<h3>Top<a class="headerlink" href="#top" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">top</span></code> adalah package di Linux yang dijalankan melalui Terminal di Linux.</p>
+<p>Aplikasi ini digunakan untuk memanajemen proses Linux tanpa menggunakan GUI.</p>
+<p>Saat dieksekusi, aplikasi ini akan menampilkan daftar semua proses yang sedang berjalan dan setiap detik akan diperbaharui.</p>
+<p>Proses yang ditampilkan pada perintah <code class="docutils literal notranslate"><span class="pre">top</span></code> adalah yang <strong>paling besar menggunakan sumber daya</strong>.</p>
+<p>Tampilan perintah <code class="docutils literal notranslate"><span class="pre">top</span></code> dapat dilihat pada gambar di bawah ini:</p>
+<img alt="_images/process-management-linux-1.1-top-command.jpg" src="_images/process-management-linux-1.1-top-command.jpg" />
+<p>Aplikasi ini didesain tidak perlu menggunakan mouse, tujuannya memang digunakan untuk server.</p>
+<p>Sehingga semua fungsi dilakukan menggunakan keyboard.</p>
+<p>Berikut ini beberapa keyboard shortcut yang dapat digunakan untuk navigasi:</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">List keyboard function on Top command</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Keyboard</p></td>
+<td><p>Fungsi</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">h</span></code> atau <code class="docutils literal notranslate"><span class="pre">?</span></code></p></td>
+<td><p>Menampilkan jendela bantuan.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">f</span></code></p></td>
+<td><p>Menghapus atau menambahkan field di layout.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">l</span></code></p></td>
+<td><p>Menampilkan atau menghilangkan tampilan informasi beban rata-rata dan informasi uptime.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td><p>Menampilkan atau menghilangkan tampilan informasi memori.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">P</span></code></p></td>
+<td><p>Mengurutkan proses berdasarkan penggunaan CPU.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">q</span></code></p></td>
+<td><p>Menutup aplikasi atau jendela pada session saat itu.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">space</span></code></p></td>
+<td><p>Digunakan untuk memperbaharui tampilan atau me-refresh tampilan dengan data terbaru tanpa menunggu waktu refresh.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Saat menjalankan perintah <code class="docutils literal notranslate"><span class="pre">top</span></code>, dapat menggunakan beberapa opsi tampilan yang ingin ditampilkan.</p>
+<p>Opsi-opsi tersebut beberapa dapat dilihat pada tabel di bawah.</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Opsi function on Top command</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-h</span></code> atau <code class="docutils literal notranslate"><span class="pre">-v</span></code></p></td>
+<td><p>Help atau Version: Digunakan untuk menampilkan user manual penggunaan “top” dan menampilkan versi yang terinstal.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-H</span></code></p></td>
+<td><p>Threads-mode operation: Digunakan untuk menampilkan thread secara terpisah.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-s</span></code></p></td>
+<td><p>Secure-mode operation: Menjalankan “top” dengan mode secure.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-u</span></code> atau <code class="docutils literal notranslate"><span class="pre">-U</span></code></p></td>
+<td><p>User-filter-mode: Digunakan untuk menampilkan proses pada user tertentu saja.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="ps">
+<h3><code class="docutils literal notranslate"><span class="pre">ps</span></code><a class="headerlink" href="#ps" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ps</span></code> adalah aplikasi di Linux yang digunakan untuk menampilkan aktif proses yang berjalan pada sistem.</p>
+<p>Aplikasi ini dapat digunakan untuk melakukan manajemen proses Linux.</p>
+<p>Tampilan hasilnya seperti di bawah ini.</p>
+<img alt="_images/process-management-linux-1.2-ps-command.jpg" src="_images/process-management-linux-1.2-ps-command.jpg" />
+<p>Ada beberapa opsi yang dapat digunakan ketika menggunakan <code class="docutils literal notranslate"><span class="pre">ps</span></code> sebagai aplikasi monitoring proses.</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Opsi function on ps command</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-e</span></code></p></td>
+<td><p>Digunakan untuk menampilkan semua proses.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-C</span></code></p></td>
+<td><p>Digunakan untuk menyaring proses berdasarkan nama/perintah.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-f</span></code></p></td>
+<td><p>Digunakan untuk menampilkan semua informasi proses secara lengkap.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-r</span></code></p></td>
+<td><p>Digunakan untuk menampilkan proses yang sedang berjalan.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-u</span></code></p></td>
+<td><p>Digunakan untuk menampilkan proses pada user tertentu saja. Biasanya diikuti dengan menggunakan nama user yang ingin dilihat prosesnya.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-o</span></code></p></td>
+<td><p>Digunakan untuk menampilkan proses yang menggunakan kata kunci tertentu saja.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--pid</span></code></p></td>
+<td><p>Digunakan untuk menampilkan informasi proses berdasarkan Process ID (PID).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ppid</span></code></p></td>
+<td><p>Digunakan untuk menampilkan informasi proses berdasarkan Parent Process ID (PPID).</p></td>
+</tr>
+</tbody>
+</table>
+<img alt="_images/process-management-linux-1.3-ps-command-user-run.png" src="_images/process-management-linux-1.3-ps-command-user-run.png" />
+<img alt="_images/process-management-linux-1.4-ps-command-specific-pid.png" src="_images/process-management-linux-1.4-ps-command-specific-pid.png" />
+<p>Jika ingin melihat seluruh proses maka bisa menggunakan command <code class="docutils literal notranslate"><span class="pre">ps</span> <span class="pre">aux</span></code></p>
+</div>
+<div class="section" id="menghentikan-process">
+<h3>Menghentikan <code class="docutils literal notranslate"><span class="pre">process</span></code><a class="headerlink" href="#menghentikan-process" title="Permalink to this headline">¶</a></h3>
+<p>Dalam linux terdapat package <code class="docutils literal notranslate"><span class="pre">kill</span></code> yang akan menghentikan suatu process berdasarkan PID.</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kill</span> <span class="o">-</span><span class="p">[</span><span class="n">signal</span><span class="p">]</span> <span class="n">PID</span>
+</pre></div>
+</div>
+<p>misalkan adalah menghentikan process dengan PID 3235</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kill</span> <span class="mi">3235</span>
+</pre></div>
+</div>
+<p>Jika tidak diberikan signal maka otomatis akan menggunakan signal default <code class="docutils literal notranslate"><span class="pre">-15</span></code>.</p>
+<p>Namun ada kalanya suatu process masih belum dapat dihentikan dengan command diatas, oleh karenanya bisa menggunakan signal <code class="docutils literal notranslate"><span class="pre">-9</span></code> yang mengindikasikan untuk menghentikan process secara keseluruhan.</p>
+<p>Signal <code class="docutils literal notranslate"><span class="pre">-9</span></code> biasa digunakan apabila process menggunakan resource yang kompleks, seperti <code class="docutils literal notranslate"><span class="pre">socket</span></code> (contoh pada package seperti <code class="docutils literal notranslate"><span class="pre">httpd</span></code>, <code class="docutils literal notranslate"><span class="pre">apache</span></code> atau <code class="docutils literal notranslate"><span class="pre">nginx</span></code>)</p>
+<img alt="_images/process-management-linux-1.5-kill-pid.jpg" src="_images/process-management-linux-1.5-kill-pid.jpg" />
+<div class="section" id="menghentikan-process-dari-package-top">
+<h4>Menghentikan process dari package top<a class="headerlink" href="#menghentikan-process-dari-package-top" title="Permalink to this headline">¶</a></h4>
+<p>Package top juga dapat digunakan untuk menghentikan process.</p>
+<p>Caranya adalah dengan mengetik keyboard <code class="docutils literal notranslate"><span class="pre">k</span></code> kemudian masukkan PID daripada process yang akan dihentikan</p>
+<img alt="_images/process-management-linux-1.6-kill-with-top.jpg" src="_images/process-management-linux-1.6-kill-with-top.jpg" />
+</div>
+<div class="section" id="menghentikan-semua-process-yang-berjalan-menggunakan-nama-aplikasi">
+<h4>Menghentikan Semua process yang Berjalan Menggunakan Nama Aplikasi<a class="headerlink" href="#menghentikan-semua-process-yang-berjalan-menggunakan-nama-aplikasi" title="Permalink to this headline">¶</a></h4>
+<p>Selain menggunakan pid dapat juga menghentikan procss dengan nama aplikasi menggunakan package <code class="docutils literal notranslate"><span class="pre">pkill</span></code> dan <code class="docutils literal notranslate"><span class="pre">killall</span></code></p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pkill</span> <span class="n">firefox</span>
+
+<span class="n">killall</span> <span class="n">firefox</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="membuat-custom-service-manual-menggunakan-supervisor-systemd-dan-upstart">
+<h2>Membuat custom service (manual) menggunakan supervisor, systemd dan upstart<a class="headerlink" href="#membuat-custom-service-manual-menggunakan-supervisor-systemd-dan-upstart" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="system-manager-process-manager">
+<h3>System manager/Process manager<a class="headerlink" href="#system-manager-process-manager" title="Permalink to this headline">¶</a></h3>
+<p>Dalam <cite>Distro Linux</cite>, terdapat banyak metode dalam membuat dan menjalankan service.</p>
+<p>Diantaranya seperti <code class="docutils literal notranslate"><span class="pre">SysVinit</span></code> (System five) yang digunakan pada debian 7 kebawah, <code class="docutils literal notranslate"><span class="pre">systemd</span></code> yang sekarang digunakan di hampir semua distro linux, dan <code class="docutils literal notranslate"><span class="pre">upstart</span></code> yang digunakan khusus pada ubuntu.</p>
+<p>Tiap distro sebenarnya dapat mengaplikasikan ketiga process manager diatas, bahkan di ubuntu semua <cite>process manager</cite> diatas dapat digunakan.</p>
+<p>Berikut contoh penggunaan ketiga process manager tersebut</p>
+<ul>
+<li><p><strong>sysvinit</strong></p>
+<blockquote>
+<div><p>Pada sysvinit file service akan disimpan di <code class="docutils literal notranslate"><span class="pre">/etc/init.d/&lt;file-service&gt;</span></code></p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">service</span> <span class="n">mysql</span> <span class="n">start</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p><strong>systemd</strong></p>
+<blockquote>
+<div><p>Pada systemd file service akan disimpan di <code class="docutils literal notranslate"><span class="pre">/etc/systemd/system/&lt;file-service&gt;.service</span></code></p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">systemctl</span> <span class="n">start</span> <span class="n">mysql</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p><strong>upstart</strong></p>
+<blockquote>
+<div><p>Pada upstart file service akan disimpan di <code class="docutils literal notranslate"><span class="pre">/etc/init/&lt;file-service&gt;.conf</span></code></p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">initctl</span> <span class="n">start</span> <span class="n">mysql</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Dalam perkembangan sekarang, systemd jauh lebih banyak digunakan.</p>
+<p>Namun beberapa developer tidak terlalu menyukai penggunaan systemd terutama pada developer debian karena berbagai alasan.</p>
+<p>Beberapa developer debian beralih membuat process manager/service manager sendiri dan mengembangkan OS baru bernama <code class="docutils literal notranslate"><span class="pre">devuan</span></code></p>
+<p>Sedangkan <cite>upstart</cite> sendiri sudah sangat jarang digunakan di ubuntu.</p>
+<p>Sehingga yang biasa digunakan, terutama setelah penginstallan package external adalah <strong>systemd</strong> atau <strong>sysvinit</strong></p>
+<p>Berikut perbedaan antara systemd vs sysvinit</p>
+<img alt="_images/systemd-vs-sysvinit.jpg" src="_images/systemd-vs-sysvinit.jpg" />
+</div>
+<p>Selain terdapat pula process manager third party bernama <strong>supervisor</strong>.</p>
+</div>
+<div class="section" id="pembuatan-manual-custom-service">
+<h3>Pembuatan Manual Custom Service<a class="headerlink" href="#pembuatan-manual-custom-service" title="Permalink to this headline">¶</a></h3>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Pada materi ini penulis hanya akan membahas mengenai supervisor dan systemd</p>
+<p>Penulis tidak akan menjelaskan lebih jauh untuk pembuatan service menggunakan sysvinit atau upstart.</p>
+<p>Dikarenakan selain keduanya tidak terlalu digunakan pada saat ini, pembuatan daripada service juga merepotkan.</p>
+</div>
+<div class="section" id="supervisor">
+<h4>Supervisor<a class="headerlink" href="#supervisor" title="Permalink to this headline">¶</a></h4>
+<p>Supervisor adalah package untuk membuat service secara <strong>manual</strong> yang akan berjalan di background.</p>
+<p>Konsepnya sama seperti systemd atau sysvinit.</p>
+<p>Namun perlu diketahui bahwa systemd/sysvinit itu adalah <strong>init service</strong> (untuk memulai <cite>process</cite> dari awal), artinya supervisor hanyalah <cite>process</cite> dan tidak akan bisa menggantikan systemd/sysvinit.</p>
+<div class="section" id="fungsionalitas-supervisor">
+<h5>Fungsionalitas supervisor<a class="headerlink" href="#fungsionalitas-supervisor" title="Permalink to this headline">¶</a></h5>
+<p>Sebenarnya hampir kebanyakan process akan berjalan di foreground, misalkan saja server di <code class="docutils literal notranslate"><span class="pre">Node</span> <span class="pre">JS</span></code>.</p>
+<p>Berikut contoh sederhana dalam menjalankan server node js</p>
+<p>file <code class="docutils literal notranslate"><span class="pre">http.js</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">http</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">);</span>
+
+<span class="n">function</span> <span class="n">serve</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">http</span><span class="o">.</span><span class="n">createServer</span><span class="p">(</span><span class="n">function</span> <span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">writeHead</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">});</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Some Secrets:&quot;</span><span class="p">);</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">process</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">SECRET_PASSPHRASE</span><span class="p">);</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">process</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">SECRET_TWO</span><span class="p">);</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">end</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">There is no place like &quot;</span><span class="o">+</span><span class="n">ip</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="n">port</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="p">);</span>
+        <span class="p">})</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">ip</span><span class="p">);</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Server running at http://&#39;</span><span class="o">+</span><span class="n">ip</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="n">port</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="o">//</span><span class="n">Create</span> <span class="n">a</span> <span class="n">server</span> <span class="n">listening</span> <span class="n">on</span> <span class="nb">all</span> <span class="n">networks</span>
+<span class="n">serve</span><span class="p">(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="mi">9000</span><span class="p">);</span>
+</pre></div>
+</div>
+<img alt="_images/supervisor-1.1-run-service-in-aemon.png" src="_images/supervisor-1.1-run-service-in-aemon.png" />
+<img alt="_images/supervisor-1.2-run-service-in-aemon.png" src="_images/supervisor-1.2-run-service-in-aemon.png" />
+<p>Selain itu dalam service foreground juga tidak dapat menggunakan variable</p>
+<img alt="_images/supervisor-1.3.cannot-use-env.png" src="_images/supervisor-1.3.cannot-use-env.png" />
+<p>Jika menggunakan konsep running process seperti diatas maka akan cukup menyulitkan karena:</p>
+<ul class="simple">
+<li><p>jika semisal terdapat error di process ini maka process (<code class="docutils literal notranslate"><span class="pre">server</span> <span class="pre">node</span></code>) akan berhenti</p></li>
+<li><p>jika semisal server restart, maka process ini perlu dijalankan kembali</p></li>
+<li><p>tidak dapat menggunakan environment variable</p></li>
+</ul>
+<p>Dengan adanya supervisor akan lebih membantu terutama adalah dapat menjalankan kembali process yang terhenti (karena terjadi error).</p>
+<p>Selain itu apabila server mengalami restart, maka supervisor akan otomatis berjalan sendiri dan menjalankan process yang telah ada di supervisor.</p>
+<p>Serta supervisor dapat memberikan adanya environment variable</p>
+<p>Untuk menginstall package supervisor</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">supervisor</span>
+</pre></div>
+</div>
+<p>Untuk membuat konfigurasi supervisor buat file di <code class="docutils literal notranslate"><span class="pre">/etc/supervisor/conf.d/&lt;file-supervisor-conf&gt;.conf</span></code></p>
+<p>Misal untuk merun node js</p>
+<p>file <code class="docutils literal notranslate"><span class="pre">/etc/supervisor/conf.d/webhook.conf</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">program</span><span class="p">:</span><span class="n">webhook</span><span class="p">]</span>
+<span class="n">command</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">node</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">intel</span><span class="o">/</span><span class="n">belajar</span><span class="o">-</span><span class="n">process</span><span class="o">-</span><span class="n">manager</span><span class="o">/</span><span class="n">http</span><span class="o">.</span><span class="n">js</span>
+<span class="n">directory</span><span class="o">=/</span><span class="n">srv</span>
+<span class="n">autostart</span><span class="o">=</span><span class="n">yes</span>
+<span class="n">autorestart</span><span class="o">=</span><span class="n">yes</span>
+<span class="n">startretries</span><span class="o">=</span><span class="mi">3</span>
+<span class="n">stderr_logfile</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">webhook</span><span class="o">/</span><span class="n">webhook</span><span class="o">.</span><span class="n">err</span><span class="o">.</span><span class="n">log</span>
+<span class="n">stdout_logfile</span><span class="o">=/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">webhook</span><span class="o">/</span><span class="n">webhook</span><span class="o">.</span><span class="n">log</span>
+<span class="n">user</span><span class="o">=</span><span class="n">www</span><span class="o">-</span><span class="n">data</span>
+<span class="n">environment</span><span class="o">=</span><span class="n">SECRET_PASSPHRASE</span><span class="o">=</span><span class="s1">&#39;this is a secret&#39;</span><span class="p">,</span><span class="n">SECRET_TWO</span><span class="o">=</span><span class="s1">&#39;another secret&#39;</span>
+</pre></div>
+</div>
+<p>Penjelasan di tiap key</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">command</span></code></p>
+<blockquote>
+<div><p>adalah command yang akan dijalankan</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">directory</span></code></p>
+<blockquote>
+<div><p>adalah directory path tempat dimana file <cite>executable</cite>.</p>
+<p>Sebenarnya ini opsional, hanya saja ini akan memastikan supervisor untuk memindah directory (change directory) ke dalam directory path sebelum langsung me-execute file tujuan</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">autostart</span></code></p>
+<blockquote>
+<div><p>memberikan perintah kepada Supervisor bahwa program ini akan dimulai saat server booting (atau saat package supervisor start/restart).</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">autorestart</span></code></p>
+<blockquote>
+<div><p>memberikan perintah kepada Supervisor apa yang perlu dilakukan pada program ini pada saat event exit (apabila terjadi error pada service). terdapat 3 pilihan penanganan pada autorestart:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">false</span></code> atau <code class="docutils literal notranslate"><span class="pre">no</span></code> akan memberi perintah pada Supervisor bahwa kita tidak ingin program di restart setelah exit</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">true</span></code> atau <code class="docutils literal notranslate"><span class="pre">yes</span></code> akan memberi perintah pada Supervisor bahwa kita ingin program agar selalu di restart setelah exit</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unexpected</span></code> akan memberi perintah pada Supervisor bahwa restart program apa bila terjadi error</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">startretries</span></code></p>
+<blockquote>
+<div><p><cite>startretries</cite> sebenarnya <strong>optional</strong>, jika tidak memberikan startretries, maka supervisor akan memberikan default <code class="docutils literal notranslate"><span class="pre">3</span></code>.</p>
+<p>Konsep service di supervisor sejatinya diperuntukkan untuk menjalankan service, apabila terjadi kegagalan, tentunya service harus dijalankan kembali.</p>
+<p>Opsi startretries akan membuat berapa kali service akan dijalankan (RUNNING) kembali, apabila sudah mencapai maksimal, maka service akan berada di state ‘exit’</p>
+<p>Dan selanjutnya tergantung kepada value <code class="docutils literal notranslate"><span class="pre">autorestart</span></code>, apabila autorestart adalah <strong>true</strong> atau <strong>yes</strong> maka service akan dilakukan restart kembali dan jika tidak maka service tidak akan dijalankan (state exit).</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>opsi <code class="docutils literal notranslate"><span class="pre">startretries</span></code> tidak dapat dicoba dengan command <code class="docutils literal notranslate"><span class="pre">kill</span> <span class="pre">&lt;PID-process&gt;</span></code>.</p>
+<p>karena ketika kill process maka state daripada service di supervisor adalah <strong>exit</strong>, sehingga selanjutnya tergantung pada opsi <cite>autorestart</cite>.</p>
+<p>untuk lebih mudahnya hilangkan saja opsi <code class="docutils literal notranslate"><span class="pre">startretries</span></code>.</p>
+</div>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stderr_logfile</span></code> dan <code class="docutils literal notranslate"><span class="pre">stdout_logfile</span></code></p>
+<blockquote>
+<div><p>Adalah file path dimana log error dan log output diberikan</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Jangan lupa untuk membuatkan dahulu directory path untuk file log, karena supervisor tidak akan otomatis membuatkan directory tersebut secara otomatis.</p>
+</div>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">user</span></code></p>
+<blockquote>
+<div><p>user yang me-running service</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">environment</span></code></p>
+<blockquote>
+<div><p>Untuk membuat variable environmment</p>
+</div></blockquote>
+</li>
+</ul>
+<p>Berikut contoh menjalankan service di supervisor</p>
+<img alt="_images/supervisor.1.4.create-supervisor.png" src="_images/supervisor.1.4.create-supervisor.png" />
+<p>command <code class="docutils literal notranslate"><span class="pre">supervisorctl</span> <span class="pre">reread</span></code> adalah membaca adanya file <code class="docutils literal notranslate"><span class="pre">.conf</span></code> (file service) yang telah dibuat.</p>
+<p>Apabila terdapat file <cite>.conf</cite> baru maka lakukan restart pada supervisor dengan command <code class="docutils literal notranslate"><span class="pre">supervisorctl</span> <span class="pre">reload</span></code>.</p>
+<p>Pastikan service supervisor yang dibuat telah berjalan (status <strong>RUNNING</strong>) dengan menggunakan command <code class="docutils literal notranslate"><span class="pre">supervisorclt</span> <span class="pre">status</span></code>, apabila statusnya hanya <strong>STARTING</strong> maka lakukan kembali proses <cite>reread</cite> dan <cite>restart</cite> supervisor.</p>
+<p>Kemudian selanjutnya akan dicoba untuk menjelaskan konsep <code class="docutils literal notranslate"><span class="pre">startretries</span></code> pada supervisor</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Sebenarnya dalam node (server node) terdapat <cite>package</cite> javascript yang khusus untuk mengurusi process manager yaitu <strong>pm2</strong>     (<a class="reference external" href="https://www.npmjs.com/package/pm2">https://www.npmjs.com/package/pm2</a>)</p>
+<p>Konsepnya sama seperti process manager di supervisor.</p>
+</div>
+</div>
+</div>
+<div class="section" id="systemd">
+<h4>systemd<a class="headerlink" href="#systemd" title="Permalink to this headline">¶</a></h4>
+<p><strong>systemd</strong> merupakan system manager/process manager yang berfungsi untuk me-initialization semua process (daemon, service dan semua program yang berjalan).</p>
+<p>dalam systemd file service (konfigurasi service) disebut sebagai unit.</p>
+<p>Unit ini akan menjalankan 1 service saja.</p>
+<p>systemd merupakan pembaharuan daripada sysvinit (system five).</p>
+<p>systemd memiliki adanya fitur yang lebih banyak dibanding sysvinit seperti <strong>binary logs</strong>, <strong>interface name</strong>, <strong>network</strong>, dll.</p>
+<p>Pembuatan service di systemd juga jauh lebih sederhana dibandingkan dengan sysvinit yang masih menggunakan script (bash/shell).</p>
+<p>service di systemd akan disimpan ke dalam <code class="docutils literal notranslate"><span class="pre">/etc/systemd/system</span></code>.</p>
+<p>Service yang berasal dari package external seperti <cite>mysql</cite>, <cite>php-fpm</cite>, <cite>nginx</cite> akan disimpan ke dalam directory <code class="docutils literal notranslate"><span class="pre">/etc/systemd/system/multi-user.target.wants/</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Sebenarnya hampir semua service (termasuk package external) yang ada akan disimpan ke dalam directory <code class="docutils literal notranslate"><span class="pre">/lib/systemd/system</span></code>.</p>
+<p>Namun konsep daripada systemd nantinya akan membuatkan symlink ke <code class="docutils literal notranslate"><span class="pre">/etc/systemd/system/</span></code>.</p>
+</div>
+<p>Berikut contoh pembuatan service di systemd</p>
+<p>file <code class="docutils literal notranslate"><span class="pre">/etc/systemd/system/webhook.service</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Unit</span><span class="p">]</span>
+<span class="n">Description</span><span class="o">=</span><span class="n">webhook</span>
+
+<span class="p">[</span><span class="n">Service</span><span class="p">]</span>
+<span class="n">User</span><span class="o">=</span><span class="n">www</span><span class="o">-</span><span class="n">data</span>
+<span class="n">Group</span><span class="o">=</span><span class="n">www</span><span class="o">-</span><span class="n">data</span>
+<span class="n">Restart</span><span class="o">=</span><span class="n">on</span><span class="o">-</span><span class="n">failure</span>
+<span class="n">ExecStart</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">node</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">intel</span><span class="o">/</span><span class="n">belajar</span><span class="o">-</span><span class="n">process</span><span class="o">-</span><span class="n">manager</span><span class="o">/</span><span class="n">http</span><span class="o">.</span><span class="n">js</span>
+
+<span class="p">[</span><span class="n">Install</span><span class="p">]</span>
+<span class="n">WantedBy</span><span class="o">=</span><span class="n">multi</span><span class="o">-</span><span class="n">user</span><span class="o">.</span><span class="n">target</span>
+</pre></div>
+</div>
+<p>Penjelasan:</p>
+<ul>
+<li><p>User dan Group</p>
+<blockquote>
+<div><p>User dan group yang dapat menjalankan service</p>
+</div></blockquote>
+</li>
+<li><p>Restart</p>
+<blockquote>
+<div><p>Restart service akan dilakukan jika gagal</p>
+</div></blockquote>
+</li>
+<li><p>ExecStart</p>
+<blockquote>
+<div><p>Command dalam me-execute file</p>
+</div></blockquote>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>WantedBy ini konsepnya sama dengan runlevel.</p>
+<p>Penulis tidak akan menjelaskan bagian ini karena bahasannya cukup kompleks.</p>
+</div>
+<img alt="_images/systemd-1.1.create-systemd-service.png" src="_images/systemd-1.1.create-systemd-service.png" />
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>gunakan command sudo <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">daemon-reload</span></code> untuk me restart systemd, nantinya service yang baru akan muncul</p>
+</div>
+<p>Ketika membuat service menjadi <strong>enable</strong> maka ini otomatis akan membuat symlink ke directory <code class="docutils literal notranslate"><span class="pre">/etc/systemd/system/multi-user.target/</span></code></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Ketika service di-disable maka symlink akan dihapus</p>
+</div>
+<p>Berikut untuk melihat keseluruhan service yang ada pada systemd dengan statusnya</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">systemctl</span> <span class="nb">list</span><span class="o">-</span><span class="n">unit</span><span class="o">-</span><span class="n">files</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="perbandingan-antara-systemd-sysvinit-dan-upstart">
+<h3>Perbandingan antara <code class="docutils literal notranslate"><span class="pre">systemd</span></code>, <code class="docutils literal notranslate"><span class="pre">sysvinit</span></code>, dan <code class="docutils literal notranslate"><span class="pre">upstart</span></code><a class="headerlink" href="#perbandingan-antara-systemd-sysvinit-dan-upstart" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="penulisan-script">
+<h4>Penulisan script<a class="headerlink" href="#penulisan-script" title="Permalink to this headline">¶</a></h4>
+<p>Jika dilihat dari penggunaannya maka systemd jauh lebih direkomendasikan dikarenakan kemudahan dalam pembuatan service.</p>
+<p>sysvinit kurang begitu mudah untuk dibuat karena berbentuk script (bash/shell)</p>
+<p>Sedangkan upstart sendiri hampir sama dengan systemd namun hanya berbeda dari segi fitur.</p>
+<p><strong>contoh systemd</strong></p>
+<p>file <code class="docutils literal notranslate"><span class="pre">/etc/systemd/system/multi-user.target.wants/mysql.service</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># MySQL systemd service file</span>
+
+<span class="p">[</span><span class="n">Unit</span><span class="p">]</span>
+<span class="n">Description</span><span class="o">=</span><span class="n">MySQL</span> <span class="n">Community</span> <span class="n">Server</span>
+<span class="n">After</span><span class="o">=</span><span class="n">network</span><span class="o">.</span><span class="n">target</span>
+
+<span class="p">[</span><span class="n">Install</span><span class="p">]</span>
+<span class="n">WantedBy</span><span class="o">=</span><span class="n">multi</span><span class="o">-</span><span class="n">user</span><span class="o">.</span><span class="n">target</span>
+
+<span class="p">[</span><span class="n">Service</span><span class="p">]</span>
+<span class="n">User</span><span class="o">=</span><span class="n">mysql</span>
+<span class="n">Group</span><span class="o">=</span><span class="n">mysql</span>
+<span class="n">PermissionsStartOnly</span><span class="o">=</span><span class="n">true</span>
+<span class="n">ExecStartPre</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">mysql</span><span class="o">-</span><span class="n">systemd</span><span class="o">-</span><span class="n">start</span> <span class="n">pre</span>
+<span class="n">ExecStart</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">mysqld</span>
+<span class="n">ExecStartPost</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">mysql</span><span class="o">-</span><span class="n">systemd</span><span class="o">-</span><span class="n">start</span> <span class="n">post</span>
+<span class="n">TimeoutSec</span><span class="o">=</span><span class="mi">600</span>
+<span class="n">Restart</span><span class="o">=</span><span class="n">on</span><span class="o">-</span><span class="n">failure</span>
+<span class="n">RuntimeDirectory</span><span class="o">=</span><span class="n">mysqld</span>
+<span class="n">RuntimeDirectoryMode</span><span class="o">=</span><span class="mi">755</span>
+</pre></div>
+</div>
+<p><strong>contoh sysvinit</strong></p>
+<p>file <code class="docutils literal notranslate"><span class="pre">/etc/init.d/mysql</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#!/bin/bash
+#
+# Short-Description: Start and stop the mysql database server daemon
+# Description:       Controls the main MySQL database server daemon &quot;mysqld&quot;
+#                    and its wrapper script &quot;mysqld_safe&quot;.
+...
+
+SELF=$(cd $(dirname $0); pwd -P)/$(basename $0)
+CONF=/etc/mysql/my.cnf
+
+...
+
+case &quot;${1:-&#39;&#39;}&quot; in
+  &#39;start&#39;)
+  ...
+
+            # Start MySQL!
+            su - mysql -s /bin/sh -c &quot;/usr/bin/mysqld_safe &gt; /dev/null 2&gt;&amp;1 &amp;&quot;
+  ...
+
+  &#39;stop&#39;)
+  ...
+            killall -15 mysqld
+  ...
+</pre></div>
+</div>
+<p><strong>contoh upstart</strong></p>
+<p>file <code class="docutils literal notranslate"><span class="pre">/etc/init/mysql.conf</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">description</span>     <span class="s2">&quot;MySQL 5.7 Server&quot;</span>
+<span class="n">author</span>          <span class="s2">&quot;Mario Limonciello &lt;superm1@ubuntu.com&gt;&quot;</span>
+
+<span class="n">start</span> <span class="n">on</span> <span class="n">runlevel</span> <span class="p">[</span><span class="mi">2345</span><span class="p">]</span>
+<span class="n">stop</span> <span class="n">on</span> <span class="n">starting</span> <span class="n">rc</span> <span class="n">RUNLEVEL</span><span class="o">=</span><span class="p">[</span><span class="mi">016</span><span class="p">]</span>
+
+<span class="n">respawn</span>
+<span class="n">respawn</span> <span class="n">limit</span> <span class="mi">2</span> <span class="mi">5</span>
+
+<span class="n">env</span> <span class="n">HOME</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">mysql</span>
+<span class="n">umask</span> <span class="mi">007</span>
+
+<span class="o">...</span>
+
+<span class="n">exec</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">mysqld</span>
+
+<span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="supervisor-vs-systemd">
+<h4>supervisor vs systemd<a class="headerlink" href="#supervisor-vs-systemd" title="Permalink to this headline">¶</a></h4>
+<p>Jika dilihat antara supervisor dengan systemd maka systemd jauh lebih diunggulkan.</p>
+<p>Berikut beberapa faktor keunggulan antara systemd dan supervisor yang penulis dapat rangkum:</p>
+<ol class="arabic">
+<li><p>Systemd adalah initialization sedangkan supervisor hanyalah process</p>
+<blockquote>
+<div><p>Artinya systemd ini sudah pasti ada di tiap distro, sedangkan supervisor merupakan package external</p>
+</div></blockquote>
+</li>
+<li><p>systemd akan berjalan saat macchine restart, sedangkan supervisor belum tentu</p>
+<blockquote>
+<div><p>Karena poin 1 diatas, maka sudah dipastikan systemd akan berjalan otomatis ketika machine startup, namun lain halnya supervisor yang memiliki kemungkinan tidak akan langsung berjalan saat</p>
+<p>Artinya jika menggunakan supervisor, tiap kali restart perlu mengecek apakah process supervisor running atau tidak</p>
+</div></blockquote>
+</li>
+<li><p>systemd memiliki depedency</p>
+<blockquote>
+<div><p>sejatinya systemd adalah unit service</p>
+<p>artinya 1 konfigurasi service adalah untuk menjalankan 1 service saja</p>
+<p>sedangkan pada supervisor, satu file konfigurasi dapat menjalankan lebih dari 1 service.</p>
+<p>Namun systemd memiliki depedency, dimana satu unit  bisa bergantung pada unit lain</p>
+<p>Meskipun kenyatannya depedency tersebut tidak terlalu berpengaruh.</p>
+<p>Seperti misal unit a adalah depedency unit b</p>
+<p>start atau stop salah satu unit tidak akan terlalu berpengaruh</p>
+<p>misal ketika unit b di start, maka unit a juga akan di start</p>
+<p>namun ketika unit a direstart maka unit b belum tentu di restart</p>
+<p>command untuk melihat adanya depedency suatu service <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">list-dependencies</span> <span class="pre">&lt;service-name&gt;</span></code></p>
+<p>ref: <a class="reference external" href="https://ege.dev/post/systemd-vs-supervisor/">https://ege.dev/post/systemd-vs-supervisor/</a></p>
+</div></blockquote>
+</li>
+</ol>
+<p>Kelebihan yang mungkin bisa dijadikan pertimbangan dalam penggunaan <cite>supervisor</cite> adalah sebagai berikut:</p>
+<ul>
+<li><p>debug</p>
+<blockquote>
+<div><p>jika semisal terdapat suatu service yang tidak dipastikan <strong>harus</strong> selalu berjalan pada waktu yang lama sebaiknya menggunakan supervisor</p>
+<p>contohnya adalah pada proses debug suatu service</p>
+<p>Tentu akan merepotkan apabila memiliki service untuk keperluan debug pada systemd</p>
+</div></blockquote>
+</li>
+<li><p>supervisor web ui (GUI)</p>
+<blockquote>
+<div><p>Kelebihan lain pada supervisor adalah supervisor memiliki fitur GUI yang dapat diakses pada web</p>
+<p>ref : <a class="reference external" href="https://codesamplez.com/management/supervisord-web-interface-and-plugin">https://codesamplez.com/management/supervisord-web-interface-and-plugin</a></p>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="glosarium.html" class="btn btn-neutral float-left" title="Glosarium" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ryan
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

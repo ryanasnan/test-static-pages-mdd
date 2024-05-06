@@ -1,0 +1,862 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Docker Objects (Image, Container, Volume, Networks) &mdash; Docker and Kubernetes 1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sphinxcontrib-httpexample.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/sphinxcontrib-httpexample.js"></script>
+        <script src="_static/js/custom.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Menghapus Objects pada docker" href="docker-delete-objects.html" />
+    <link rel="prev" title="Arsitektur Docker" href="docker-architecture.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Docker and Kubernetes
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="docker-intro.html">Pengenalan Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-architecture.html">Arsitektur Docker</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Docker Objects (Image, Container, Volume, Networks)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#image-dan-container">Image dan Container</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#membuat-container-dari-image">Membuat container dari image</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#membuat-container-daripada-image">Membuat container daripada image</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#menjalankan-container">Menjalankan container</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#set-environment-variable-pada-container">Set environment variable pada container</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#expose-port">Expose Port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-run">Docker run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-exec">Docker exec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#volume">Volume</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#penggunaan-volume-objects">Penggunaan volume objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#penggunaan-bind-mount">Penggunaan bind mount</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#substansial-penggunaan-volume-objects-atau-bind-mount">substansial penggunaan volume objects atau bind mount</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#volume-object">volume object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bind-mount">Bind Mount</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#backup-dan-restore">Backup dan Restore</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#backup-restore-file-folder">Backup/Restore file/folder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#backup">backup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#restore">restore</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#backup-stream-output">Backup stream output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-network">Docker network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-logs">Docker logs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#interactive-mode-dan-tty-pseudo-terminal">Interactive mode dan TTY (pseudo terminal)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docker-delete-objects.html">Menghapus Objects pada docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile.html">Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-compose.html">Docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html">Dockerfile vs docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orchestration.html">Orchestration (Kubernetes)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-collection.html">Kumpulan Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-laravel.html">Docker Laravel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-mern.html">Docker MERN (Mongo Express React Node)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notelog.html">NoteLog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glosarium.html">Glosarium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concept-program-on-linux.html">Konsep Program di Linux</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Docker and Kubernetes</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Docker Objects (Image, Container, Volume, Networks)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/docker-objects.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="docker-objects-image-container-volume-networks">
+<h1>Docker Objects (Image, Container, Volume, Networks)<a class="headerlink" href="#docker-objects-image-container-volume-networks" title="Permalink to this headline">¶</a></h1>
+<p>Dalam docker terdapat 4 object utama yang akan digunakan yaitu Image, Container, Volume dan Networks.</p>
+<div class="section" id="image-dan-container">
+<h2>Image dan Container<a class="headerlink" href="#image-dan-container" title="Permalink to this headline">¶</a></h2>
+<p>Image dan Container pada docker layaknya class dan object, dimana image adalah class dan container adalah object.</p>
+<p>Secara lebih dalam dapat diartikan bahwa image adalah satu bundle OS dengan service yang siap dijalankan, sedangkan container adalah implementasi image yang akan di-running dimana jumlahnya bisa lebih dari 1.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Pada command docker khususnya <strong>CONTAINER</strong>, banyak command yang telah disingkat dengan tidak memberikan adanya prefix <cite>object</cite>.</p>
+<p>Semisal adalah command seperti <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> dan <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span></code>, dimana ini sebenarnya masih satu bagian daripada command object container.</p>
+<p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> adalah singkatan daripada <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">run</span></code> sedangkan <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span></code> adalah <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">exec</span></code>.</p>
+<p>Namun untuk object lain seperti image, network, volume tidak banyak command yang disingkat (dengan tidak memberikan prefix object).</p>
+<p>Seperti misal dalam menghapus image, network atau volume maka harus memberikan prefix object.</p>
+</div>
+<div class="section" id="membuat-container-dari-image">
+<h3>Membuat container dari image<a class="headerlink" href="#membuat-container-dari-image" title="Permalink to this headline">¶</a></h3>
+<p>Untuk mempermudah pembuatan container maka akan menggunakan image yang sudah terdapat registry hub docker.</p>
+<p>Untuk melakukan pulling image dari registry yang sudah ada dapat menggunakan sebagai berikut</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="o">&lt;</span><span class="n">nama</span><span class="o">-</span><span class="n">image</span><span class="o">-</span><span class="n">di</span><span class="o">-</span><span class="n">registry</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">tag</span><span class="o">-</span><span class="n">pada</span><span class="o">-</span><span class="n">registry</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Pada case ini akan dilakukan pull image <code class="docutils literal notranslate"><span class="pre">mysql</span></code> dari registry <cite>docker hub</cite></p>
+<p>Berikut adalah perintahnya</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">mysql</span>
+</pre></div>
+</div>
+<p>Setelahnya akan terdapat image baru menggunakan command <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">images</span></code></p>
+<img alt="_images/docker-implementation-4.2.docker-pull-mysql.png" src="_images/docker-implementation-4.2.docker-pull-mysql.png" />
+<p>Dapat dilihat bahwa docker images memiliki keterangan seperti nama repository, <cite>tag</cite>, <cite>image id</cite>, <cite>created at</cite> dan <cite>size</cite></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pada proses <code class="docutils literal notranslate"><span class="pre">pulling</span></code> di registry (docker hub) dapat memberikan tag secara specific, dimana tag tersebut biasanya merepresentasikan version daripada container, misal <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">pull</span> <span class="pre">mysql:8.0.19</span></code></p>
+<p>Jika tidak memberikan tag secara specific maka docker akan melakukan pull pada registry dengan tag <code class="docutils literal notranslate"><span class="pre">latest</span></code> (versi terakhir)</p>
+</div>
+<div class="section" id="membuat-container-daripada-image">
+<h4>Membuat container daripada image<a class="headerlink" href="#membuat-container-daripada-image" title="Permalink to this headline">¶</a></h4>
+<p>Untuk membuat container pada image dapat menggunakan perintah sebagai berikut</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">create</span> <span class="o">&lt;</span><span class="n">image</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">tag</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Misal jika akan membuat container pada image <cite>mysql</cite></p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="n">container</span><span class="o">-</span><span class="n">mysql</span><span class="o">-</span><span class="mi">1</span> <span class="n">mysql</span><span class="p">:</span><span class="n">latest</span>
+</pre></div>
+</div>
+<img alt="_images/implementasi-docker-4.3.create-container-and-list-container-running.png" src="_images/implementasi-docker-4.3.create-container-and-list-container-running.png" />
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Perlu diingat bahwa ketika membuat container daripada suatu image, maka pertama kali docker akan mencari image tersebut di local machine, dan jika tidak diketemukan maka docker akan otomatis melakukan pull dari registry (docker hub)</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Untuk memberikan nama pada sebuah container dapat menggunakan parameter <code class="docutils literal notranslate"><span class="pre">--name</span></code>.</p>
+<p>Jika tidak memberikan nama pada container maka docker akan secara otomatis menamai container tersebut dengan random name, dan biasanya adalah nama orang atau istilah sesuatu (misal <cite>sharp_banzai</cite>)</p>
+<img alt="_images/implementasi-docker-4.3.1.create-container-without-name.png" src="_images/implementasi-docker-4.3.1.create-container-without-name.png" />
+<p>Tujuan daripada penamaan container adalah mempermudah dalam manipulasi container itu sendiri (menghapus, run, dll)</p>
+<p>Tidak ada aturan untuk convention name pada seluruh objects docker (container, network, volume), kebanyakan nama dipisah menggunakan underscore (<cite>_</cite>) namun dapat pula menggunakan dash (<cite>-</cite>)</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Jika akan membuat container dengan <cite>nama</cite>, maka tidak akan bisa membuat nama container yang sudah ada (harus <cite>unique</cite>)</p>
+</div>
+</div>
+<p>Secara default pembuatan container dengan command <strong>create</strong> tidak akan langsung dijalankan (running).</p>
+<p>Jika menggunakan command list container maka container yang baru dibuat diatas tidak akan ada, namun jika menggunakan command list container dengan parameter <code class="docutils literal notranslate"><span class="pre">-a</span></code> (atau <code class="docutils literal notranslate"><span class="pre">--all</span></code>) maka container tersebut akan muncul</p>
+<p>Untuk melihat daftar container (yang sedang running)</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">ls</span>
+</pre></div>
+</div>
+<p>Untuk melihat daftar container (yang tidak running)</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">ls</span> <span class="o">-</span><span class="n">a</span>
+</pre></div>
+</div>
+<p>Ini mengindikasikan bahwa container tersebut masih belum dijalankan</p>
+</div>
+</div>
+<div class="section" id="menjalankan-container">
+<h3>Menjalankan container<a class="headerlink" href="#menjalankan-container" title="Permalink to this headline">¶</a></h3>
+<p>Menjalankan container (yang mana selanjutnya juga akan disebut sebagai <code class="docutils literal notranslate"><span class="pre">run</span> <span class="pre">image</span></code>) adalah proses menjalankan image yang sudah ada.</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">start</span> <span class="n">atau</span> <span class="n">docker</span> <span class="n">start</span>
+</pre></div>
+</div>
+<p>Untuk menjalankan container dapat menggunakan command sebagai berikut</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">start</span> <span class="o">&lt;</span><span class="n">nama</span><span class="o">-</span><span class="n">container</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>misal pada case ini adalah menjalankan container <code class="docutils literal notranslate"><span class="pre">container-mysql-1</span></code></p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">start</span> <span class="n">container</span><span class="o">-</span><span class="n">mysql</span><span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>Keselanjutnya dapat dilihat dengan <code class="docutils literal notranslate"><span class="pre">command</span> <span class="pre">docker</span> <span class="pre">container</span> <span class="pre">ls</span></code></p>
+<img alt="_images/implementasi-docker-4.4.docker-container-not-running.png" src="_images/implementasi-docker-4.4.docker-container-not-running.png" />
+<p><strong>Mengapa container diatas tidak running ???</strong></p>
+<p>Ini merupakan behavior daripada container mysql itu sendiri.</p>
+<p>Dimana jika tidak memberikan environment yang dibutuhkan maka container tidak akan dapat berjalan.</p>
+<p>Environment apa yang perlu diberikan ???</p>
+<p>Jika melihat adanya logs daripada container maka akan terdapat keterangan apa saja yang seharusnya diberikan, semisal pada case ini container <cite>container-mysql-1</cite> membutuhkan environment berupa <cite>MYSQL_ROOT_PASSWORD</cite></p>
+<p>Untuk melihat logs daripada container</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">logs</span> <span class="o">&lt;</span><span class="n">nama</span><span class="o">-</span><span class="n">container</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Misal pada case ini adalah container <cite>container-mysql-1</cite></p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">logs</span> <span class="n">container</span><span class="o">-</span><span class="n">mysql</span><span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+<img alt="_images/implementasi-docker-4.5.docker-logs-container.png" src="_images/implementasi-docker-4.5.docker-logs-container.png" />
+<p>Dengan adanya logs ini juga akan dapat memberikan keterangan apakah container sudah berjalan atau belum.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Pada beberapa image lain, biasanya tanpa memberikan environment (yang diharuskan) akan bisa berjalan meski terdapat adanya error</p>
+<p>contohnya adalah image <code class="docutils literal notranslate"><span class="pre">mysql/mysql-server</span></code></p>
+<p>IMAGE</p>
+</div>
+<div class="section" id="set-environment-variable-pada-container">
+<h4>Set environment variable pada container<a class="headerlink" href="#set-environment-variable-pada-container" title="Permalink to this headline">¶</a></h4>
+<p>Untuk memberikan environment variable dapat menggunakan parameter <code class="docutils literal notranslate"><span class="pre">-e</span></code> pada saat pembuatan container (bukan pada saat start container)</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="o">&lt;</span><span class="n">nama</span><span class="o">-</span><span class="n">container</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">e</span> <span class="o">&lt;</span><span class="n">ENVIRONMENT_VARIABLE_KEY</span><span class="o">&gt;=&lt;</span><span class="n">ENVIRONMENT_VARIABLE_VALUE</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">nama</span><span class="o">-</span><span class="n">image</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">tag</span><span class="o">-</span><span class="n">image</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Misal pada case ini adalah memberikan adanya environment berupa <cite>MYSQL_ROOT_PASSWORD</cite></p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="n">container</span><span class="o">-</span><span class="n">mysql</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span><span class="n">e</span> <span class="n">MYSQL_ROOT_PASSWORD</span><span class="o">=</span><span class="n">root</span> <span class="n">mysql</span><span class="p">:</span><span class="n">latest</span>
+</pre></div>
+</div>
+<p>Selanjutnya container tersebut dapat dimulai dengan command start</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">start</span> <span class="n">container</span><span class="o">-</span><span class="n">mysql</span><span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+<img alt="_images/implementasi-docker-4.6.docker-container-mysql-start-success.png" src="_images/implementasi-docker-4.6.docker-container-mysql-start-success.png" />
+</div>
+</div>
+<div class="section" id="expose-port">
+<h3>Expose Port<a class="headerlink" href="#expose-port" title="Permalink to this headline">¶</a></h3>
+<p>Pada konsep docker, container diharuskan untuk memberikan port agar dapat diakses dari luar (istilahnya adalah <strong>expose port</strong>)</p>
+<p>Untuk memberikan expose port dapat menggunakan parameter <code class="docutils literal notranslate"><span class="pre">-p</span></code> dan ini diberikan pada saat pembuatan container (tidak bisa saat menjalankan/start container)</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="o">&lt;</span><span class="n">nama</span><span class="o">-</span><span class="n">container</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">p</span> <span class="o">&lt;</span><span class="n">port</span><span class="o">-</span><span class="n">access</span><span class="o">-</span><span class="n">from</span><span class="o">-</span><span class="n">outside</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">port</span><span class="o">-</span><span class="n">access</span><span class="o">-</span><span class="n">from</span><span class="o">-</span><span class="n">container</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">nama</span><span class="o">-</span><span class="n">image</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">tag</span><span class="o">-</span><span class="n">image</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>istilah <cite>port-access-from-outside</cite> dapat disebut sebagai <strong>port binding</strong> dan istilah <cite>port-access-from-container</cite> adalah port default dalam mengakses service container.</p>
+<p>Biasanya service telah menetapkan adanya default port semisal nginx dengan port 80, mongo dengan port 27017.</p>
+<p>Di dalam docker sendiri biasanya port ini sebaiknya tidak perlu diubah.</p>
+</div>
+<p>Misal pada case ini adalah memberikan adanya port yang sama (dari luar maupun dari dalam container)</p>
+<blockquote>
+<div><p>docker container create –name container-mysql-1 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root mysql:latest</p>
+</div></blockquote>
+<p>Artinya container <cite>container-mysql-1</cite> akan dapat diakses dari luar (public atau local machine) yaitu 3306, dimana nantinya pada container tersebut akan mem-forward (dari 3306) ke port 3306</p>
+<p>Atau istilah mudahnya adalah saat local machine mengakses port 3306 maka docker daemon akan memilih container yang mengakses pada port tersebut, kemudian di container dia akan mengakses ke port 3306</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Jika ingin menggunakan adanya lebih dari 1 container pada image yang sama, semisal mysql server 2, maka hanya perlu memberikan port-from-outside (port binding) yang berbeda, misal 3307</p>
+<p>docker container create –name container-mysql-2 -p 3307:3306 -e MYSQL_ROOT_PASSWORD=root mysql:latest</p>
+<center>
+        <video width="800" controls>
+                <source src="../../resources/videos/implementasi-docker-3.3.docker-container-start-dan-port.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+        </video>
+        <p>Caption</p>
+</center></div>
+</div>
+<div class="section" id="docker-run">
+<h3>Docker run<a class="headerlink" href="#docker-run" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> adalah perintah (command) yang <cite>equivalent</cite> dengan perintah <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">create</span></code> + <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">start</span></code></p>
+<p>Perintah <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> sendiri merupakan singkatan daripada perintah <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">run</span></code></p>
+<p>Namun dalam perintah docker run memiliki lebih banyak fitur dari parameternya, salah satu yang biasa digunakan adalah parameter –rm yang akan menghapus container ketika container berhenti.</p>
+</div>
+<div class="section" id="docker-exec">
+<h3>Docker exec<a class="headerlink" href="#docker-exec" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span></code> adalah perintah (command) untuk menjalankan suatu command pada container yang berjalan (active).</p>
+<p>Perintah <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">exec</span></code> sendiri merupakan singkatan daripada perintah <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">exec</span></code>.</p>
+<p>Docker exec sering digunakan untuk masuk ke dalam container dengan interactive mode dan tty(pseudo terminal).</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">exec</span> <span class="o">-</span><span class="n">it</span> <span class="o">&lt;</span><span class="n">nama</span><span class="o">-</span><span class="n">container</span><span class="o">&gt;</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span>
+<span class="n">atau</span>
+<span class="n">docker</span> <span class="n">exec</span> <span class="o">-</span><span class="n">it</span> <span class="o">&lt;</span><span class="n">nama</span><span class="o">-</span><span class="n">container</span><span class="o">&gt;</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">sh</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Terminal yang biasa digunakan adalah <code class="docutils literal notranslate"><span class="pre">bash</span></code>, namun perlu diketahui bahwa tidak setiap container memiliki bash</p>
+</div>
+</div>
+</div>
+<div class="section" id="volume">
+<h2>Volume<a class="headerlink" href="#volume" title="Permalink to this headline">¶</a></h2>
+<p>Objects <strong>Volume</strong> pada docker layaknya <strong>storage disk</strong> yang dapat di-attach (ditambatkan) pada suatu container.</p>
+<p>Substansial penggunaan volume pada docker adalah dikarenakan konsep container pada docker yang <cite>stateless</cite> atau tidak menyimpan data.</p>
+<p>Dalam arti lain jika semisal container dihapus maka datanya juga akan ikut terhapus.</p>
+<p>Untuk service seperti <code class="docutils literal notranslate"><span class="pre">nginx</span></code>, <code class="docutils literal notranslate"><span class="pre">apache</span></code>, dan <code class="docutils literal notranslate"><span class="pre">php</span></code> tentu tidak akan menjadi masalah karena application tersebut tidak menyimpan data dinamis.</p>
+<p>Lantas bagaimana dengan service yang berhubungan dengan data dinamis seperti database (misal MySQL) ?</p>
+<p>Tentu service tersebut harus bersifat <cite>statefull</cite> atau menyimpan data.</p>
+<p>Secara garis besar dalam docker terdapat 2 jenis metode penggunaan volume yaitu:</p>
+<ul class="simple">
+<li><p><strong>volume objects</strong></p></li>
+<li><p><strong>bind mount</strong></p></li>
+</ul>
+<img alt="_images/volume-1.1-types-of-mounts-bind.png" src="_images/volume-1.1-types-of-mounts-bind.png" />
+<p>Seperti pada gambar diatas maka <cite>Volume objects</cite> berada pada <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">area</span></code>.</p>
+<p>Namun sejatinya saat membuat <cite>volume objects</cite> maka akan disimpan sebagai directory pada <code class="docutils literal notranslate"><span class="pre">/var/lib/docker</span></code></p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Untuk lebih mempermudah maka dalam dokumentasi volume ini akan menggunakan istilah sebagai berikut:</p>
+<ul>
+<li><p><cite>mount point</cite> atau <cite>mount source</cite></p>
+<blockquote>
+<div><p>Adalah <cite>path</cite> daripada <cite>volume objects</cite> atau <cite>bind mount</cite> yang akan di mounting ke <cite>mount destination</cite></p>
+</div></blockquote>
+</li>
+<li><p><cite>mount destination</cite></p>
+<blockquote>
+<div><p>Adalah path tujuan dari mount point <cite>volume objects</cite> atau <cite>bind mount</cite> yang berada di container</p>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<p>Sedangkan jika menggunakan metode <cite>bind mount</cite> maka <cite>mount point</cite> atau <cite>mount source</cite> berasal <cite>filesystem host</cite> (direktori pada host machine),</p>
+<p>Berbeda dengan bind mount, <cite>Volume objects</cite> akan dapat di manage lebih mudah karena memiliki API docker (melalui command <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">volume</span></code>).</p>
+<p>Selain itu fitur <cite>Volume objects</cite> juga lebih banyak daripada bind mount.</p>
+<p>Baik metode <cite>volume objects</cite> atau <cite>bind mount</cite>, konsepnya hampir sama yaitu melakukan mounting file/folder ke dalam container.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Konsep mounting pada docker object adalah membuat mount point ke suatu directory di container.</p>
+<p>Artinya ini bisa untuk directory root atau directory yang telah ada pada container.</p>
+<p>Berbeda dengan konsep storage di vps/cloud yang pada umumnya membuatkan mount destination pada directory <code class="docutils literal notranslate"><span class="pre">/mnt/&lt;nama-volume&gt;</span></code>.</p>
+</div>
+<div class="section" id="penggunaan-volume-objects">
+<h3>Penggunaan volume objects<a class="headerlink" href="#penggunaan-volume-objects" title="Permalink to this headline">¶</a></h3>
+<p>Untuk membuat volume object dapat dengan cara berikut</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">volume</span> <span class="n">create</span> <span class="o">&lt;</span><span class="n">nama</span><span class="o">-</span><span class="n">volume</span><span class="o">-</span><span class="nb">object</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Misalkan membuat volume bernama <cite>storage1</cite> yang selanjutnya di attach (mounting) ke dalam container</p>
+<p>Untuk melakukan mounting dengan menambahkan parameter <code class="docutils literal notranslate"><span class="pre">-v</span></code> pada command <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code>.</p>
+<img alt="_images/volume-1.2-mount-volume.png" src="_images/volume-1.2-mount-volume.png" />
+<p>Pada gambar diatas, dibuatkan file di tiap volume.</p>
+<p>Kemudian selanjutnya membuat container baru yang me-attach (mounting) volume yang sama</p>
+<img alt="_images/volume-1.3-mount-same-volume.png" src="_images/volume-1.3-mount-same-volume.png" />
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Sebenarnya dapat pula membuat <cite>volume object</cite> tanpa harus memberikan nama</p>
+<p>Namun ini kurang direkomendasikan karena docker akan secara default membuat random id pada nama volume sehingga akan susah untuk mengenalinya</p>
+<img alt="_images/volume-1.4-volume-without-name.png" src="_images/volume-1.4-volume-without-name.png" />
+</div>
+</div>
+<div class="section" id="penggunaan-bind-mount">
+<h3>Penggunaan bind mount<a class="headerlink" href="#penggunaan-bind-mount" title="Permalink to this headline">¶</a></h3>
+<p>Metode <cite>bind mount</cite> hampir sama dengan <cite>volume object</cite> hanya saja dalam bind mount akan menggunakan directory yang berada di filesystem host.</p>
+<center>
+        <video width="800" controls>
+                <source src="../../resources/videos/volume-1.1-bind-mount.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+        </video>
+        <p>Caption</p>
+</center><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Apabila menggunakan metode bind mount, maka ketika membuat file dari container dimana <cite>current-user</cite> yang berjalan adalah <strong>root</strong> maka secara default file tersebut juga akan memiliki owner <strong>root</strong>.</p>
+<p>Konsep user yang berjalan di container sejatinya sama dengan user di host machine.</p>
+<p>Hanya saja penggunaannya melalui uid (user id) dan bukan nama user.</p>
+<p>Artinya jika uid antara <cite>host machine</cite> dengan <cite>container</cite> <strong>sama</strong>, maka ketika membuat file daripada container akan memiliki owner yang sama dengan host machine.</p>
+<center>
+        <video width="800" controls>
+                <source src="../../resources/videos/volume-1.2.menyamakan-user-container-dengan-host.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+        </video>
+        <p>Caption</p>
+</center></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Apabila saat mendeklarasikan <cite>mount point</cite> <strong>tidak</strong> menggunakan prefix <code class="docutils literal notranslate"><span class="pre">/</span></code> maka mount point tersebut akan dikenali sebagai <cite>volume object</cite>.</p>
+<p>Dan jika saat mendeklarasikan mount point menggunakan prefix <code class="docutils literal notranslate"><span class="pre">/</span></code> maka mount point tersebut adalah directory filesystem dari host machine</p>
+<p>Selain itu jangan menambahkan adanya suffix <code class="docutils literal notranslate"><span class="pre">/</span></code> pada file atau folder daripada <cite>mount point</cite>, karena akan terjadi error.</p>
+<p>Nantinya docker akan secara otomatis mengenali apakah mount point tersebut file atau directory saat mounting di container.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Selain menggunakan command docker run, untuk me-attach (mounting) baik dari metode volume object atau bind mount dapat menggunakan command <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">container</span> <span class="pre">create</span></code> atau <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">create</span></code></p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">container</span> <span class="n">create</span> <span class="o">-</span><span class="n">v</span> <span class="o">&lt;</span><span class="n">nama</span><span class="o">-</span><span class="n">volume</span><span class="o">-</span><span class="nb">object</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">mount</span><span class="o">-</span><span class="n">point</span><span class="o">-</span><span class="n">container</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">nama</span><span class="o">-</span><span class="n">image</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">tag</span><span class="o">-</span><span class="n">image</span><span class="o">&gt;</span>
+<span class="n">docker</span> <span class="n">container</span> <span class="n">create</span> <span class="o">-</span><span class="n">v</span> <span class="o">/&lt;</span><span class="n">mount</span><span class="o">-</span><span class="n">point</span><span class="o">-</span><span class="n">local</span><span class="o">-</span><span class="n">machine</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">mount</span><span class="o">-</span><span class="n">point</span><span class="o">-</span><span class="n">container</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">nama</span><span class="o">-</span><span class="n">image</span><span class="o">&gt;</span><span class="p">:</span><span class="o">&lt;</span><span class="n">tag</span><span class="o">-</span><span class="n">image</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="substansial-penggunaan-volume-objects-atau-bind-mount">
+<h3>substansial penggunaan volume objects atau bind mount<a class="headerlink" href="#substansial-penggunaan-volume-objects-atau-bind-mount" title="Permalink to this headline">¶</a></h3>
+<p>Dengan adanya behavior yang berbeda daripada metode <cite>volume object</cite> dan <cite>bind mount</cite> maka penggunaan yang ideal adalah sebagai berikut.</p>
+<div class="section" id="volume-object">
+<h4>volume object<a class="headerlink" href="#volume-object" title="Permalink to this headline">¶</a></h4>
+<p>Jika semisal datanya tidak diperlukan untuk diedit secara manual, maka sebaiknya gunakan volume object</p>
+<p>Contoh sederhana adalah data pada MySQL.</p>
+<p>Database MySQL akan menyimpan data data seperti database dan data dinamis lainnya di directory <code class="docutils literal notranslate"><span class="pre">/var/lib/mysql</span></code>.</p>
+<p>Data data didalamnya adalah hasil proses daripada software MySQL, oleh karenanya sebaiknya data tersebut tidak diubah ubah secara manual.</p>
+<p>Sebenarnya bisa saja menggunakan metode <cite>bind mount</cite> akan tetapi nantinya file atau direktori akan berada di filesystem dan rentan terhadap kehilangan beberapa data tersebut.</p>
+</div>
+<div class="section" id="bind-mount">
+<h4>Bind Mount<a class="headerlink" href="#bind-mount" title="Permalink to this headline">¶</a></h4>
+<p>Jika semisal datanya diperlukan untuk diubah (edit) secara manual, maka sebaiknya gunakan bind mount.</p>
+<p>Contoh sederhana adalah file/folder suatu project.</p>
+<p>Semisal pada framework <code class="docutils literal notranslate"><span class="pre">Laravel</span></code> yang berisikan file/folder yang nantinya perlu diedit.</p>
+<p>Tentunya tidak mungkin apabila file project disimpan ke dalam <cite>volume object</cite>, karena file dan folder tidak akan terdapat pada filesystem host</p>
+</div>
+</div>
+<div class="section" id="backup-dan-restore">
+<h3>Backup dan Restore<a class="headerlink" href="#backup-dan-restore" title="Permalink to this headline">¶</a></h3>
+<p>Jika akan membuat backup/restore maka penulis lebih menyarankan untuk menggunakan metode <cite>volume object</cite></p>
+<p>Jika menggunakan konsep <cite>bind mount</cite> maka semua file/folder (yang sebelumnya di mounting ke dalam container) terdapat pada <cite>filesystem host</cite>.</p>
+<p>Artinya tidak dalam bentuk 1 file backup yang siap untuk di restore.</p>
+<p>Sedangkan konsep backup/restore itu sendiri sebaiknya menggunakan 1 file yang merepresentasikan semua data, bisa dalam bentuk compressed (<cite>tar</cite> atau <cite>zip</cite>) atau data lain yang berbentuk satu bundle.</p>
+<p>Dalam melakukan backup, sebelumnya perlu ditelaah data apa yang akan dibackup, dalam hal ini ada 2 metode yaitu <cite>file/folder</cite> atau <cite>stream output</cite></p>
+<ol class="arabic">
+<li><p>Backup file/folder</p>
+<blockquote>
+<div><p>Apabila data yang dibackup berbentuk <cite>file/folder</cite> maka akan dibuatkan file compressed (tar atau zip).</p>
+</div></blockquote>
+</li>
+<li><p>Stream Output text</p>
+<blockquote>
+<div><p>Apabila data yang dibackup adalah <cite>content</cite> daripada suatu application/file maka data backup akan dibuatkan <cite>streaming output text</cite>, atau dalam arti lain data tersebut akan dibaca melalui suatu application dan ditaruh ke dalam satu file.</p>
+<p>Contoh pada bagian ini adalah data pada MySQL yang mana untuk membackup data di databasenya diperlukan package <code class="docutils literal notranslate"><span class="pre">mysqldump</span></code></p>
+</div></blockquote>
+</li>
+</ol>
+<div class="section" id="backup-restore-file-folder">
+<h4>Backup/Restore file/folder<a class="headerlink" href="#backup-restore-file-folder" title="Permalink to this headline">¶</a></h4>
+<p>Jika dalam suatu volume terdapat file/folder, maka untuk backup data tersebut adalah dengan membuat file compressed, dalam case ini akan dibuatkan file tar.</p>
+<p>Berikut contoh sederhana dalam membuat backup file/folder pada suatu volume</p>
+<ol class="arabic">
+<li><p>membuat container dimana memiliki mount point ke /dbdata</p>
+<p>buat container tanpa source volume (host/volume default docker)
+command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">it</span> <span class="o">-</span><span class="n">v</span> <span class="o">/</span><span class="n">dbdata</span> <span class="o">--</span><span class="n">name</span> <span class="n">dbstore</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">18.04</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span>
+</pre></div>
+</div>
+<p>lalu bisa isi file sembarang di directory ‘/dbdata’</p>
+</li>
+<li><p>backup semua file di directory ‘/dbdata’
+sebelumnya cek dulu apakah volume dari suatu container sudah tertambatkan (attach) dengan  param ‘–volumes-from &lt;container&gt;’
+command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">it</span> <span class="o">--</span><span class="n">rm</span> <span class="o">--</span><span class="n">volumes</span><span class="o">-</span><span class="kn">from</span> <span class="nn">dbstore</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">18.04</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span>
+</pre></div>
+</div>
+<p>Jika sudah tertambatkan (attach) maka compress semua file (dengan tar)
+command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker run --rm --volumes-from dbstore -v $(pwd):/backup ubuntu:18.04 tar cvf /backup/backup.tar /dbdata
+</pre></div>
+</div>
+<p>setelahnya di current local directory akan terdapat file</p>
+</li>
+<li><p>buat container lain yang akan me-restore file backup</p></li>
+</ol>
+<p>docker run -it -v /dbdata –name dbstore2 ubuntu:18.04 /bin/bash</p>
+<p>4.
+docker run –rm –volumes-from dbstore2 -v $(pwd):/backup ubuntu:18.04 bash -c “cd /dbdata &amp;&amp; tar xvf /backup/backup.tar –strip 1”</p>
+</div>
+</div>
+<div class="section" id="backup">
+<h3>backup<a class="headerlink" href="#backup" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>buat 1 container dengan nama container_a dan attach volume yang akan dibackup</p></li>
+</ol>
+<p>command:
+docker run -it -v storage1:/data1 -v storage2:/data2 –name container_a ubuntu:18.04 /bin/bash</p>
+<p>edit file di dalamnya (buat juga direktori)</p>
+<ol class="arabic simple" start="2">
+<li><p>buat container temp (–rm) dengan volume dari container_a dan mount current directory $(pwd)</p></li>
+</ol>
+<p>command:
+docker run –rm -it –volumes-from container_a -v $(pwd):/backup ubuntu:18.04</p>
+<ol class="arabic simple" start="3">
+<li><p>letakkan file backup</p></li>
+</ol>
+<p>command:
+tar cvf /backup/backupvol1.tar /data1
+tar cvf /backup/backupvol2.tar /data2</p>
+</div>
+<div class="section" id="restore">
+<h3>restore<a class="headerlink" href="#restore" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>buat 1 container dengan nama container_b dan attach 2 volume yang akan me-restore</p></li>
+</ol>
+<p>command:
+docker run -it -v restore1:/data1 -v restore2:/data2 –name container_b ubuntu:18.04 /bin/bash</p>
+<ol class="arabic simple" start="2">
+<li><p>buat container temp (–rm) dengan volume dari container_b dan mount current directory $(pwd)</p></li>
+</ol>
+<p>command:
+docker run –rm -it –volumes-from container_b -v $(pwd):/backup ubuntu:18.04 /bin/bash</p>
+<ol class="arabic simple" start="3">
+<li><p>extract file backup ke masing masing volume</p></li>
+</ol>
+<p>command:
+cd /data1 &amp;&amp; tar xvf /backup/backupvol1.tar –strip 1
+cd /data2 &amp;&amp; tar xvf /backup/backupvol2.tar –strip 1”</p>
+<p>parameter <code class="docutils literal notranslate"><span class="pre">--volumes-from</span></code> adalah me-mounting semua volume yang sedang di-mounting dari suatu container.</p>
+<p>Parameter ini digunakan untuk mempermudah mounting agar tak perlu memberikan mount point atau mount destination yang sama pada suatu container</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Apabila akan me-mounting volume yang sama pada suatu container dengan cara manual maka akan cukup merepotkan, seperti</p>
+<p>command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">it</span> <span class="o">--</span><span class="n">rm</span> <span class="o">-</span><span class="n">v</span> <span class="n">vol1</span><span class="p">:</span><span class="o">/</span><span class="n">hoho</span> <span class="o">-</span><span class="n">v</span> <span class="n">vol2</span><span class="p">:</span><span class="o">/</span><span class="n">hoho</span> <span class="n">ubuntu</span><span class="p">:</span><span class="mf">18.04</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span>
+</pre></div>
+</div>
+</div>
+<p>Update</p>
+<p>ada cara yang lebih baik
+dengan cara buat container temp dan mount volume kemudian letaakan pada file
+tentu ini bisa dibuat bash shell/script
+dan tentu ini bisa untuk restore juga</p>
+<div class="section" id="backup-stream-output">
+<h4>Backup stream output<a class="headerlink" href="#backup-stream-output" title="Permalink to this headline">¶</a></h4>
+<p>Dalam database MySQL semua database/schema akan disimpan ke dalam directory <code class="docutils literal notranslate"><span class="pre">/var/lib/mysql</span></code>.</p>
+<p>Di dalam directory tersebut selain database/schema juga terdapat file konfigurasi seperti <code class="docutils literal notranslate"><span class="pre">.pem</span></code>.</p>
+<p>Untuk bisa membuat file backup data MySQL membutuhkan package <code class="docutils literal notranslate"><span class="pre">mysqldump</span></code> yang akan melakukan streaming output text.</p>
+<p>Nantinya dari streaming output text tersebut dapat langsung disimpan ke dalam file di filesystem host.</p>
+<p>backup
+docker exec some-mysql sh -c ‘exec mysqldump –all-databases -uroot -p”$MYSQL_ROOT_PASSWORD”’ &gt; /some/path/on/your/host/all-databases.sql</p>
+<p>restore
+docker exec -i some-mysql sh -c ‘exec mysql -uroot -p”$MYSQL_ROOT_PASSWORD”’ &lt; /some/path/on/your/host/all-databases.sql</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Pada software <code class="docutils literal notranslate"><span class="pre">MySQL</span></code> sebenarnya bisa saja mem-backup semua data pada directory <code class="docutils literal notranslate"><span class="pre">/var/lib/mysql</span></code>, namun kurang disarankan, karena terdapat berbagai file konfigurasi seperti <code class="docutils literal notranslate"><span class="pre">.pem</span></code> file.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Sejatinya konsep mounting pada UNIX Like adalah membuat disk baru, layaknya windows yang akan menamai drive <code class="docutils literal notranslate"><span class="pre">G</span></code>,``H``,``I`` dan seterusnya saat memasang Disk Drive.</p>
+<p>Namun konsep mounting pada docker cukup berbeda.</p>
+<p>Secara default disk yang terlihat hanyalah satu (/dev/sdb3) yang mana mounted destination defaultnya adalah <code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code></p>
+<p>Meskipun me-mounting lebih dari 1 volume (volume object atau bind mount) maka hasil daripada disk hanyalah satu (/dev/sdb3).</p>
+<p>Selain itu terdapat pula keanehan di bagian mount destination.</p>
+<p>Apabila mount destionation nya <strong>tidak berada</strong> pada default filesystem container maka mount destionation nya adalah mount destination itu sendiri.</p>
+<p>Namun jika mount destionation nya <strong>berada</strong> pada default filesystem container maka mount destionation nya adalah <code class="docutils literal notranslate"><span class="pre">/etc/hosts</span></code></p>
+<p>kalau lebih dari 1 volume misal di docker-compose:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">volumes</span><span class="p">:</span>
+  <span class="o">-</span> <span class="s2">&quot;./config/my.conf:/etc/mysql/conf.d/config-file.cnf&quot;</span>
+  <span class="o">-</span> <span class="s2">&quot;./data:/var/lib/mysql:rw&quot;</span>
+  <span class="o">-</span> <span class="s2">&quot;./directoryhost:/mountdestination1&quot;</span>
+  <span class="o">-</span> <span class="s2">&quot;volumeobject:/mountdestination2&quot;</span>
+</pre></div>
+</div>
+<p>maka disk yang terlihat (dengan command <code class="docutils literal notranslate"><span class="pre">df</span></code>) adalah:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">root</span><span class="nd">@d0e48cefdd53</span><span class="p">:</span><span class="o">/</span><span class="c1"># df -h</span>
+<span class="n">Filesystem</span>      <span class="n">Size</span>  <span class="n">Used</span> <span class="n">Avail</span> <span class="n">Use</span><span class="o">%</span> <span class="n">Mounted</span> <span class="n">on</span>
+<span class="n">overlay</span>          <span class="mi">32</span><span class="n">G</span>   <span class="mi">27</span><span class="n">G</span>  <span class="mf">3.9</span><span class="n">G</span>  <span class="mi">88</span><span class="o">%</span> <span class="o">/</span>
+<span class="n">tmpfs</span>            <span class="mi">64</span><span class="n">M</span>     <span class="mi">0</span>   <span class="mi">64</span><span class="n">M</span>   <span class="mi">0</span><span class="o">%</span> <span class="o">/</span><span class="n">dev</span>
+<span class="n">tmpfs</span>           <span class="mf">3.9</span><span class="n">G</span>     <span class="mi">0</span>  <span class="mf">3.9</span><span class="n">G</span>   <span class="mi">0</span><span class="o">%</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">fs</span><span class="o">/</span><span class="n">cgroup</span>
+<span class="n">shm</span>              <span class="mi">64</span><span class="n">M</span>     <span class="mi">0</span>   <span class="mi">64</span><span class="n">M</span>   <span class="mi">0</span><span class="o">%</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">shm</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sdb3</span>        <span class="mi">32</span><span class="n">G</span>   <span class="mi">27</span><span class="n">G</span>  <span class="mf">3.9</span><span class="n">G</span>  <span class="mi">88</span><span class="o">%</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">mountdestination1</span>
+<span class="n">tmpfs</span>           <span class="mf">3.9</span><span class="n">G</span>     <span class="mi">0</span>  <span class="mf">3.9</span><span class="n">G</span>   <span class="mi">0</span><span class="o">%</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">asound</span>
+<span class="n">tmpfs</span>           <span class="mf">3.9</span><span class="n">G</span>     <span class="mi">0</span>  <span class="mf">3.9</span><span class="n">G</span>   <span class="mi">0</span><span class="o">%</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">acpi</span>
+<span class="n">tmpfs</span>           <span class="mf">3.9</span><span class="n">G</span>     <span class="mi">0</span>  <span class="mf">3.9</span><span class="n">G</span>   <span class="mi">0</span><span class="o">%</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">scsi</span>
+<span class="n">tmpfs</span>           <span class="mf">3.9</span><span class="n">G</span>     <span class="mi">0</span>  <span class="mf">3.9</span><span class="n">G</span>   <span class="mi">0</span><span class="o">%</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">firmware</span>
+</pre></div>
+</div>
+<p>Penulis tidak akan menanggapi keanehan ini, namun hanya untuk sekedar memberitahukan.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="docker-network">
+<h2>Docker network<a class="headerlink" href="#docker-network" title="Permalink to this headline">¶</a></h2>
+<p>Network pada docker berfungsi untuk mengkoneksikan antar container.</p>
+<p>Sejatinya container pada docker bersifat <cite>isolated</cite> dimana container satu dengan yang lain tidak memiliki adanya kemampuan untuk berinteraksi.</p>
+<p>Maka untuk dapat saling berkomunikasi maka dibutuhkan adanya <strong>network</strong>.</p>
+<p>Berikut adalah implementasi sederhana dalam penggunaan aplikasi <strong>laravel</strong>.</p>
+<p>Laravel sendiri adalah framework php yang biasa dijalankan menggunakan server <strong>nginx</strong> dan database <strong>mysql</strong>.</p>
+<p>Konsep untuk bisa mengkoneksikan cukup sederhana, yaitu pertama buat network, kemudian tiap container masukkan ke dalam network.</p>
+<p>Kemudian jika semisal suatu container akan berhubungan dengan container maka dapat dengan memberikan host berupa <cite>nama container</cite></p>
+<p>konsepnya sederhana</p>
+<p>yaitu build image dari php, install composer ada command composer install</p>
+<p>jadi dari image tersebut akan dijadikan php (dengan composer)</p>
+<p>jadi sebenarnya docker daemon ini adalah os pada suatu image</p>
+<p>misal php dengan tag cent os</p>
+<p>maka dia docker daemonnya dalah cent os</p>
+<p>docker container create –name java-docker -p 8080:8080 -e NAME=docker -e MONGO_HOST=mongo -e MONGO_PORT=27017 -e REDIS_HOST=redis REDIS_PORT=6379 java-docker:1.0</p>
+<p>atau dengan kata lain sebenarnya application java di running dengan menggunakan host mongo dan host redis untuk bisa menggunakan database</p>
+<p>untuk menjalankan java-docker diatas yang menggunakan mongo dan redis sebagai database, maka yang di run adalah image java-docker</p>
+<p>docker container start java-docker</p>
+<p>namun ini masih belum bisa dijalankan</p>
+<p>karena java-docker tidak mengetahui host mongo</p>
+<p>yang artinya</p>
+<p>saat membuat container itu sebenarnya terisolasi satu sama lain</p>
+<p>jadi container satu dengan yang lain tidak bisa berkomunikasi satu sama lain</p>
+<p>untuk dibutuhkan adanya network</p>
+<p>jadi buat 1 network lalu container yang akan dikomunikasikan harus dimasukkan ke dalam network tersebut</p>
+<p>docker network  create java_network</p>
+<p>untuk melihat list</p>
+<blockquote>
+<div><p>docker network ls</p>
+<p>docker network connect java_network mongo</p>
+<p>docker network connect java_network redis</p>
+<p>docker network connect java_network java-docker</p>
+</div></blockquote>
+<p>docker container inspect mongo</p>
+<p>di bagian network terdapat adanya network (java_network)</p>
+</div>
+<div class="section" id="docker-logs">
+<h2>Docker logs<a class="headerlink" href="#docker-logs" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="interactive-mode-dan-tty-pseudo-terminal">
+<h3>Interactive mode dan TTY (pseudo terminal)<a class="headerlink" href="#interactive-mode-dan-tty-pseudo-terminal" title="Permalink to this headline">¶</a></h3>
+<p>Dalam komunikasi dengan suatu program di komputer, untuk bisa mendapatkan adanya output daripada command maka dibutuhkan adanya standard streams (STDIN, STDOUT, STDERR)</p>
+<p>Ketika menjalankan command daripada service (seperti nginx, php, dll) tentunya dibutukan adanya hasil daripada command tersebut.</p>
+<p>Pada docker secara default standard streams ini telah dijalankan.</p>
+<p>Artinya setelah menjalankan container, maka akan muncul output daripada command yang sedang berjalan (log, error atau keterangan lain).</p>
+<p>Namun jika semisal ingin menghilangkan fitur tersebut maka container dapat dijalankan melakui detached mode (-d).</p>
+<p>Sedangkan tty (pseudo) sendiri adalah untuk bisa menghubungkan user dengan suatu komunikasi baru (terminal baru).</p>
+<p>Secara singkat maka kombinasi antara interactive dan tty adalah masuk ke dalam bash (terminal session) yang mana akan memunculkan adanya standard streams (STDIN, STDOUT dan STDERR)</p>
+<p>ref : <a class="reference external" href="https://medium.com/&#64;lucaspenzeymoog/understanding-standard-streams-stdin-stdout-5bc350939b94">https://medium.com/&#64;lucaspenzeymoog/understanding-standard-streams-stdin-stdout-5bc350939b94</a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Untuk memudahkan dalam pengimplementasian docker, maka pada kali ini akan menggunakan case php application, dimana pada application tersebut akan menggunakan service nginx, mysql, dan php.</p>
+</div>
+<p>Dalam UNIX Like terdapat file yang digunakan untuk meng-handle Standard Input, Standard Output dan Standard Error pada suatu service yang berjalan</p>
+<p>File tersebut berada di path <code class="docutils literal notranslate"><span class="pre">/dev</span></code>, yaitu <code class="docutils literal notranslate"><span class="pre">/dev/stdin</span></code> untuk standard input, <code class="docutils literal notranslate"><span class="pre">/dev/stdout</span></code> untuk standard output, dan <code class="docutils literal notranslate"><span class="pre">/dev/stderr</span></code> untuk standard error.</p>
+<p>Dalam docker sendiri</p>
+<p>namun lantas kenapa gak bisa dibaca pas di container
+kenapa kalau service kayak nginx diinstall di local bisa dibaca</p>
+<p>nah jadi gini
+kalau nginx yang diinstall di local
+itu file /var/log/nginx/access.log gak akan di forward (symlink)</p>
+<p>makanya kalau pake docker ya harus di symlink ke /dev/stdout</p>
+<p>kenapa biar kelihatan bro kalau di docker logs &lt;container-name&gt;</p>
+<p>nah inilah yang keluar (kayak knosep foreground) kan</p>
+<p>tapi wait kalau lebih dari satu host gimana
+nah jadi gini dari file nginx configuration (sites-available)
+dia kan ada access log
+disitu diset kan ya
+nah nanti tiap service nginx akan dibaca disitu</p>
+<p>so bakal dibuat itu filenya</p>
+<p>nah masalahnya di docker kan gak sampe kek gitu
+nah di dockerfile lebih parah lagi, gak ada</p>
+<p>makanya saranku 1 service nginx itu default aja, jadi tetep baca /var/log/nginx/access.log</p>
+<p>takutnya kalau gak di symlink kan gak kebaca lognya bahaya kan</p>
+<p>atau gini aja boleh 1 service nginx lebih dari 1 conf, tapi semuanya menuju file yang sama /var/log/access.log yang nanti di symlink
+makanya bakal aman bos
+tapi ya gitu bakal kebaca semuanya, susah juga kan buat monitoring</p>
+<p>artinya secara default command
+docker logs &lt;container&gt;
+adalah membaca pada /dev/stdout</p>
+<p>ketika menjalankan nginx jangan menggunakan -it /bin/bash
+karena itu gak akan jalan, idk
+tapi menurutku karena masalah stdin stdout stderr
+artinya docker ini gak bis</p>
+<p>wait salah bro bukan logs</p>
+<p>You have run the container in order the CMD command starts, if not, you are overwriting the init process with the bash command. Once it starts you can open a connection into the container and check:</p>
+<p>tapi masalah karena ini replace di bagian docker run (exec cms/entrypoint)</p>
+<p>nah kalau di nginx itu kan sebenere dia nulis default di /dev/stderr</p>
+<p>biasanya sih di file conf itu ada bagian access_log dan errror_log
+nah kalau misal gak dikasih berarti di Dockerfile harus dikasih symlink</p>
+<p>nah jadi gini kalau semisal pake konsep /dev.stderr symlink di satu Dockerfile
+itu berarti satu service docekr itu nyimpan di situ
+lantas gimana kalau ada 2 conf
+kan bisa aja itu ada 2 hosts kan,
+apa gak berarti ada 2 conf artinya log nya gimmana ?
+ya berarti harus dibuat
+which mean pake aja access_log dan error_log di conf
+ok challenge
+gimana kalau punya 2 conf
+apa bisa membuat 2 log</p>
+<p>masalah env file pada docker-compose</p>
+<p>jadi katakanlah di laravel kan file .env itu cwd (current working directory) sama docker-compose.yml
+nah ada cara yaitu meletakkan di direktori lain
+buat ngecek apakah sudah benar pake direktori lain atau file .env di cwd bisa pake
+docker-compose config</p>
+<p>ref : <a class="reference external" href="https://docs.docker.com/compose/environment-variables/">https://docs.docker.com/compose/environment-variables/</a></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="docker-delete-objects.html" class="btn btn-neutral float-right" title="Menghapus Objects pada docker" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="docker-architecture.html" class="btn btn-neutral float-left" title="Arsitektur Docker" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ryan
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

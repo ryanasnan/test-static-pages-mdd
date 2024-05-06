@@ -1,0 +1,550 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Container and Orchestration with Docker &amp; Kubernetes &mdash; Docker and Kubernetes 1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sphinxcontrib-httpexample.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/sphinxcontrib-httpexample.js"></script>
+        <script src="_static/js/custom.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pengenalan Docker" href="docker-intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home" alt="Documentation Home"> Docker and Kubernetes
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="docker-intro.html">Pengenalan Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-architecture.html">Arsitektur Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-objects.html">Docker Objects (Image, Container, Volume, Networks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-delete-objects.html">Menghapus Objects pada docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile.html">Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-compose.html">Docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html">Dockerfile vs docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orchestration.html">Orchestration (Kubernetes)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-collection.html">Kumpulan Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-laravel.html">Docker Laravel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-mern.html">Docker MERN (Mongo Express React Node)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notelog.html">NoteLog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glosarium.html">Glosarium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concept-program-on-linux.html">Konsep Program di Linux</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Docker and Kubernetes</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Container and Orchestration with Docker &amp; Kubernetes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="container-and-orchestration-with-docker-kubernetes">
+<h1>Container and Orchestration with Docker &amp; Kubernetes<a class="headerlink" href="#container-and-orchestration-with-docker-kubernetes" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="docker-intro.html">Pengenalan Docker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="docker-intro.html#virtualisasi">Virtualisasi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docker-intro.html#teknologi-virtualisasi-hypervisor">Teknologi virtualisasi (<code class="docutils literal notranslate"><span class="pre">Hypervisor</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="docker-intro.html#teknologi-docker">Teknologi Docker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docker-intro.html#perbedaan-docker-dengan-virtualisasi-yang-lain">Perbedaan Docker dengan virtualisasi yang lain</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docker-architecture.html">Arsitektur Docker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="docker-architecture.html#docker-bukanlah-virtual-machine-namun-container-manager">Docker bukanlah <strong>virtual machine</strong>, namun <strong>container manager</strong>.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docker-architecture.html#keuntungan-menggunakan-docker">Keuntungan menggunakan Docker</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="docker-architecture.html#beberapa-objects-dan-konsep-pada-docker">Beberapa objects dan konsep pada Docker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docker-architecture.html#docker-images">Docker Images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-architecture.html#docker-container">Docker Container</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-architecture.html#docker-registry">Docker Registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-architecture.html#docker-volume">Docker volume</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="docker-architecture.html#command-umum-pada-docker-objects-image-container-volume"><cite>Command</cite> umum pada docker objects (image, container, volume)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docker-objects.html">Docker Objects (Image, Container, Volume, Networks)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="docker-objects.html#image-dan-container">Image dan Container</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docker-objects.html#membuat-container-dari-image">Membuat container dari image</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="docker-objects.html#membuat-container-daripada-image">Membuat container daripada image</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="docker-objects.html#menjalankan-container">Menjalankan container</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="docker-objects.html#set-environment-variable-pada-container">Set environment variable pada container</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="docker-objects.html#expose-port">Expose Port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-objects.html#docker-run">Docker run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-objects.html#docker-exec">Docker exec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="docker-objects.html#volume">Volume</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docker-objects.html#penggunaan-volume-objects">Penggunaan volume objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-objects.html#penggunaan-bind-mount">Penggunaan bind mount</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-objects.html#substansial-penggunaan-volume-objects-atau-bind-mount">substansial penggunaan volume objects atau bind mount</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="docker-objects.html#volume-object">volume object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="docker-objects.html#bind-mount">Bind Mount</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="docker-objects.html#backup-dan-restore">Backup dan Restore</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="docker-objects.html#backup-restore-file-folder">Backup/Restore file/folder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="docker-objects.html#backup">backup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-objects.html#restore">restore</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="docker-objects.html#backup-stream-output">Backup stream output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="docker-objects.html#docker-network">Docker network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docker-objects.html#docker-logs">Docker logs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docker-objects.html#interactive-mode-dan-tty-pseudo-terminal">Interactive mode dan TTY (pseudo terminal)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docker-delete-objects.html">Menghapus Objects pada docker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="docker-delete-objects.html#menghapus-container">Menghapus container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docker-delete-objects.html#menghapus-images">Menghapus images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docker-delete-objects.html#command-singkat-untuk-menghapus-semua-objects-docker">Command singkat untuk menghapus semua objects docker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docker-delete-objects.html#melihat-jumlah-image-container-dan-volumes">Melihat jumlah image, container, dan volumes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile.html">Dockerfile</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile.html#id1">Dockerfile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile.html#instruction-run-cmd-dan-entrypoint-pada-file-dockerfile">Instruction <code class="docutils literal notranslate"><span class="pre">RUN</span></code>, <code class="docutils literal notranslate"><span class="pre">CMD</span></code> dan <code class="docutils literal notranslate"><span class="pre">ENTRYPOINT</span></code> pada file Dockerfile</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile.html#shell-vs-executable-file"><strong>Shell</strong> VS <strong>Executable File</strong></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dockerfile.html#shell-vs-bash"><code class="docutils literal notranslate"><span class="pre">shell</span></code> vs <code class="docutils literal notranslate"><span class="pre">bash</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dockerfile.html#shell-form-vs-exec-form-pada-instruction-run-cmd-dan-entrypoint">Shell Form vs Exec Form pada instruction RUN, CMD, dan ENTRYPOINT</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile.html#run"><strong>RUN</strong></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile.html#cmd"><strong>CMD</strong></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile.html#entrypoint"><strong>ENTRYPOINT</strong></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile.html#substansial-pengaplikasian-run-cmd-dan-entrypoint">Substansial pengaplikasian RUN, CMD, dan ENTRYPOINT</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dockerfile.html#pengaplikasian-run">Pengaplikasian <strong>RUN</strong></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dockerfile.html#pengaplikasian-cmd">Pengaplikasian <strong>CMD</strong></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dockerfile.html#pengaplikasian-entrypoint">Pengaplikasian <strong>ENTRYPOINT</strong></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dockerfile.html#pengaplikasian-entrypoint-cmd">Pengaplikasian <code class="docutils literal notranslate"><span class="pre">ENTRYPOINT</span> <span class="pre">+</span> <span class="pre">CMD</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile.html#jika-terjadi-error-atau-gagal-running">Jika terjadi Error atau gagal running</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile.html#environment">Environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile.html#environment-variable-pada-run-cmd-dan-entrypoint">Environment Variable pada RUN CMD dan ENTRYPOINT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile.html#overwrite-environment-variable-saat-pembuatan-image-docker-container-create-atau-saat-menjalankan-docker-run">Overwrite environment variable saat pembuatan image (docker container create) atau saat menjalankan (docker run)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile.html#arg">ARG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile.html#substansial-penggunaan-arg-dan-env">Substansial penggunaan ARG dan ENV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile.html#volume">Volume</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile.html#workdir">Workdir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile.html#add">Add</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile.html#expose">Expose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile.html#mengupload-image-ke-registry">mengupload image ke registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile.html#membuat-custom-image-dari-registry">Membuat custom image dari registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile.html#membuat-custom-image-dari-base-image">Membuat custom image dari base image</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile.html#base-image-alpine-vs-ubuntu">base image alpine vs ubuntu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile.html#menjalankan-multi-service-pada-satu-container">Menjalankan multi service pada satu container</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile.html#kalau-gagal-build-dockerfile">kalau gagal build dockerfile</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docker-compose.html">Docker compose</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="docker-compose.html#id1">docker compose</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docker-compose.html#docker-compose-tidak-bisa-melakukan-build-secara-berurutan">Docker compose tidak bisa melakukan build secara berurutan</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html">Dockerfile vs docker compose</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html#docker-compose-laravel-by-serversforhackers">Docker compose laravel by serversforhackers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html#konsep-image-pada-dockerfile">Konsep image pada Dockerfile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html#pembuatan-dockerfile">Pembuatan dockerfile</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html#docker-logs">docker logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html#docker-network">docker network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html#docker-compose">docker compose</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="orchestration.html">Orchestration (Kubernetes)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="orchestration.html#kubernetes">kubernetes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="orchestration.html#istilah-kubernetes">istilah kubernetes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-collection.html">Kumpulan Dockerfile</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile-collection.html#docker-php">Docker php</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile-collection.html#dockerfile-php-5-2-fpm">Dockerfile php 5.2 fpm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dockerfile-collection.html#proses-configure-enable-install">Proses configure/enable/install</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dockerfile-collection.html#environment-variable-pada-dockerfile">Environment Variable pada Dockerfile</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dockerfile-collection.html#patch">Patch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dockerfile-collection.html#apa-itu-php-cgi-php-fpm-dan-php-cli">Apa itu php-cgi, php-fpm dan php-cli</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile-collection.html#dockerfile-php-7-4-alpine">Dockerfile php 7.4 alpine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile-collection.html#dockerfile-php-7-4-debian">Dockerfile php 7.4 debian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dockerfile-collection.html#docker-php-alpine-3-15-vs-docker-php-alpine-3-16">docker php alpine 3.15 vs docker php alpine 3.16</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dockerfile-collection.html#bahaya-penggunaan-apt-get-purge-autoremove">Bahaya penggunaan apt-get purge –autoremove</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docker-laravel.html">Docker Laravel</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="docker-laravel.html#lemp-stack-laravel">LEMP Stack + laravel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#install-basic-tools-package">Install basic tools package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#add-repository-nginx-php">Add repository (nginx + php)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#install-package-nginx-php-php-library">Install package nginx + php + php library</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#install-composer">Install composer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#install-laravel">Install laravel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#set-konfigurasi-virtual-host-nginx">Set konfigurasi virtual host nginx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#permission">Permission</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="docker-laravel.html#permission-dengan-user-non-root-dalam-laravel">Permission dengan user non-root dalam laravel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#konfigurasi-php">Konfigurasi php</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="docker-laravel.html#module-php">module php</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#instalasi-mysql">Instalasi MySQL</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="docker-laravel.html#secure-mysql">Secure mysql</a></li>
+<li class="toctree-l4"><a class="reference internal" href="docker-laravel.html#user-non-root-di-mysql">User non-root di MySQL</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#redis">redis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="docker-laravel.html#docker-compose-laravel">Docker Compose laravel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#basic-laravel">Basic Laravel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#advance-laravel">Advance Laravel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#multi-laravel-docker">Multi Laravel docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#directory-structure">Directory structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#real-notelog">real notelog</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="docker-laravel.html#desain-simple-laravel-5-5">desain simple laravel 5.5</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="docker-laravel.html#directory-and-file-structure">directory and file structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="docker-laravel.html#desain-reference-project-docker">desain reference project docker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docker-laravel.html#desain-single-app-single-docker">desain single app single docker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="docker-mern.html">Docker MERN (Mongo Express React Node)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notelog.html">NoteLog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#konsep-php-nginx">konsep php nginx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#konsep-api-address">Konsep api address</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#mengapa-kalau-docker-build-harus-ada-context-path-asumsi">mengapa kalau docker build harus ada context path (asumsi)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#mengapa-di-mysql-official-harus-memberikan-adanya-p">Mengapa di mysql official harus memberikan adanya -p</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#mengapa-di-docker-php-image-pake-docker-php-ext-install">mengapa di docker php image pake docker-php-ext-install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#melihat-history-log-di-linux">Melihat history log di linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#redirection">redirection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#cara-membuat-web-application-nginx-dengan-subdirectory">cara membuat web application (nginx) dengan subdirectory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#ubuntu-vs-centos">ubuntu vs centos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#ubuntu-vs-centos-berani-pakai-centos">ubuntu vs centos, berani pakai centos ?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#network-0-0-0-0">network 0.0.0.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#volume-itu-akan-menghapus">volume itu akan menghapus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#konsep-node-php-dan-service-backend">konsep node,php dan service backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#perbedaan-binary-dan-source-code">Perbedaan binary dan source code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#apa-itu-alpine">apa itu alpine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#kalau-serius-mau-buat-dockerfile">kalau serius mau buat dockerfile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#docker-push-new-repo">docker push new repo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#docker-compose-restart-always-on-autostart">docker compose restart always (on autostart)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notelog.html#menghilangkan-dengan-docker-compose-down">menghilangkan dengan docker-compose down</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#penjelasan-host">penjelasan host</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#masalah-php-dan-nginx-di-docker">masalah php dan nginx di docker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#docker-compose-adalah-seperti-halnya-docker-run">docker-compose adalah seperti halnya docker run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#jika-ingin-mount-volume-pastikan-file-yang-di-mount-bener-semua-terkadang-kalau-ada-dockerfile-bikin-error-saja">jika ingin mount volume pastikan file yang di mount bener semua, terkadang kalau ada Dockerfile bikin error saja</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#jika-pas-di-docker-compose-up-itu-terkadang-ada-tambahan-misal-php-1-atau-web-1-nah-itu-juga-bisa-dijadikan-server-tersendiri-bisa-untuk-php-1-9000-pada-nginx">jika pas di docker compose up itu terkadang ada tambahan, misal php_1 atau web_1 nah itu juga bisa dijadikan server tersendiri (bisa untuk php_1:9000 pada nginx)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#php-extension-in-docker">php extension in docker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notelog.html#gak-perlu-install-package-aneh-aneh">gak perlu install package aneh aneh</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#cors-dan-implementasi-proxy-di-react">CORS dan Implementasi Proxy di React</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notelog.html#cors-cross-origin-resource-sharing">CORS (Cross Origin Resource Sharing)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notelog.html#origin">Origin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notelog.html#same-origin-policy-dalam-cors"><cite>Same-Origin policy</cite> dalam CORS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notelog.html#menerapkan-akses-dengan-cors-control-allow-header-origin">Menerapkan akses dengan CORS (control allow header origin)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notelog.html#serangan-csrf-dan-xsrf">Serangan CSRF dan XSRF</a></li>
+<li class="toctree-l4"><a class="reference internal" href="notelog.html#kesimpulan-cors">Kesimpulan CORS</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="notelog.html#react-proxy">React Proxy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="notelog.html#bagaimana-react-menggunakan-proxy">Bagaimana React menggunakan <code class="docutils literal notranslate"><span class="pre">proxy</span></code> ?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#package-react-router-sejatinya-bukan-url-namun-hanya-semacam-routing-di-browser">Package <code class="docutils literal notranslate"><span class="pre">react-router</span></code> sejatinya bukan url namun hanya semacam <cite>routing</cite> di browser</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notelog.html#hal-ini-tidak-berlaku-jika-semisal-menggunakan-dengan">Hal ini tidak berlaku jika semisal menggunakan dengan ,</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#session-based-authentication-vs-token-based-authentication-case-session-vs-jwt">session based authentication vs token based authentication (case SESSION vs JWT)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notelog.html#php-session-dan-cookie">PHP session dan cookie</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notelog.html#jwt">JWT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notelog.html#disable-play-video-dengan-cors">Disable play video dengan CORS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glosarium.html">Glosarium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concept-program-on-linux.html">Konsep Program di Linux</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="concept-program-on-linux.html#process">Process</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="concept-program-on-linux.html#background-and-foreground-process">Background and Foreground Process</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="concept-program-on-linux.html#daemon">Daemon</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="concept-program-on-linux.html#daemon-vs-service-vs-process"><strong>Daemon</strong> vs <strong>Service</strong> vs <strong>Process</strong></a></li>
+<li class="toctree-l3"><a class="reference internal" href="concept-program-on-linux.html#fungsionalitas-daemon">Fungsionalitas daemon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concept-program-on-linux.html#command-pada-terminal-linux-dan-relativitas-dengan-daemon">Command pada terminal linux dan relativitas dengan daemon</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="concept-program-on-linux.html#management-process-linux">Management Process Linux</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="concept-program-on-linux.html#top">Top</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concept-program-on-linux.html#ps"><code class="docutils literal notranslate"><span class="pre">ps</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="concept-program-on-linux.html#menghentikan-process">Menghentikan <code class="docutils literal notranslate"><span class="pre">process</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="concept-program-on-linux.html#menghentikan-process-dari-package-top">Menghentikan process dari package top</a></li>
+<li class="toctree-l4"><a class="reference internal" href="concept-program-on-linux.html#menghentikan-semua-process-yang-berjalan-menggunakan-nama-aplikasi">Menghentikan Semua process yang Berjalan Menggunakan Nama Aplikasi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="concept-program-on-linux.html#membuat-custom-service-manual-menggunakan-supervisor-systemd-dan-upstart">Membuat custom service (manual) menggunakan supervisor, systemd dan upstart</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="concept-program-on-linux.html#system-manager-process-manager">System manager/Process manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="concept-program-on-linux.html#pembuatan-manual-custom-service">Pembuatan Manual Custom Service</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="concept-program-on-linux.html#supervisor">Supervisor</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="concept-program-on-linux.html#fungsionalitas-supervisor">Fungsionalitas supervisor</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="concept-program-on-linux.html#systemd">systemd</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="concept-program-on-linux.html#perbandingan-antara-systemd-sysvinit-dan-upstart">Perbandingan antara <code class="docutils literal notranslate"><span class="pre">systemd</span></code>, <code class="docutils literal notranslate"><span class="pre">sysvinit</span></code>, dan <code class="docutils literal notranslate"><span class="pre">upstart</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="concept-program-on-linux.html#penulisan-script">Penulisan script</a></li>
+<li class="toctree-l4"><a class="reference internal" href="concept-program-on-linux.html#supervisor-vs-systemd">supervisor vs systemd</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="docker-intro.html" class="btn btn-neutral float-right" title="Pengenalan Docker" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ryan
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

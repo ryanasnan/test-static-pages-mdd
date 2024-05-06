@@ -1,0 +1,462 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Docker compose &mdash; Docker and Kubernetes 1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sphinxcontrib-httpexample.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/sphinxcontrib-httpexample.js"></script>
+        <script src="_static/js/custom.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Dockerfile vs docker compose" href="dockerfile-vs-docker-container-compose.html" />
+    <link rel="prev" title="Dockerfile" href="dockerfile.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Docker and Kubernetes
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="docker-intro.html">Pengenalan Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-architecture.html">Arsitektur Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-objects.html">Docker Objects (Image, Container, Volume, Networks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-delete-objects.html">Menghapus Objects pada docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile.html">Dockerfile</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Docker compose</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">docker compose</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#docker-compose-tidak-bisa-melakukan-build-secara-berurutan">Docker compose tidak bisa melakukan build secara berurutan</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html">Dockerfile vs docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="orchestration.html">Orchestration (Kubernetes)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-collection.html">Kumpulan Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-laravel.html">Docker Laravel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-mern.html">Docker MERN (Mongo Express React Node)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notelog.html">NoteLog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glosarium.html">Glosarium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concept-program-on-linux.html">Konsep Program di Linux</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Docker and Kubernetes</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Docker compose</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/docker-compose.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="docker-compose">
+<h1>Docker compose<a class="headerlink" href="#docker-compose" title="Permalink to this headline">¶</a></h1>
+<p>Docker compose adalah file dimana kesemua object (container, volume, networks) daripada docker dapat dibundle menjadi satu buah application yang siap jalan.</p>
+<p>Menjalankan docker compose adalah layaknya menjalankan docker run dengan segala parameternya</p>
+<p>misal</p>
+<p>docker run -v</p>
+<p>docker run –networks</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Docker compose berbeda dengan instruction pada <code class="docutils literal notranslate"><span class="pre">dockerfile</span></code>.</p>
+<p>Lihat bagian dockerfile vs docker container (compose)</p>
+</div>
+<p>Untuk memberikan gambaran tentang penggunaan docker pada php dan nginx secara sederhana, dapat mengikuti contoh berikut</p>
+<p>struktur file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>├── code
+│   └── index.php
+├── docker-compose.yml
+└── site.conf
+</pre></div>
+</div>
+<p>file <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span>
+
+<span class="n">services</span><span class="p">:</span>
+    <span class="n">webserver</span><span class="o">-</span><span class="n">service</span><span class="p">:</span>
+        <span class="n">image</span><span class="p">:</span> <span class="n">nginx</span><span class="p">:</span><span class="n">latest</span>
+        <span class="n">container_name</span><span class="p">:</span> <span class="n">webserver</span>
+        <span class="n">ports</span><span class="p">:</span>
+            <span class="o">-</span> <span class="s2">&quot;8080:80&quot;</span>
+        <span class="n">volumes</span><span class="p">:</span>
+            <span class="o">-</span> <span class="o">./</span><span class="n">code</span><span class="p">:</span><span class="o">/</span><span class="n">code</span>
+            <span class="o">-</span> <span class="o">./</span><span class="n">site</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">conf</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">default</span><span class="o">.</span><span class="n">conf</span>
+        <span class="n">networks</span><span class="p">:</span>
+            <span class="o">-</span> <span class="n">code</span><span class="o">-</span><span class="n">network</span>
+    <span class="n">php</span><span class="o">-</span><span class="n">service</span><span class="p">:</span>
+        <span class="n">image</span><span class="p">:</span> <span class="n">php</span><span class="p">:</span><span class="n">fpm</span>
+        <span class="n">container_name</span><span class="p">:</span> <span class="n">php</span><span class="o">-</span><span class="n">fpm</span>
+        <span class="n">volumes</span><span class="p">:</span>
+            <span class="o">-</span> <span class="o">./</span><span class="n">code</span><span class="p">:</span><span class="o">/</span><span class="n">code</span>
+        <span class="n">networks</span><span class="p">:</span>
+            <span class="o">-</span> <span class="n">code</span><span class="o">-</span><span class="n">network</span>
+
+<span class="n">networks</span><span class="p">:</span>
+    <span class="n">code</span><span class="o">-</span><span class="n">network</span><span class="p">:</span>
+        <span class="n">driver</span><span class="p">:</span> <span class="n">bridge</span>
+</pre></div>
+</div>
+<p>file <code class="docutils literal notranslate"><span class="pre">site.conf</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>server {
+    listen 80;
+    index index.php index.html;
+    server_name localhost;
+    error_log  /var/log/nginx/error.log;
+    access_log /var/log/nginx/access.log;
+    root /code;
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass php-fpm:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+}
+</pre></div>
+</div>
+<p>file <code class="docutils literal notranslate"><span class="pre">code/index.php</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;?php
+phpinfo();
+</pre></div>
+</div>
+<img alt="_images/docker-laravel-1.1.simple-docker-php-nginx.png" src="_images/docker-laravel-1.1.simple-docker-php-nginx.png" />
+<p>Perlu diketahui bahwa saat menggunakan adanya network, maka host pada container dapat diakses pada container lain.</p>
+<p>Semisal pada contoh diatas adalah pada file <code class="docutils literal notranslate"><span class="pre">site.conf</span></code> menggunakan host <cite>php-fpm</cite> yang mana host ini berasal dari container bernama <cite>php-fpm</cite></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Sebenarnya juga bisa menggunakan nama service daripada container tersebut misal adalah <cite>php-service</cite></p>
+<p>sehingga pada file site.conf dapat dibuat sebagai berikut</p>
+<p>file <code class="docutils literal notranslate"><span class="pre">site.conf</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>server {
+    listen 80;
+    index index.php index.html;
+    server_name localhost;
+    error_log  /var/log/nginx/error.log;
+    access_log /var/log/nginx/access.log;
+    root /code;
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass php-service:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+}
+</pre></div>
+</div>
+<p>Namun disarankan menggunakan nama container yang telah ada, karena dengan menggunakan nama container maka network masih dapat dilakukan tanpa menggunakan objects docker-compose.</p>
+</div>
+<div class="section" id="id1">
+<h2>docker compose<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>jika terdapat banyak sekali container yang diintegrasikan maka sebaiknya gunakan docker compose</p>
+<p>docker compose adalah automation proses  integrasi container tersebut, seperti membuat container, connect antar container, konfigurasi environment variable, dll.</p>
+<p>code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">version</span><span class="p">:</span> <span class="s2">&quot;3.7&quot;</span>
+
+<span class="n">services</span><span class="p">:</span>
+        <span class="n">mongo</span><span class="p">:</span>
+                <span class="n">container_name</span><span class="p">:</span> <span class="n">mongo</span>
+                <span class="n">image</span><span class="p">:</span> <span class="n">mongo</span><span class="p">:</span><span class="mi">4</span><span class="o">-</span><span class="n">xenial</span>
+                <span class="n">ports</span><span class="p">:</span>
+                        <span class="o">-</span> <span class="mi">27017</span><span class="p">:</span><span class="mi">27017</span>
+                <span class="n">networks</span><span class="p">:</span>
+                        <span class="o">-</span> <span class="n">java_network</span>
+        <span class="n">redis</span><span class="p">:</span>
+                <span class="n">container_name</span><span class="p">:</span> <span class="n">redis</span>
+                <span class="n">image</span><span class="p">:</span> <span class="n">redis</span><span class="p">:</span><span class="mi">5</span>
+                <span class="n">ports</span><span class="p">:</span>
+                        <span class="o">-</span> <span class="mi">6379</span><span class="p">:</span><span class="mi">6379</span>
+                <span class="n">networks</span><span class="p">:</span>
+                        <span class="o">-</span> <span class="n">java_network</span>
+        <span class="n">java</span><span class="o">-</span><span class="n">docker</span><span class="p">:</span>
+                <span class="n">container_name</span><span class="p">:</span> <span class="n">java</span><span class="o">-</span><span class="n">docker</span>
+                <span class="n">image</span><span class="p">:</span> <span class="n">java</span><span class="o">-</span><span class="n">docker</span><span class="p">:</span><span class="mf">1.0</span>
+                <span class="n">ports</span><span class="p">:</span>
+                        <span class="o">-</span> <span class="mi">8080</span><span class="p">:</span><span class="mi">8080</span>
+                <span class="n">depends_on</span><span class="p">:</span>
+                        <span class="o">-</span> <span class="n">redis</span>
+                        <span class="o">-</span> <span class="n">mongo</span>
+                <span class="n">environment</span><span class="p">:</span>
+                        <span class="o">-</span> <span class="n">NAME</span><span class="o">=</span><span class="n">Docker</span>
+                        <span class="o">-</span> <span class="n">MONGO_HOST</span><span class="o">=</span><span class="n">mongo</span>
+                        <span class="o">-</span> <span class="n">MONGO_PORT</span><span class="o">=</span><span class="mi">27017</span>
+                        <span class="o">-</span> <span class="n">REDIS_HOST</span><span class="o">=</span><span class="n">redis</span>
+                        <span class="o">-</span> <span class="n">REDIS_PORT</span><span class="o">=</span><span class="mi">6379</span>
+                <span class="n">networks</span><span class="p">:</span>
+                        <span class="o">-</span> <span class="n">java_network</span>
+<span class="n">networks</span><span class="p">:</span>
+        <span class="n">java_network</span><span class="p">:</span>
+                <span class="n">name</span><span class="p">:</span> <span class="n">java_network</span>
+</pre></div>
+</div>
+<p>services adalah container dengan konfigurasinya</p>
+<p>Dalam pembuatan di docker compose dapat memberikan dependency pada container</p>
+<p>maka pada docker compose diatas java-docker tidak akan dijalankan sampai redis dan mongo dijalankan</p>
+<p>Pada environment maka saat menjalankan container java-docker dia membutuhkan adanya host dan port</p>
+<p>sebelumnya pada environment memang terdapat adanya set host untuk menjalankan tools/program lain</p>
+<p>maka diberikan mongo dan redis untuk menjalankan host asal sudah terdapat network</p>
+<p>konsep port juga sama</p>
+<p>ini artinya konsep port di docker adalah &lt;port-public&gt;:&lt;port-container&gt;</p>
+<p>yang mana ketika mengakses container java-docker dan mengakses port public maka akan diteruskan (forward) ke port container</p>
+<p>berarti ini tergantung saja darimana set port</p>
+<p>misal pada mongo</p>
+<p>port 8083:27017</p>
+<p>artinya di container java-docker bisa memberikan</p>
+<p>MONGO_PORT=8083</p>
+<p>selanjutnya buat network</p>
+<p>jika ingin me-running semua container</p>
+<p>docker-compose up</p>
+<p>docker-compose up akan membuat container dan me-start container</p>
+<p>docker-compose down akan menghentikan container sekaligus menghapus container</p>
+<p>docker-compose stop hanya akan menghentikan container</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>jika melakukan command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span></code> dan melakukan quit (ctrl+c) bukan berarti menghapus container tersebut, hanya akan melakukan stop container</p>
+<p>yang artinya container tersebut bisa dilakukan <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">start</span></code></p>
+<p>untuk menghentikan dan menghapus container diperlukan command <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">down</span></code></p>
+</div>
+<div class="section" id="docker-compose-tidak-bisa-melakukan-build-secara-berurutan">
+<h3>Docker compose tidak bisa melakukan build secara berurutan<a class="headerlink" href="#docker-compose-tidak-bisa-melakukan-build-secara-berurutan" title="Permalink to this headline">¶</a></h3>
+<p>Katakan memiliki adanya image yang akan dibuild, namun ini berdasar pada image sebelumnya.</p>
+<p>code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># PHP FPM base image Service</span>
+<span class="n">php</span><span class="o">-</span><span class="mi">52</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">image</span><span class="o">-</span><span class="n">rs</span><span class="p">:</span>
+        <span class="n">build</span><span class="p">:</span>
+        <span class="n">context</span><span class="p">:</span> <span class="o">./</span><span class="n">service</span><span class="o">/</span><span class="n">php</span><span class="o">/</span><span class="n">images</span><span class="o">/</span><span class="n">php</span><span class="o">-</span><span class="mi">52</span><span class="o">-</span><span class="n">jessie</span><span class="o">-</span><span class="n">mod</span>
+        <span class="n">dockerfile</span><span class="p">:</span> <span class="n">Dockerfile</span>
+        <span class="n">image</span><span class="p">:</span> <span class="n">php</span><span class="o">-</span><span class="mi">52</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">image</span><span class="o">-</span><span class="n">rs</span><span class="p">:</span><span class="n">app</span>
+        <span class="n">container_name</span><span class="p">:</span> <span class="n">php</span><span class="o">-</span><span class="mi">52</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">image</span><span class="o">-</span><span class="n">rs</span>
+        <span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
+        <span class="n">networks</span><span class="p">:</span>
+                <span class="o">-</span> <span class="n">yii1</span><span class="o">-</span><span class="n">rs</span>
+
+<span class="c1"># PHP FPM Service for yii1</span>
+<span class="n">php</span><span class="o">-</span><span class="n">yii1</span><span class="o">-</span><span class="n">rs</span><span class="p">:</span>
+        <span class="n">build</span><span class="p">:</span>
+        <span class="n">context</span><span class="p">:</span> <span class="o">./</span><span class="n">service</span><span class="o">/</span><span class="n">php</span><span class="o">/</span><span class="n">images</span><span class="o">/</span><span class="n">php</span><span class="o">-</span><span class="mi">52</span><span class="o">-</span><span class="n">jessie</span><span class="o">-</span><span class="n">mod</span>
+        <span class="n">dockerfile</span><span class="p">:</span> <span class="n">php</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">extra</span><span class="o">-</span><span class="n">ext</span><span class="o">.</span><span class="n">dockerfile</span>
+        <span class="n">image</span><span class="p">:</span> <span class="n">php</span><span class="o">-</span><span class="n">yii1</span><span class="o">-</span><span class="n">rs</span><span class="p">:</span><span class="n">app</span>
+        <span class="n">container_name</span><span class="p">:</span> <span class="n">php</span><span class="o">-</span><span class="n">yii1</span><span class="o">-</span><span class="n">rs</span>
+        <span class="n">restart</span><span class="p">:</span> <span class="n">unless</span><span class="o">-</span><span class="n">stopped</span>
+        <span class="n">working_dir</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">yii1</span>
+        <span class="n">depends_on</span><span class="p">:</span>
+                <span class="o">-</span> <span class="n">php</span><span class="o">-</span><span class="mi">52</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">image</span><span class="o">-</span><span class="n">rs</span>
+        <span class="n">volumes</span><span class="p">:</span>
+                <span class="o">-</span> <span class="o">./</span><span class="n">service</span><span class="o">/</span><span class="n">php</span><span class="o">/</span><span class="n">config</span><span class="o">/</span><span class="n">usr</span><span class="o">-</span><span class="n">local</span><span class="o">-</span><span class="n">etc</span><span class="o">-</span><span class="n">php</span><span class="o">-</span><span class="n">conf</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">php</span><span class="o">.</span><span class="n">ini</span><span class="o">-</span><span class="n">php71</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">php</span><span class="o">/</span><span class="n">conf</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">php</span><span class="o">.</span><span class="n">ini</span>
+                <span class="o">-</span> <span class="o">./</span><span class="n">stateful</span><span class="o">/</span><span class="n">app</span><span class="p">:</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span>
+        <span class="n">networks</span><span class="p">:</span>
+                <span class="o">-</span> <span class="n">yii1</span><span class="o">-</span><span class="n">rs</span>
+</pre></div>
+</div>
+<p>Jadi rencananya pada image <code class="docutils literal notranslate"><span class="pre">php-yii1-rs:app</span></code> itu baru di-build setelah image <code class="docutils literal notranslate"><span class="pre">php-52-base-image</span></code> selesai di-build, dimana untuk melakukannya adalah dengan syntax <code class="docutils literal notranslate"><span class="pre">depends_on</span></code>.</p>
+<p>Namun nyatanya hal itu tidak akan terjadi, karena <code class="docutils literal notranslate"><span class="pre">depends_on</span></code> hanya untuk menangani saat service dimulai atau berakhir.</p>
+<p>Pada docker-compose memang ada <code class="docutils literal notranslate"><span class="pre">depends_on</span></code> namun ini hanya untuk menangani adanya proses pada <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span></code> dan <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">stop</span></code>, dimana pas <code class="docutils literal notranslate"><span class="pre">up</span></code> (start) maka ini akan ada order dalam memulai service, dan juga ketika <code class="docutils literal notranslate"><span class="pre">stop</span></code> juga akan menggunakan order dalam menghentikan service.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>As you guessed, depends_on is for runtime order only, not build time - it just affects docker-compose up and docker-compose stop.</p>
+<p>I highly recommend you make all the builds independent of each other. Perhaps you need to consider separate builder and runtime images here, and / or use a Docker-based CI (Gitlab, Travis, Circle etc) to have these dependencies available for testing.</p>
+<p>ref : <a class="reference external" href="https://stackoverflow.com/questions/60139255/docker-compose-build-order">https://stackoverflow.com/questions/60139255/docker-compose-build-order</a></p>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dockerfile-vs-docker-container-compose.html" class="btn btn-neutral float-right" title="Dockerfile vs docker compose" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dockerfile.html" class="btn btn-neutral float-left" title="Dockerfile" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ryan
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

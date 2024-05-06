@@ -1,0 +1,93 @@
+Menghapus Objects pada docker
+=================================
+
+Perlu diketahui bahwa objects pada docker (image, container, volume, network) ini berjalan layaknya tree.
+
+Seperti pada tulisan sebelumnya bahwa image adalah class dan container adalah object, artinya ketika akan menghapus image maka harus menghapus container terlebih dahulu.
+
+Dan apabila container sedang running maka container tersebuh harus dihentikan (stop) sebelum menghapus container tersebut
+
+=================================
+Menghapus container
+=================================
+
+Berikut adalah command untuk menghapus container
+
+command::
+
+	docker container rm <nama-container>:<tag>
+
+Misal pada case ini adalah menghapus container `container_mysql_1`
+
+command::
+
+	docker container rm container_mysql_1
+
+
+Namun pastikan untuk menghentikan dahulu proses container yang sedang running (dapat dilihat dengan command ``docker container ls``)
+
+command::
+
+	docker container stop <nama-container>
+
+Pada case ini adalah menghentikan service container `container_mysql_1`
+
+command::
+
+	docker container stop container_mysql_1
+
+=================================
+Menghapus images
+=================================
+
+docker image rm <nama-image>:<tag>
+
+docker image rm mongo:4.1
+
+.. note::
+
+	Jika masih terdapat container yang menjalankan image, maka image tersebut tidak akan dapat dihapus.
+
+	Meski container tersebut tidak melakukan running (container start)
+
+	Untuk bisa melakukan penghapusan image, container yang dibuat dari image tersebut harus dihapus (bukan hanya di-`stop`)
+
+====================================================================
+Command singkat untuk menghapus semua objects docker
+====================================================================
+
+Untuk menghentikan semua container yang berjalan
+
+command::
+
+	docker stop $(docker ps -a -q)
+
+	atau
+
+	docker container stop $(docker container ls -aq)
+
+Untuk menghapus semua container (yang tidak berjalan)
+
+command::
+
+	docker rm $(docker ps -a -q)
+
+	atau
+
+	docker container rm $(docker container ls -aq)
+
+Untuk menghapus semua images beserta volume
+
+command::
+
+	docker system prune -a --volumes
+
+====================================================================================================
+Melihat jumlah image, container, dan volumes
+====================================================================================================
+
+Dengan melihat adanya jumlah object docker (image, container dan volume) maka akan lebih mudah dalam me-manage object docker yang akan dihapus
+
+.. code-block:: bash
+
+	docker system df

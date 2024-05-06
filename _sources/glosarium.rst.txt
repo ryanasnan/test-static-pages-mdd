@@ -1,0 +1,32 @@
+Glosarium
+===================
+
+Istilah pada dokumentasi ini
+
+- **Host**
+
+	Yang dimaksud dengan host adalah local computer (PC/Laptop) yang telah menginstall docker
+
+	A Docker host is a physical computer system or virtual machine running Linux. 
+	
+	This can be your laptop, server or virtual machine in your data center, or computing resource provided by a cloud provider.
+
+- **Distro Linux**
+
+	Adalah distribusi OS linux seperti ubuntu, redhat, mint, debian dll
+
+- **UNIX**
+
+	Adalah OS yang memiliki sertifikasi, seperti macos dan IBM
+
+- **UNIX like**
+
+	Adalah distribusi OS yang mirip **UNIX** dimana biasanya ini untuk menyebutkan distro Linux
+
+- **mount point** atau **mount source**
+
+	Adalah path daripada `volume objects` atau `bind mount` yang akan di mounting ke `mount destination`
+
+- **mount destination**
+
+	Adalah path tujuan dari mount point `volume objects` atau `bind mount` yang berada di container

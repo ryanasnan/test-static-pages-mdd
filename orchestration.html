@@ -1,0 +1,388 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Orchestration (Kubernetes) &mdash; Docker and Kubernetes 1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/sphinxcontrib-httpexample.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/sphinxcontrib-httpexample.js"></script>
+        <script src="_static/js/custom.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Kumpulan Dockerfile" href="dockerfile-collection.html" />
+    <link rel="prev" title="Dockerfile vs docker compose" href="dockerfile-vs-docker-container-compose.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Docker and Kubernetes
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="docker-intro.html">Pengenalan Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-architecture.html">Arsitektur Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-objects.html">Docker Objects (Image, Container, Volume, Networks)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-delete-objects.html">Menghapus Objects pada docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile.html">Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-compose.html">Docker compose</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-vs-docker-container-compose.html">Dockerfile vs docker compose</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Orchestration (Kubernetes)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#kubernetes">kubernetes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#istilah-kubernetes">istilah kubernetes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dockerfile-collection.html">Kumpulan Dockerfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-laravel.html">Docker Laravel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docker-mern.html">Docker MERN (Mongo Express React Node)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notelog.html">NoteLog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glosarium.html">Glosarium</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concept-program-on-linux.html">Konsep Program di Linux</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Docker and Kubernetes</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Orchestration (Kubernetes)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/orchestration.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="orchestration-kubernetes">
+<h1>Orchestration (Kubernetes)<a class="headerlink" href="#orchestration-kubernetes" title="Permalink to this headline">¶</a></h1>
+<p>konsep kubernetes adalah memiliki container yang dibungkus pada pod</p>
+<p>ketika butuh adanya resource yang lebih (karena total cpu sudah lebih dari 50%) maka akan membuat pod baru (yang otomatis adalah container baru)
+dengan begitu maka akan ada pengalihan beban yang lebih baik</p>
+<p>teknologi container itu tidak hanya memudahkan, tapi pada akhirnya ada cara untuk ‘scaling up’ lebih mudah
+yakni dengan kubernetes</p>
+<p>jadi konsep kubernetes itu</p>
+<ul class="simple">
+<li><p>kenapa harus ada banyak nodes</p></li>
+</ul>
+<p>jadi konsepnya kalau tanpa ‘container’ alias vps, ketika satu server itu mati, entah kena serangan hacker, maka sudah done
+aplikasi tidak bisa digunakan, user request sudah stop ditangani
+tapi kalau pakai konsep kontainer, maka akan ada nodes yang dalam satu cluster, dimaan ketika satu nodes itu mati, entah kena serangan hacker atau apa, maka akan dibuatkan instance container baru di nodes satunya
+konsepnya sama seperti backup</p>
+<ul class="simple">
+<li><p>kenapa sih harus ada load balancing dan mengapa juga harus container</p></li>
+</ul>
+<p>jadi katakan dengan monolith (diinstall di satu vps), maka hanya ada ‘satu app’ yang menangani request
+tentu kalau vpsnya spec tinggi akan cepat juga</p>
+<p>tapi kalau dibuat konsep container, yang artinya satu vps itu ada ‘banyak apps’
+maka ketika ada request masuk dia bisa menyalurkan ke ‘salah satu container/service’
+kalau ada request lagi maka ke container/service yang lain
+jadi benar benar ada ‘banyak apps’ yang akan memproses
+note : intinya jadi gak ada ‘satu app penuh’ untuk memproses setiap request</p>
+<p>dengan begini maka microservice akan lebih ‘baik’ dalam hal ‘penanganan request’ (karena dibagi bagi, tentuynya sesuai dengan request/atau endpointnya)</p>
+<p>dan lagi microservice akan memberi kemudahan, misal bisa beda bahasa</p>
+<p><a class="reference external" href="https://www.routecloud.net/blog/mengenal-kubernetes-untuk-solusi-devops/">https://www.routecloud.net/blog/mengenal-kubernetes-untuk-solusi-devops/</a>
+<a class="reference external" href="https://medium.com/easyread/membuat-kubernetes-cluster-di-google-cloud-ae14bee317ba">https://medium.com/easyread/membuat-kubernetes-cluster-di-google-cloud-ae14bee317ba</a>
+<a class="reference external" href="https://www.routecloud.net/blog/mengenal-kubernetes-untuk-solusi-devops/">https://www.routecloud.net/blog/mengenal-kubernetes-untuk-solusi-devops/</a>
+<a class="reference external" href="https://tuanpembual.wordpress.com/2018/12/27/implementasi-docker-kubernetes-kops-di-binar-academy-bagian-3/">https://tuanpembual.wordpress.com/2018/12/27/implementasi-docker-kubernetes-kops-di-binar-academy-bagian-3/</a></p>
+<p>load balancing adalah teknik membagi beban ke server lain
+dengan begini maka traffic yang tinggi dapat</p>
+<p>jadi memang benar bahwa
+ternyata docker swarm itu sama dengan kubernetes</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>pada materi orchestration tidak akan membahas mengenai docker swarm, tapi akan fokus ke kubernetes</p>
+</div>
+<p>pod itu satu set container container</p>
+<p>node itu machine berisikan pod</p>
+<p>cluster itu adalah satu set node node</p>
+<p>A Kubernetes cluster is a set of node machines for running containerized applications. If you’re running Kubernetes, you’re running a cluster.</p>
+<p>cluster adalah satu set node machine untuk menjalankan container.</p>
+<p>At a minimum, a cluster contains a worker node and a master node.</p>
+<p>The master node is responsible for maintaining the desired state of the cluster, such as which applications are running and which container images they use.
+Worker nodes actually run the applications and workloads.</p>
+<p>The cluster is the heart of Kubernetes’ key advantage: the ability to schedule and run containers across a group of machines, be they physical or virtual, on premises or in the cloud.</p>
+<p>Kubernetes containers aren’t tied to individual machines. Rather, they’re abstracted across the cluster</p>
+<p>aku rasa ip private network itu berlaku pada orchestration (kubernetes) karena akan digunakan untuk komunikasi antar</p>
+<p>penjelasan mengapa harus ada virtual box di local computer (untuk menjalankan kubernete)
+12-02 Kubernetes in Development and Production</p>
+<p>mengapa tidak menggunakan loadbalancer di kubernete
+15-01 Load Balancer Services</p>
+<p><a class="reference external" href="https://software.endy.muhardin.com/linux/intro-docker/">https://software.endy.muhardin.com/linux/intro-docker/</a>
+<a class="reference external" href="https://software.endy.muhardin.com/devops/docker-workflow/">https://software.endy.muhardin.com/devops/docker-workflow/</a>
+<a class="reference external" href="https://software.endy.muhardin.com/java/cluster-ready-app/">https://software.endy.muhardin.com/java/cluster-ready-app/</a>
+<a class="reference external" href="https://software.endy.muhardin.com/devops/deploy-google-container-engine/">https://software.endy.muhardin.com/devops/deploy-google-container-engine/</a></p>
+<p><a class="reference external" href="https://software.endy.muhardin.com/aplikasi/konsep-clustering/">https://software.endy.muhardin.com/aplikasi/konsep-clustering/</a></p>
+<p>jika menggunakan konsep kubernetes maka jangan menggunakan adanya supervisor di container
+jadi 1 container 1 service</p>
+<p>nginx load balance atau kubernetes saja
+menurutku di kubernetes itu udah ada load balance, gak usah banyak setup
+<a class="reference external" href="https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0">https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0</a></p>
+<p>menurutku load balancing itu adalah istilah untuk membagi process saja (worker dan master)
+jadi menggunakan kubernetes itu sudah sama dengan load balancing (karena di dalam cluster itu ada service yang akan membagi bagikannya)</p>
+<div class="section" id="kubernetes">
+<h2>kubernetes<a class="headerlink" href="#kubernetes" title="Permalink to this headline">¶</a></h2>
+<p>kubernetes sering ditulis k8s (angka 8 interpretasi huruf antara k dan s)</p>
+<p>replikasi
+contoh satu application jalan di dua instance</p>
+<p>tapi replikasi gak boleh kalau 1 host kenapa</p>
+<p>tujuan replikasi
+- menambah kapasitas
+misal ada 10000 concurrent user (10000 user mengakses secara bersamaan)
+kalau ada replikasi bisa nambah misal 20000 user, atau tps (transaction per second)
+- high availability
+kalau misal node mati (satu server mati) karena power supply, hdd rusak, ram habis, dll aplikasi masih bisa jalan</p>
+<p>nah kalau masih 1 host, ya gak sesuai tujuan replikasi</p>
+<p>nah makanya replikasi itu di tempat berbeda
+install application lagi</p>
+<p>medode 12 factor (ini metode pengembangan web seperti dev, staging, production)
+kalau bagian application dia stateless, artinya aktif:aktif yaitu webserver a jalan, webserver b juga jalan, bisa melayani request</p>
+<p>tapi gak untuk database
+kalau database itu aktif:pasif, mysql a aktif mysql b pasif,
+mysql a sebagai master dan mysql b sebagai slave
+nah nanti mysql a synchronize ke mysql b (mysql a kirim data ke mysql b)</p>
+<p>docker itu ada swarm
+tapi belakangan kurang diadopsi, karena apa
+karena google mengeluarkan kubernetes</p>
+<p>kubernetes itu menggunakan arsitektur borg
+borg -&gt; sistem internal google untuk handling clustering google</p>
+<p>tujuan sebenarnya kubernetes ini untuk menyaingi aws
+karena di amazon sudah ada fitur auto scaling</p>
+<p>konsepnya auto scaling gini</p>
+<p>dia ada thresold atau batasan, katakanlah  apabila terjadi kondisi
+cpu &gt; 80 %
+memory &gt; 50 %
+maka dia akan membuat instance baru
+lantas apabila terjadi pengurangan
+cpu &lt; 20%
+memory &lt; 10 %
+maka dia akan menghapus (destroy) instance tersebut</p>
+<p>nah ini ada grace period
+misal min instance = 2 max instance = 100</p>
+<p>nah ansible ini bisa dikolaborasikan dengan kubernetes
+artinya tiap file yml itu bisa untuk install docker, kubelet, kubeadm</p>
+<div class="section" id="istilah-kubernetes">
+<h3>istilah kubernetes<a class="headerlink" href="#istilah-kubernetes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>container</p></li>
+<li><p>pod</p></li>
+<li><p>service</p></li>
+<li><p>persistent volume</p>
+<ul>
+<li><p>persistent volume claim</p></li>
+</ul>
+</li>
+</ul>
+<p>nah konsepnya gini</p>
+<p>dalam 1 node (1 machine atau 1 os host) itu kan bisa menjalankan banyak container
+misal ada container app dan container cache (redis)</p>
+<p>container ini akan jalan ke dalam pod
+container dalam 1 pod itu dianggap localhost</p>
+<p>intinya pod ini gak tahu disimpan di mana, ini semua di atur oleh kubernetes
+jangan berharap bisa diatur
+karena tujuan pake kubernetes, ini biar gak pusing container ini jalan dimana</p>
+<p>nah sesama pod gak bisa berkomunikasi
+makanya dibuatlah service
+service ini akan menghubungkan ke pod lain</p>
+<p>vendor spesifik, untuk mempublish web
+kan buat service, nah nanti servicenya jalannya load balancer (pod banyak)
+nanti vendor specific
+kalau do ada load balancer</p>
+<hr class="docutils" />
+<p>jadi sejatinya konsep cloud itu adalah kubernetes (clustering)</p>
+<p>ini sebabnya kenapa ada konsep cloud itu gak bakal down</p>
+<p><a class="reference external" href="https://www.quora.com/If-the-cloud-is-basically-a-server-why-is-the-concept-of-cloud-storage-so-talked-about">https://www.quora.com/If-the-cloud-is-basically-a-server-why-is-the-concept-of-cloud-storage-so-talked-about</a></p>
+<p>jadi kalau local vps atau server dedicated
+kalau dia down maka udah gak bisa diakses lagi</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dockerfile-collection.html" class="btn btn-neutral float-right" title="Kumpulan Dockerfile" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dockerfile-vs-docker-container-compose.html" class="btn btn-neutral float-left" title="Dockerfile vs docker compose" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ryan
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

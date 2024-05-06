@@ -1,0 +1,570 @@
+Kumpulan Dockerfile
+==========================================================================================================
+
+==========================================================================================================
+Docker php
+==========================================================================================================
+
+Dockerfile php 5.2 fpm
+----------------------------------------------------------------------------------------------------------
+
+Berikut adalah file Dockerfile untuk menginstall php versi 5.2.17 dari `source code`
+
+file ``Dockerfile``::
+
+    FROM debian:jessie-slim
+
+    ENV PHP_VERSION 5.2.17
+    ENV PHP_INI_DIR /usr/local/etc/php
+    ENV DATA_DIR="data"
+    ENV DATA_BIN_DIR="$DATA_DIR/binaries"
+    ENV DATA_CONFIG_DIR="$DATA_DIR/config"
+    ENV DATA_PATCH_DIR="$DATA_DIR/patch"
+
+    # Creating directories for php location and default html
+    RUN set -eux; \
+        mkdir -p "$PHP_INI_DIR/conf.d"; \
+        [ ! -d /var/www/html ] && \
+        mkdir -p /var/www/html && \
+        chown www-data:www-data /var/www/html && \
+        chmod 777 /var/www/html; \
+        [ ! -d /usr/src/php ] && \
+        mkdir -p /usr/src/php;
+
+    # dependencies required for running "phpize"
+    ENV PHPIZE_DEPS \
+            autoconf \
+            g++ \
+            gcc \
+            libc-dev \
+            make \
+            pkg-config \
+            re2c
+            # dpkg-dev \
+            # file \
+
+    # persistent / runtime deps
+    ENV RUNTIME_DEPS \
+            $PHPIZE_DEPS \
+            ca-certificates \
+            curl \
+            libmysqlclient18 \
+            libxml2 \
+            sendmail \
+            freetds-dev
+            # libsqlite3-0 \
+            # libpcre3 \
+            # librecode0 \
+            # xz-utils \
+
+    # Install for phpize dependency and runtime dependency
+    RUN set -eux; \
+        apt-get update && apt-get install -y --no-install-recommends \
+            $RUNTIME_DEPS; \
+        apt-get clean; \
+        rm -r /var/lib/apt/lists/*
+
+    # PHP build dependencies
+    ENV PHP_BUILD_DEPS \
+            bzip2 \
+            libcurl4-openssl-dev \
+            libjpeg-dev \
+            libmysqlclient-dev \
+            libpng12-dev \
+            libreadline6-dev \
+            libssl-dev \
+            libxml2-dev \
+            patch
+            # autoconf2.13 \ -> for php 5.2 need this
+            # libbison-dev \
+            # libfl-dev \
+            # libpcre3-dev \
+            # librecode-dev \
+            # libsqlite3-dev \
+
+    # Install php build dependency
+    RUN set -eux; \
+        apt-get update && apt-get install -y $PHP_BUILD_DEPS --no-install-recommends && rm -rf /var/lib/apt/lists/*;
+
+    # Copy PHP file and patches
+    COPY $DATA_DIR/php-${PHP_VERSION}.tar.gz /usr/src/
+    COPY $DATA_PATCH_DIR/php-${PHP_VERSION}*.patch /tmp/
+    COPY $DATA_BIN_DIR/docker-php-source /usr/local/bin/
+
+    # Extract artifacts
+    RUN set -eux; \
+        cd /usr/src; \
+        mv php-${PHP_VERSION}.tar.gz php.tar.gz; \
+        docker-php-source extract;
+
+
+    # you can download the php-fpm patch on  https://php-fpm.org/downloads/
+    # Apply patches
+    RUN set -eux; \
+        cd /usr/src/php; \
+        patch -p1 < /tmp/php-${PHP_VERSION}-libxml2.patch; \
+        patch -p1 < /tmp/php-${PHP_VERSION}-openssl.patch; \
+        patch -p1 < /tmp/php-${PHP_VERSION}-fpm.patch; \
+        patch -p0 < /tmp/php-${PHP_VERSION}-curl.patch || true; \
+    # Create php.tar.gz
+        cd /usr/src; \
+        rm -rf php.tar.gz; \
+        tar -zcvf php.tar.gz php; \
+        rm -rf php; \
+    # # Clean-up
+        rm -rf /tmp/php-*;
+
+    # create symlink for libsybdb.a into /usr/lib
+    RUN ln -s /usr/lib/x86_64-linux-gnu/libsybdb.a /usr/lib/
+
+    # Install php from source
+    RUN set -eux; \
+        ln -s /usr/lib/x86_64-linux-gnu/libmysqlclient* /usr/lib/; \
+        cd /usr/src; \
+        docker-php-source extract; \
+        cd /usr/src/php; \
+        ./configure \
+            --with-config-file-path="${PHP_INI_DIR}" \
+            --with-config-file-scan-dir="${PHP_INI_DIR}/conf.d" \
+            --with-fpm-conf="/usr/local/etc/php-fpm.conf" \
+            \
+            --enable-fastcgi \
+            --enable-fpm \
+            --enable-force-cgi-redirect \
+            \
+            --enable-mbstring \
+            --enable-pdo \
+            --enable-soap \
+            \
+            --with-curl \
+            --with-mysql \
+            --with-mysqli \
+            --with-mssql \
+            --with-openssl \
+            --with-pdo-mysql \
+            --with-readline \
+            --with-zlib; \
+        sed -i 's/-lxml2 -lxml2 -lxml2/-lcrypto -lssl/' Makefile; \
+        make -j"$(nproc)"; \
+        make install; \
+    # Clean-up
+        { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; }; \
+        apt-get purge -y --auto-remove $PHP_BUILD_DEPS; \
+        make clean; \
+        cd /; \
+        docker-php-source delete; \
+        rm -rf /var/lib/apt/*; \
+        rm -rf /var/cache/apt/*;
+
+    COPY $DATA_BIN_DIR/docker-php-* /usr/local/bin/
+    COPY $DATA_BIN_DIR/php-fpm-binary-alternative /usr/local/sbin/php-fpm
+    COPY $DATA_CONFIG_DIR/php-fpm.conf /usr/local/etc/
+    COPY $DATA_CONFIG_DIR/php.ini /usr/local/etc/php/php.ini
+
+    WORKDIR /app
+    EXPOSE 9000
+    CMD ["php-fpm", "start"]
+
+Untuk mengetahui file selengkapnya tentang file diatas, bisa mengunjungi repository berikut : https://github.com/ryanasnan/docker-php-5-version
+
+.. danger::
+
+    Jangan menghapus file ``php.tar.gz`` karena nantinya ketika membuat adanya file dockerfile baru dengan base image yang sama, maka untuk ``configure/enable/install`` akan menggunakan kembali file php.tar.gz
+    
+    File semacam``docker-php-ext-configure`` atau ``docker-php-ext-install`` akan berhubungan dengan ``docker-php-source`` yang mana ini akan kembali mengekstrak file ``php.tar.gz``
+
+.. note::
+
+    ``--no-install-recommends`` mengindikasikan untuk menginstall package yang penting saja (package utama serta dependency nya), sedangkan `package recommended` tidak diinstal.
+
+.. hint::
+
+    ``set eux`` dapat dipahami satu persatu sebagai berikut::
+
+    - e
+
+        e akan menghentikan script jika terjadi error (misal file tidak ada), sehingga script dibawahnya tidak akan dieksekusi
+
+    - x
+
+        x digunakan untuk debugging, yaitu akan memunculkan tiap proses dari baris script (meski tidak dilakukan echo)
+
+    - u
+
+        seperti misal mengeksekusi perintah berikut ``echo $x $y`` di terminal, maka tidak akan terjadi error, namun dengan tambahan -u akan terjadi error `unbound variable`
+
+
+----------------------------------------------------------------------------------------------------------
+Proses configure/enable/install
+----------------------------------------------------------------------------------------------------------
+
+Pada repository diatas terdapat adanya file yang akan berurusan dengan **php**::
+
+    - docker-php-entrypoint
+
+        Untuk menjadi entrypoint daripada program php, yakni file **php-fpm**
+
+    - docker-php-ext-configure
+
+        Untuk melakukan adanya configure module sebelum melakukan penginstalan ulang pada php.
+
+    - docker-php-ext-enable
+
+        Untuk melakukan adanya `enable` module sebelum melakukan penginstalan ulang php php.
+
+    - docker-php-ext-install
+
+        Akan menginstall php dengan argumennya berupa module php.
+
+    - docker-php-source
+
+        Untuk mengekstrak file php.tar.gz pada directory ``/usr/usr/``
+
+
+Pada file `docker-php-ext-configure` dan `docker-php-ext-install` akan ada command seperti berikut::
+
+    : ${CFLAGS:=$PHP_CFLAGS}
+    : ${CPPFLAGS:=$PHP_CPPFLAGS}
+    : ${LDFLAGS:=$PHP_LDFLAGS}
+    export CFLAGS CPPFLAGS LDFLAGS
+
+Dimana command **export** tersebut adalah semacam `env_variable` yang akan dijalankan di 'child bash', dan tidak akan menganggu adanya env di bash yang sedang berjalan.
+
+Tujuan adanya `env_variable` tersebut adalah untuk mengoptimasi compile seperti bisa memperkecil size (ukuran) instalasi, namun untuk case ini tidak digunakan.
+
+----------------------------------------------------------------------------------------------------------
+Environment Variable pada Dockerfile
+----------------------------------------------------------------------------------------------------------
+
+Terdapat 3 Environment Variable (dalam dockerfile) yakni :
+
+- PHPIZE_DEPS
+
+    phpize ini sejatinya adalah suatu script (bash) yang mana digunakan untuk menyiapkan `PHP extension` dalam melakukan **compiling**.
+
+    Namun disini penulis memberikan beberapa package yang memang dibutuhkan untuk proses compile seperti gcc, g++, make, dll.
+
+- RUNTIME_DEPS
+
+    Persistence/RUNTIME adalah beberapa package yang digunakan untuk menjalankan php.
+
+    Jadi package ini harus ada ketika php sudah diinstal.
+
+    Seperti misal adalah ``libmysqlclient18`` dimana library ini harus ada di directory ``/usr/lib/x86_64-linux-gnu``, dan jika tidak maka akan muncul error::
+
+        libmysqlclient18 will be saved in /usr/lib/x86_64-linux-gnu#
+        php: error while loading shared libraries: libmysqlclient.so.18: cannot open shared object file: No such file or directory
+
+    Dan meski juga telah dilakukan penginstalan library ``libmysqlclient``, namun library tersebut nantinya akan dihapus (purge), dan jika tidak terdapat library ``libmysqlclient18`` maka tidak akan bisa untuk menjalankan program php. 
+
+    Hal ini berlaku juga pada ``libxml`` dan ``libxml-dev``.
+
+- PHP_BUILD_DEPS
+
+    Package yang memang digunakan untuk 'build php', seperti misal untuk memberikan module `xml` maka dibutuhkan ``libxml-dev``.
+
+    .. note::
+
+        Untuk Package yang berada di PHP_BUILD_DEPS boleh dihapus (dengan ``apt-get purge -y --auto-remove $PHP_BUILD_DEPS;``)
+
+        Adanya package dengan akhiran *-dev biasanya adalah package yang berisikan `headers` yang berhubungan dengan suatu interface library
+
+        Adanya penghapusan package dengan akhiran *-dev tidak akan berpengaruh pada program (seperti dalam case ini adalah php dan php-cgi), sehingga jika dihapus maka tidak akan terpengaruh.
+
+        Namun memang dalam penginstallan suatu package (seperti dalam case ini php), maka dibutuhkan adanya packge dengan akhiran *-dev tersebut.
+
+        Arti daripada ``apt-get purge -y --auto-remove $PHP_BUILD_DEPS;``
+
+        Syntax tersebut akan melakukan penghapusan (purge) pada package::
+
+            + apt-get purge -y --auto-remove bzip2 libcurl4-openssl-dev libjpeg-dev libmysqlclient-dev libpng12-dev libreadline6-dev libssl-dev libxml2-dev patch
+            Reading package lists...
+            Building dependency tree...
+            Reading state information...
+            The following packages will be REMOVED:
+            bzip2* libcurl4-openssl-dev* libjpeg-dev* libjpeg62-turbo*
+            libjpeg62-turbo-dev* libmysqlclient-dev* libmysqlclient18* libpng12-dev*
+            libreadline6-dev* libssl-dev* libtinfo-dev* libxml2* libxml2-dev*
+            mysql-common* patch* zlib1g-dev*
+            0 upgraded, 0 newly installed, 16 to remove and 0 not upgraded.
+
+        Dan berikut script penghapusan yang lebih lengkap::
+        
+            apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $PHP_BUILD_DEPS;
+
+.. note::
+
+    Adanya beberapa package yang di`comment` (#) tersebut berasal dari beberapa sumber repo/article yang ditemukan oleh penulis, hanya saja tampaknya tidak terlalu dibutuhkan dalam penginstallan.
+
+.. hint::
+
+    untuk mengecek adanya suatu library, seperti apakah sudah terinstall atau belum bisa menggunakan syntax ``dpkg -L <packagename>``::
+
+        root@19e3273243c2:/app# dpkg -L libmysqlclient18
+        /.
+        /usr
+        /usr/lib
+        /usr/lib/x86_64-linux-gnu
+        /usr/lib/x86_64-linux-gnu/libmysqlclient.so.18.0.0
+        /usr/share
+        /usr/share/doc
+        /usr/share/doc/libmysqlclient18
+        /usr/share/doc/libmysqlclient18/changelog.Debian.gz
+        /usr/share/doc/libmysqlclient18/changelog.gz
+        /usr/share/doc/libmysqlclient18/NEWS.Debian.gz
+        /usr/share/doc/libmysqlclient18/copyright
+        /usr/lib/x86_64-linux-gnu/libmysqlclient.so.18
+        /usr/lib/x86_64-linux-gnu/libmysqlclient_r.so.18
+        /usr/lib/x86_64-linux-gnu/libmysqlclient_r.so.18.0.0
+
+        root@19e3273243c2:/app# dpkg -L libjpeg-dev
+        dpkg-query: package 'libjpeg-dev' is not installed
+        Use dpkg --info (= dpkg-deb --info) to examine archive files,
+        and dpkg --contents (= dpkg-deb --contents) to list their contents.
+        root@19e3273243c2:/app# 
+
+----------------------------------------------------------------------------------------------------------
+Patch
+----------------------------------------------------------------------------------------------------------
+
+PHP 5.2 membutuhkan adanya patch untuk menggunakan library `libxml2`, `openssl`, `fpm`, dan `curl`.
+
+Tanpa patch tersebut maka penginstallan akan **gagal**.
+
+.. attention::
+
+    Apa itu file patch?
+
+    Sebenarnya ini seperti adanya pembaharuan code suatu file, dimana jika dilihat filenya (file patch) maka seperti berisikan output perbedaan file dengan git command ``git diff``
+
+    contoh::
+
+        diff --git a/configure b/configure
+        index 2d88ed7..c490abf 100755
+        --- a/configure
+        +++ b/configure
+        @@ -773,6 +773,17 @@ ac_help="$ac_help
+        --disable-path-info-check CGI: If this is disabled, paths such as
+                                    /info.php/test?a=b will fail to work"
+        ac_help="$ac_help
+        +  --enable-fpm              FastCGI: If this is enabled, the fastcgi support
+        +                            will include experimental process manager code"
+        +ac_help="$ac_help
+        +  --with-fpm-conf=PATH        Set the path for php-fpm configuration file [PREFIX/etc/php-fpm.conf]"
+        +ac_help="$ac_help
+        +  --with-fpm-log=PATH         Set the path for php-fpm log file [PREFIX/logs/php-fpm.log]"
+        +ac_help="$ac_help
+        +  --with-fpm-pid=PATH         Set the path for php-fpm pid file [PREFIX/logs/php-fpm.pid]"
+        +ac_help="$ac_help
+        +  --with-xml-config=PATH      FPM: use xml-config in PATH to find libxml"
+        +ac_help="$ac_help
+        
+        General settings:
+        "
+        @@ -12153,11 +12164,30 @@ ext_output=$PHP_PATH_INFO_CHECK
+        
+        
+        
+        +php_enable_fpm=no
+        +
+        +
+        +# Check whether --enable-fpm or --disable-fpm was given.
+        +if test "${enable_fpm+set}" = set; then
+        +  enableval="$enable_fpm"
+        +  PHP_FPM=$enableval
+        +else
+        +
+        +  PHP_FPM=no
+        +
+        +  if test "$PHP_ENABLE_ALL" && test "no" = "yes"; then
+        +    PHP_FPM=$PHP_ENABLE_ALL
+        +  fi
+        +
+        +fi
+        +
+        +
+        +ext_output=$PHP_FPM
+        
+        
+        if test "$PHP_SAPI" = "default"; then
+        echo $ac_n "checking whether to build CGI binary""... $ac_c" 1>&6
+        -echo "configure:12161: checking whether to build CGI binary" >&5
+        +echo "configure:12435: checking whether to build CGI binary" >&5
+        if test "$PHP_CGI" != "no"; then
+            echo "$ac_t""yes" 1>&6
+            
+        @@ -12194,8 +12224,25 @@ EOF
+        
+
+
+----------------------------------------------------------------------------------------------------------
+Apa itu php-cgi, php-fpm dan php-cli
+----------------------------------------------------------------------------------------------------------
+
+CGI adalah sebuah teknologi web dan protocol yang digunakan untuk `web server` (http) untuk berhubungan ke application lainnya (seprti php).
+
+Sedangkan php-cgi sendiri dapat diartikan sebagai file server-side php untuk menerima request http (take incoming http request).
+
+Sedangkan pengembangan selanjutnya dari cgi adalah FastCGI yang memungkinkan adanya optimisasi dalam penerimaan request http.
+
+Bagaimana dengan php-fpm ?
+
+Sebetulnya tidak jauh berbeda antara FastCGI dan FPM, karena FPM ini lebih kepada `process manager` untuk me-manage 'FastCGI SAPI (server API)'.
+
+Jadi php-fpm adalah seperti php-cgi namun memiliki adanya process manager sehingga lebih terstruktur.
+
+php-fpm adalah implementasi server FastCGI yang dapat ditentukan pada beberapa web server seperti Apache or Nginx.
+
+Sedangkan php-cli adalah `standalone tool` untuk menjalankan `PHP scripts` di `command line` (php somescript.php). 
+
+Untuk memudahkan pemahaman maka mudahnya pengaksesan `file` php itu ada 2 yakni cgi (lewat http) dan cli (melalui command line).
+
+Tentu yang biasa digunakan adalah http atau dalam hal ini `cgi`, sedangkan cli tentunya akan kurang begitu banyak diaplikasikan.
+
+.. warning::
+
+    Untuk memahami lebih jelasnya, pada docker ``php official``, pada file dockerfile php-cli, maka tidak akan terdapat adanya ``fpm`` (tidak terdapat ``--enable-fpm``)
+
+    https://github.com/docker-library/php/blob/master/7.4/buster/cli/Dockerfile
+
+Referensi :
+
+- https://hub.docker.com/r/tommylau/php-5.2 , https://github.com/TommyLau/docker-lnmpa dan https://github.com/TommyLau/docker-lnmpa/blob/master/php/5.2/Dockerfile
+- https://git.plzen.eu/devops/php/-/blob/fpm-5.2-deb/Dockerfile
+- https://staff.blog.ui.ac.id/jp/2015/07/08/kompilasi-php-5-2-pada-debian-jessie/
+- https://www.phpinternalsbook.com/php5/build_system/building_php.html
+- https://www.baeldung.com/linux/set-command
+
+Download :
+
+- https://php-fpm.org/downloads/
+
+
+Dockerfile php 7.4 alpine
+----------------------------------------------------------------------------------------------------------
+
+Pada alpine setiap penginstallan sudah ada opsi --no-cache, yang fungsinya adalah menghapus adanya cache dari penginstallan::
+
+    RUN apk add --no-cache \
+		ca-certificates \
+		curl \
+		tar \
+		xz \
+		openssl
+
+Dan dalam penginstallan, itu bisa diberikan adanya opsi --virtual, ini seperti menjadikan adanya 'package wrapper', dimana keuntungannya nanti adalah dapat menghapus seluruh package dengan 'package wrapper'
+
+contoh::
+
+    RUN set -eux; \
+        \
+        apk add --no-cache --virtual .fetch-deps gnupg; \
+        \
+        mkdir -p /usr/src; \
+        cd /usr/src; \
+        \
+        curl -fsSL -o php.tar.xz "$PHP_URL"; \
+        \
+        if [ -n "$PHP_SHA256" ]; then \
+            echo "$PHP_SHA256 *php.tar.xz" | sha256sum -c -; \
+        fi; \
+        \
+        if [ -n "$PHP_ASC_URL" ]; then \
+            curl -fsSL -o php.tar.xz.asc "$PHP_ASC_URL"; \
+            export GNUPGHOME="$(mktemp -d)"; \
+            for key in $GPG_KEYS; do \
+                gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key"; \
+            done; \
+            gpg --batch --verify php.tar.xz.asc php.tar.xz; \
+            gpgconf --kill all; \
+            rm -rf "$GNUPGHOME"; \
+        fi; \
+        \
+        apk del --no-network .fetch-deps
+
+dan pasti penghapusan (apk del <nama-package>) terletak di paling bawah
+
+
+Dockerfile php 7.4 debian
+----------------------------------------------------------------------------------------------------------
+
+
+Pada debian setiap penginstallan::
+
+    apt-get install -y --no-install-recommends \
+
+Maka harus diberikan adanya penghapusan lists::
+
+	rm -rf /var/lib/apt/lists/*
+
+
+Contoh lengkap::
+
+    RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        $PHPIZE_DEPS \
+        ca-certificates \
+        curl \
+        xz-utils \
+    ; \
+    rm -rf /var/lib/apt/lists/*
+
+    RUN set -eux; \
+    apt-get update \
+	apt-get install -y --no-install-recommends gnupg dirmngr; \
+	rm -rf /var/lib/apt/lists/*; \
+
+
+docker php alpine 3.15 vs docker php alpine 3.16
+----------------------------------------------------------------------------------------------------------
+
+tidak ada perbedaan
+
+pas dicek cuma beda::
+
+    -FROM alpine:3.15
+    +FROM alpine:3.16
+
+
+
+==========================================================================================================
+Bahaya penggunaan apt-get purge --autoremove
+==========================================================================================================
+
+Ketika menggunakan konsep penghapusan library untuk dependency menggunakan purge, maka ini tidak hanya menghapus library namun juga pada `repository`
+
+Jadi katakan sudah melakukan adanya `purge`, maka selanjutnya tidak akan bisa menginstall library tanpa melakukan `apt-get update`
+
+Semisal run ke salah satu image -> ``docker run --rm -it php-fpm /bin/bash``, maka keselanjutnya tidak akan bisa melakukan penginstalan library baru.
+
+bash::
+
+    root@d0c11542bbfb:/app# apt install libmcrypt-dev
+    Reading package lists... Done
+    Building dependency tree... Done
+    E: Unable to locate package libmcrypt-dev
+    root@d0c11542bbfb:/app# apt-get update
+    Get:1 http://security.debian.org jessie/updates InRelease [44.9 kB]
+    Get:2 http://security.debian.org jessie/updates/main amd64 Packages [992 kB]                                                                                           
+    Ign http://deb.debian.org jessie InRelease                                                                                                                             
+    Get:3 http://deb.debian.org jessie-updates InRelease [16.3 kB]                                                                                                         
+    Get:4 http://deb.debian.org jessie Release.gpg [1652 B]                                                                                                                
+    Get:5 http://deb.debian.org jessie Release [77.3 kB]                                                                                                                   
+    Get:6 http://deb.debian.org jessie-updates/main amd64 Packages [20 B]                                                                                                  
+    Get:7 http://deb.debian.org jessie/main amd64 Packages [9098 kB]                                                                                                       
+    Fetched 10.2 MB in 1min 17s (133 kB/s)                                                                                                                                 
+    Reading package lists... Done
+    root@d0c11542bbfb:/app# apt install libmcrypt-dev
+    Reading package lists... Done
+    Building dependency tree... Done
+    The following extra packages will be installed:
+    libmcrypt4
+    Suggested packages:
+    mcrypt
+    The following NEW packages will be installed:
+    libmcrypt-dev libmcrypt4
+    0 upgraded, 2 newly installed, 0 to remove and 0 not upgraded.
+    Need to get 164 kB of archives.
+    After this operation, 662 kB of additional disk space will be used.
+    Do you want to continue? [Y/n] 

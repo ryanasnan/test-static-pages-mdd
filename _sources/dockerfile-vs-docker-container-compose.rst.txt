@@ -1,0 +1,501 @@
+Dockerfile vs docker compose
+==============================
+
+====================================================
+Docker compose laravel by serversforhackers
+====================================================
+
+Konsep image pada Dockerfile
+--------------------------------
+
+Image pada dockerfile sebenarnya adalah membuat image baru dari tiap instruction
+
+nah misal kita sedang run image ubuntu
+
+docker run --rm -it ubuntu:18.04 bash
+
+lalu install nginx 
+
+apt-get update
+apt-get install -y nginx
+
+maka perubahan setelahnya dapat ditrace dengan command diatas
+
+untuk melihat perubahan pada container dapat menggunakan command
+
+command::
+
+	docker diff <id-container>
+
+kemudian dalam perubahan tersebut dapat melakukan commit sama halnya dengan git.
+
+fungsi daripada docker commit adalah membuat image baru
+
+command::
+
+	docker commit [OPTIONS] CONTAINER-id [REPOSITORY[:TAG]]
+
+docker commit -a "ryan" -m "installed nginx" <id-container> <nginxbaru>:<latest>
+
+nama-repository nantinya ini adalah nama image yang baru
+
+.. hint::
+
+	Jika ingin membuat adanya image baru (repository baru) maka disarankan menggunakan docker run dengan parameter --rm, sehingga container akan dihapus setelahnya
+
+	misal
+
+	command::
+
+		docker run --rm -it ubuntu:18.04 bash
+
+kemudian docker image ls atau docker images akan muncul image baru
+
+dan itulah konsep dasar daripada dockerfile, sebenarnya dia commit image ketika ada instruction tapi dia akan menghapus begitu ada instructin selanjutnya, sampai pada yang terakhir
+
+dan dengan konsep intermediate image, maka ini akan membuat cache yang akan mempercepat
+
+
+jadi gini katakanlah docker container create -e foo=ryan
+itu artinya pada saat buat container itu dia override environment variable
+nah kalau docker run -e itu juga sama
+
+artinya apa
+pada saat exec (cmd atau entrypoint) dia akan mengambil daripada environmetn variable yang sudah ada
+
+bahasa mudahnya ketika container start (sama halnya docker run) itu adalah menjalankan cmd atau entrypoint
+
+nah di mysql official juga gitu
+sebelum execution file sh
+dia memberikan adanya environment terlebih dahulu
+ingat disini pada mysql official, dia gak memberikan ENV pada dockerfile melainkan pada file sh
+tapi konsepnya sama ENV di dockerfile dengan di file bash
+
+
+Pembuatan dockerfile
+-----------------------
+
+hal yang paling krusial adalah env DEBIAN_FRONTEND
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+noninteractive – 
+You use this mode when you need zero interaction while installing or upgrading the system via apt. 
+It accepts the default answer for all questions. 
+It might mail an error message to the root user, but that’s it all. 
+Otherwise, it is totally silent and humble, a perfect frontend for automatic installs. 
+One can use such mode in Dockerfile, shell scripts, cloud-init script, and more.
+
+intinya adalah membuat default answer saat ada question
+mmisalnya pada mysql
+
+artinya ini adalah menuliskan env
+
+
+
+ini akan mencegah `dialog box` pada saat penginstallan package
+
+Misalkan saja ketika menginstall package mysql, pasti akan muncul dialog box untuk me-set root password
+
+Jika ini dilakukan di dockerfile maka akan muncul error ``unable to initialize frontend: Dialog``
+
+
+kemudian untuk meset UTC timezone perlu package tzdata dan menaruh UTC ke dalam file /etc/timezone
+
+
+
+apt/apt-get clean → cleans the packages and install script in /var/cache/apt/archives/
+apt/apt-get autoclean → cleans obsolete deb-packages, less than clean
+apt/apt-get autoremove → removes orphaned packages which are not longer needed from the system, but not purges them, use the --purge option together with the command for that.
+
+jadi setelah install akan membersihkan package
+
+
+rm /var/lib/apt/lists/*
+This will remove the package lists. No repositories will be deleted, they are configured in the config file in /etc/apt/sources.list. All that can happen is that tools like apt-cache cannot get package information unless you updated the package lists. Also apt-get install will fail with E: Unable to locate package <package>, because no information is available about the package.
+
+Then just run:
+
+apt-get update
+to rewrite those lists and the command will work again.
+
+Anyway, it's recommended to run apt-get update before installing anything.
+
+jadi apt-get update itu akan memperbaharui list
+
+nah di dockerfile baiknya dihapus
+
+intinya ini akan memperkecil image
+
+
+build image
+
+docker build -t <nama-image>:<nama-tag> -f <filepath-dockerfile> <contextpath-dockerfile>
+
+context path adalah dimana dockerfile ini akan menjalankan setiap stuff
+
+misalkan dalam dockerfile terdapat adanya mount volume, jadi baiknya dikasih referencepath biar lebih jelas dia mount volume bersama file dockerfile (satu root)
+
+
+docker build -t shippingdocker/app:latest -f docker/app/Dockerfile docker/app
+
+
+
+
+ok jadi intinya 
+
+jika dalam suatu container menjalankan service di background (running seperti daemon) docker akan otomatis menghentikan container
+
+karenanya dibutuhkan daemon off pada /etc/nginx/nginx.conf
+
+
+daemon off akan membuat nginx berjalan di foreground.
+
+
+
+lalu add konfig nginx
+
+add default /etc/nginx/sites-avaialbes/default
+
+
+nah fungsinya contextreference disini, dengan begini ini akan memberitahu dockerfile untuk mengambil semua file di dalam contextreference path
+
+
+
+
+supervisor
+nah ada nodaemon=true
+artinya ini akan dijalankan di foreground
+
+
+nah masalahnya ada di supervisor php
+
+karena php kan sudah berjalan otomatis
+
+di supervisor ketika menjalankan php-fpm akan error (karena sudah running)
+
+maka dari itu harus dimatikan daemon nya
+sama seperti nginx 
+
+inilah hal yang perlu diperhatikan ketika menggunakan supervisor
+harus mematikan semua daemon
+karena ini akan dijalankan via supervisor
+
+kalau gak ada supervisor gimana ??
+
+keknya sih bisa sih ya, tapi kan nginx dan php-fpm itu berjalan di background.
+docker gak akan nangkep
+
+artinya kalau sudah install nginx dan php, meski berjalan tapi itu di background
+
+nah dengan adanya supervisor (nodaemon=true) ini akan membuat adanya foreground
+
+kenapa ini harus dilakukan
+
+nginx dan php-fpm sudah pasti background, docker gak akan ngedetect
+
+bisa kok dengan 
+nginx -g "daemon no;"
+tapi itu kan buat nginx doang, kalau php nya gimana ?
+
+makanya pake supervisor
+
+
+========================================================
+docker logs
+========================================================
+ketika buat supervisor dengan log
+
+maka ini bisa me-trace dengan
+docker logs <id-container>
+
+
+untuk lihat logs
+docker logs -f <id-container>
+
+
+jadi sejatinya docker itu melog di file
+
+/dev/stdout
+/dev/stderr
+
+maka dari itu tiap service baiknya di buatkan symlink kesitu
+
+ln -sf /dev/stdout /var/log/nginx/access.log
+ln -sf /dev/stderr /var/log/nginx/error.log
+
+untuk php
+
+
+-sf
+itu pembuatan symlink dengan force, artinya kalau sudah ada file symlink akan di-overwrite
+
+
+nah kalau logs itu sebenarnya cukup ribet pembuatannya
+kek nginx dia itu membuat symlink
+
+https://github.com/nginxinc/docker-nginx/blob/8921999083def7ba43a06fabd5f80e4406651353/mainline/jessie/Dockerfile#L21-L23
+
+atau httpd
+https://github.com/docker-library/httpd/blob/b13054c7de5c74bbaa6d595dbe38969e6d4f860c/2.2/Dockerfile#L72-L75
+
+
+saran gw sih mending liat aja di docker-library
+ini bisa jadi referensi
+atau di repo lain yang official
+
+just remember cari yg official kek
+https://github.com/nodejs/docker-node/blob/master/14/alpine3.11/Dockerfile
+https://github.com/docker-library/mysql/blob/master/8.0/Dockerfile
+
+saran buat log di docker
+https://www.docker.com/blog/capturing-logs-in-docker-desktop/
+https://docs.docker.com/config/containers/logging/
+
+
+
+
+
+
+
+
+
+========================================================
+docker network
+========================================================
+
+secara default network pada docker akan ada 3
+
+docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+6ad11f8d1673        bridge              bridge              local
+6a0e158a9e0c        host                host                local
+b2282a228e64        none                null                local
+intel@intel-Satellite-C55t-C:~$ 
+
+
+membuat network baru
+
+docker network create
+
+
+type bridge adalah default dimana ini membuat local container dapat berkomunikasi satu sama lain
+
+tanpa membberikan specific type maka bridge akan digunakan
+
+local berarti local computer
+
+docker network create appnet
+
+
+
+docker run -d --rm --name=mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=homestead -e MYSQL_USER=homestead -e MYSQL_PASSWORD=secret --network=appnet mysql:5.7
+
+docker inspect appnet
+
+maka di bagian containers akan berisikan container mysql
+
+
+nah host daripada container tersebut adalah name yaitu mysql (atau ini sama dengan ipv4address)
+
+
+ketika dicoba di container
+
+misal
+
+getenv hosts mysql
+maka akan memunculkan bahwa ini sama dengan inspect network diatas
+
+mysql -h mysql -u homestead -psecret
+
+
+jika misalkan container lain akan berkomunikasi maka tinggal tambahkan network
+
+docker run --name=app --network=appnet -d --rm -p 80:80 -v $(pwd)/application:/var/www/html/public shippingdocker/app:latest
+
+maka pada nginx diatas hostname nya adalah `app`
+
+
+nah di dalam container nginx bisa ngecek
+
+getent hosts app
+atau 
+getent hosts mysql
+
+
+
+docker connecting a container
+
+
+-w adalah workdir
+ini digunakan untuk bberpindah sebelum mengeksekusi 
+
+docker run -it --rm -v $(pwd):/var/www/html -w /var/www/html shippingdocker/app:latest composer create-project laravel/laravel application
+
+itu berarti sebelum exec composer create project, pindah ddulu
+
+
+
+
+
+
+=========================
+docker compose
+=========================
+
+basic::
+
+	version:'3'
+	services:
+	networks:
+	  appnet:
+	  	driver: bridge
+	volumes:
+	  dbdata:
+	  	driver: local
+	  cachedata:
+	  	driver: local
+
+services itu bisa dikatakan container
+
+A service definition contains configuration that is applied to each container started for that service, 
+much like passing command-line parameters to docker run. 
+
+Likewise, network and volume definitions are analogous to docker network create and docker volume create.
+
+As with docker run, options specified in the Dockerfile, such as CMD, EXPOSE, VOLUME, ENV, are respected by default - you don’t need to specify them again in docker-compose.yml.
+
+You can use environment variables in configuration values with a Bash-like ${VARIABLE} syntax - see variable substitution for full details.
+
+This section contains a list of all configuration options supported by a service definition in version 3.
+
+jadi kayak docker run -v --networks image:tag
+
+nah ini juga berlaku dengan environment
+
+environment:
+  MYSQL_ROOT_PASSWORD: secret
+
+
+
+jadi buat volumes juga
+
+
+untuk menghapus semua volume
+
+docker volume rm $(docker volume ls -q)
+
+
+jangan menghapus semua network, karena ada 3 default (host, bridge dan none)
+
+
+jadi docker compose itu memberitahukan network apa yang dibuat
+lalu di bagian services akan memberitahu ada service yang menggunakan network tersebut
+
+
+
+
+
+
+
+
+
+
+
+jadi docker-compose
+
+kalau semisal di bagian image tidak ditemukan (di local image atau remote image di docker hub)
+image <name>:<tag>
+
+itu gak ada dia akan melakukan build di build yang diberikan
+
+builld
+
+
+
+
+
+btw di docker-compose bisa langsung exec
+
+docker-compose <nama-service>
+
+
+docker-compose exec app composer require predis/predis
+
+tapi kalau di docker-compose tidak set workdir
+maka perlu dispesifik
+
+docker-compose exec -w /var/www/html/
+
+
+tapi kalau sudah ada di versi docker-compose nya
+
+
+jika tidak bisa pake shell
+
+docker-compose exec app\
+bash -c "cd /var/www/html && composer require predis/predis"
+
+
+
+dan juga bisa 
+docker-compose run app pwd
+
+nah ini sama seperti docker run
+
+tapi kalau docker-compose run
+itu semua context sudah ada misal networks, image, dll
+
+nah kenapa pake docker-compose run dibanding docker compose 
+karena kalau docker-compose exec itu dia gak semua context ada, misal working directory
+
+antara
+docker-compose exec app pwd
+dan
+docker-compose run app pwd
+
+itu hasilnya berbeda
+kalau yg run itu bisa pake working directory
+kalau exec ya exec aja
+kan kalau run dia seperti docker run artinya sudah ada workdirnya
+
+kalau exec mah kayak execution di root path aja
+
+
+
+sebagai reminder kalau exec
+
+docker-compose exec app bash -c "cd /var/www/html && command"
+
+
+
+
+
+
+
+jadi environment variable ini bisa dijalankan bersamaan
+
+PORT=8000 docker-compose ps
+
+
+
+kalau konsepnya adalah npm (node)
+buat docker-compose, buat volume yang bind mount
+lantas disini kan bisa diketahui node versi berapa ? (dibuat di docker compose pake ARG) begitupula npm
+memang susahnya adalah ketika node file js
+tapi itu bisa dibuat cmd di dockerfile
+nanti kan bisa diovveride juga
+but jangan lupa workdirnya juga ya diset
+
+yang jelas di local benar benar bersih
+
+
+
+ketika menggunakan node pada laravel (misal package.json)
+ini ternyata di bind volume ke /opt
+artinya ketika install ini mungkin kesitu, tapi yang jelas ini bakal bisa buat build (npm run)
+nah disini bisa kasih command
+yang mana pada akhirnya service node ini gak dijalanin
+dan tujuannya memang untuk npm build
+
+
